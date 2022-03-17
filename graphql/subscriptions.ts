@@ -47,12 +47,7 @@ export const onCreateSubscriber = /* GraphQL */ `
       id
       firstName
       lastName
-      subscriberGroup {
-        id
-        name
-        createdAt
-        updatedAt
-      }
+      subscriberGroupID
       pubSubscriptions {
         nextToken
       }
@@ -61,7 +56,6 @@ export const onCreateSubscriber = /* GraphQL */ `
       }
       createdAt
       updatedAt
-      subscriberGroupMembersId
     }
   }
 `;
@@ -71,12 +65,7 @@ export const onUpdateSubscriber = /* GraphQL */ `
       id
       firstName
       lastName
-      subscriberGroup {
-        id
-        name
-        createdAt
-        updatedAt
-      }
+      subscriberGroupID
       pubSubscriptions {
         nextToken
       }
@@ -85,7 +74,6 @@ export const onUpdateSubscriber = /* GraphQL */ `
       }
       createdAt
       updatedAt
-      subscriberGroupMembersId
     }
   }
 `;
@@ -95,12 +83,7 @@ export const onDeleteSubscriber = /* GraphQL */ `
       id
       firstName
       lastName
-      subscriberGroup {
-        id
-        name
-        createdAt
-        updatedAt
-      }
+      subscriberGroupID
       pubSubscriptions {
         nextToken
       }
@@ -109,7 +92,6 @@ export const onDeleteSubscriber = /* GraphQL */ `
       }
       createdAt
       updatedAt
-      subscriberGroupMembersId
     }
   }
 `;
@@ -124,21 +106,8 @@ export const onCreatePubSubscription = /* GraphQL */ `
         qty
         effectiveDate
       }
-      periodical {
-        id
-        name
-        recurrence
-        createdAt
-        updatedAt
-      }
-      subscriber {
-        id
-        firstName
-        lastName
-        createdAt
-        updatedAt
-        subscriberGroupMembersId
-      }
+      periodicalID
+      subscriberID
       createdAt
       updatedAt
       subscriberPubSubscriptionsId
@@ -157,21 +126,8 @@ export const onUpdatePubSubscription = /* GraphQL */ `
         qty
         effectiveDate
       }
-      periodical {
-        id
-        name
-        recurrence
-        createdAt
-        updatedAt
-      }
-      subscriber {
-        id
-        firstName
-        lastName
-        createdAt
-        updatedAt
-        subscriberGroupMembersId
-      }
+      periodicalID
+      subscriberID
       createdAt
       updatedAt
       subscriberPubSubscriptionsId
@@ -190,21 +146,8 @@ export const onDeletePubSubscription = /* GraphQL */ `
         qty
         effectiveDate
       }
-      periodical {
-        id
-        name
-        recurrence
-        createdAt
-        updatedAt
-      }
-      subscriber {
-        id
-        firstName
-        lastName
-        createdAt
-        updatedAt
-        subscriberGroupMembersId
-      }
+      periodicalID
+      subscriberID
       createdAt
       updatedAt
       subscriberPubSubscriptionsId
@@ -269,16 +212,11 @@ export const onCreatePeriodicalIssue = /* GraphQL */ `
       id
       issueDate
       status
-      periodical {
-        id
-        name
-        recurrence
-        createdAt
-        updatedAt
-      }
+      periodicalID
       orders {
         nextToken
       }
+      notes
       createdAt
       updatedAt
       periodicalIssuesId
@@ -291,16 +229,11 @@ export const onUpdatePeriodicalIssue = /* GraphQL */ `
       id
       issueDate
       status
-      periodical {
-        id
-        name
-        recurrence
-        createdAt
-        updatedAt
-      }
+      periodicalID
       orders {
         nextToken
       }
+      notes
       createdAt
       updatedAt
       periodicalIssuesId
@@ -313,16 +246,11 @@ export const onDeletePeriodicalIssue = /* GraphQL */ `
       id
       issueDate
       status
-      periodical {
-        id
-        name
-        recurrence
-        createdAt
-        updatedAt
-      }
+      periodicalID
       orders {
         nextToken
       }
+      notes
       createdAt
       updatedAt
       periodicalIssuesId
@@ -345,6 +273,8 @@ export const onCreateOrder = /* GraphQL */ `
         id
         issueDate
         status
+        periodicalID
+        notes
         createdAt
         updatedAt
         periodicalIssuesId
@@ -353,7 +283,6 @@ export const onCreateOrder = /* GraphQL */ `
       updatedAt
       subscriberOrdersId
       periodicalIssueOrdersId
-      itemOrdersId
     }
   }
 `;
@@ -373,6 +302,8 @@ export const onUpdateOrder = /* GraphQL */ `
         id
         issueDate
         status
+        periodicalID
+        notes
         createdAt
         updatedAt
         periodicalIssuesId
@@ -381,7 +312,6 @@ export const onUpdateOrder = /* GraphQL */ `
       updatedAt
       subscriberOrdersId
       periodicalIssueOrdersId
-      itemOrdersId
     }
   }
 `;
@@ -401,6 +331,8 @@ export const onDeleteOrder = /* GraphQL */ `
         id
         issueDate
         status
+        periodicalID
+        notes
         createdAt
         updatedAt
         periodicalIssuesId
@@ -409,7 +341,6 @@ export const onDeleteOrder = /* GraphQL */ `
       updatedAt
       subscriberOrdersId
       periodicalIssueOrdersId
-      itemOrdersId
     }
   }
 `;

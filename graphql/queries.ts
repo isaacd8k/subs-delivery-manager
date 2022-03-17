@@ -42,12 +42,7 @@ export const getSubscriber = /* GraphQL */ `
       id
       firstName
       lastName
-      subscriberGroup {
-        id
-        name
-        createdAt
-        updatedAt
-      }
+      subscriberGroupID
       pubSubscriptions {
         nextToken
       }
@@ -56,7 +51,6 @@ export const getSubscriber = /* GraphQL */ `
       }
       createdAt
       updatedAt
-      subscriberGroupMembersId
     }
   }
 `;
@@ -71,9 +65,9 @@ export const listSubscribers = /* GraphQL */ `
         id
         firstName
         lastName
+        subscriberGroupID
         createdAt
         updatedAt
-        subscriberGroupMembersId
       }
       nextToken
     }
@@ -90,21 +84,8 @@ export const getPubSubscription = /* GraphQL */ `
         qty
         effectiveDate
       }
-      periodical {
-        id
-        name
-        recurrence
-        createdAt
-        updatedAt
-      }
-      subscriber {
-        id
-        firstName
-        lastName
-        createdAt
-        updatedAt
-        subscriberGroupMembersId
-      }
+      periodicalID
+      subscriberID
       createdAt
       updatedAt
       subscriberPubSubscriptionsId
@@ -128,6 +109,8 @@ export const listPubSubscriptions = /* GraphQL */ `
         qty
         startDate
         status
+        periodicalID
+        subscriberID
         createdAt
         updatedAt
         subscriberPubSubscriptionsId
@@ -178,16 +161,11 @@ export const getPeriodicalIssue = /* GraphQL */ `
       id
       issueDate
       status
-      periodical {
-        id
-        name
-        recurrence
-        createdAt
-        updatedAt
-      }
+      periodicalID
       orders {
         nextToken
       }
+      notes
       createdAt
       updatedAt
       periodicalIssuesId
@@ -209,6 +187,8 @@ export const listPeriodicalIssues = /* GraphQL */ `
         id
         issueDate
         status
+        periodicalID
+        notes
         createdAt
         updatedAt
         periodicalIssuesId
@@ -233,6 +213,8 @@ export const getOrder = /* GraphQL */ `
         id
         issueDate
         status
+        periodicalID
+        notes
         createdAt
         updatedAt
         periodicalIssuesId
@@ -241,7 +223,6 @@ export const getOrder = /* GraphQL */ `
       updatedAt
       subscriberOrdersId
       periodicalIssueOrdersId
-      itemOrdersId
     }
   }
 `;
@@ -266,7 +247,6 @@ export const listOrders = /* GraphQL */ `
         updatedAt
         subscriberOrdersId
         periodicalIssueOrdersId
-        itemOrdersId
       }
       nextToken
     }
@@ -304,10 +284,67 @@ export const listItems = /* GraphQL */ `
     }
   }
 `;
+export const subscribersByGroup = /* GraphQL */ `
+  query SubscribersByGroup(
+    $subscriberGroupID: ID!
+    $sortDirection: ModelSortDirection
+    $filter: ModelSubscriberFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    subscribersByGroup(
+      subscriberGroupID: $subscriberGroupID
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        firstName
+        lastName
+        subscriberGroupID
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+export const pubSubscriptionsBySubscriber = /* GraphQL */ `
+  query PubSubscriptionsBySubscriber(
+    $subscriberID: ID!
+    $sortDirection: ModelSortDirection
+    $filter: ModelPubSubscriptionFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    pubSubscriptionsBySubscriber(
+      subscriberID: $subscriberID
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        qty
+        startDate
+        status
+        periodicalID
+        subscriberID
+        createdAt
+        updatedAt
+        subscriberPubSubscriptionsId
+        periodicalPubSubscriptionsId
+      }
+      nextToken
+    }
+  }
+`;
 export const periodicalIssuesByStatus = /* GraphQL */ `
   query PeriodicalIssuesByStatus(
     $status: IssueStatus!
-    $id: ModelIDKeyConditionInput
     $sortDirection: ModelSortDirection
     $filter: ModelPeriodicalIssueFilterInput
     $limit: Int
@@ -315,7 +352,6 @@ export const periodicalIssuesByStatus = /* GraphQL */ `
   ) {
     periodicalIssuesByStatus(
       status: $status
-      id: $id
       sortDirection: $sortDirection
       filter: $filter
       limit: $limit
@@ -325,6 +361,37 @@ export const periodicalIssuesByStatus = /* GraphQL */ `
         id
         issueDate
         status
+        periodicalID
+        notes
+        createdAt
+        updatedAt
+        periodicalIssuesId
+      }
+      nextToken
+    }
+  }
+`;
+export const periodicalIssuesByPeriodical = /* GraphQL */ `
+  query PeriodicalIssuesByPeriodical(
+    $periodicalID: ID!
+    $sortDirection: ModelSortDirection
+    $filter: ModelPeriodicalIssueFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    periodicalIssuesByPeriodical(
+      periodicalID: $periodicalID
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        issueDate
+        status
+        periodicalID
+        notes
         createdAt
         updatedAt
         periodicalIssuesId
@@ -336,7 +403,6 @@ export const periodicalIssuesByStatus = /* GraphQL */ `
 export const ordersByStatus = /* GraphQL */ `
   query OrdersByStatus(
     $status: OrderStatus!
-    $id: ModelIDKeyConditionInput
     $sortDirection: ModelSortDirection
     $filter: ModelOrderFilterInput
     $limit: Int
@@ -344,7 +410,6 @@ export const ordersByStatus = /* GraphQL */ `
   ) {
     ordersByStatus(
       status: $status
-      id: $id
       sortDirection: $sortDirection
       filter: $filter
       limit: $limit
@@ -364,7 +429,40 @@ export const ordersByStatus = /* GraphQL */ `
         updatedAt
         subscriberOrdersId
         periodicalIssueOrdersId
-        itemOrdersId
+      }
+      nextToken
+    }
+  }
+`;
+export const ordersByItem = /* GraphQL */ `
+  query OrdersByItem(
+    $itemID: ID!
+    $sortDirection: ModelSortDirection
+    $filter: ModelOrderFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    ordersByItem(
+      itemID: $itemID
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        placedDate
+        isAutomaticOrder
+        isPubSubscriptionOrder
+        itemQty
+        status
+        cancellationReason
+        itemID
+        subscriberID
+        createdAt
+        updatedAt
+        subscriberOrdersId
+        periodicalIssueOrdersId
       }
       nextToken
     }
@@ -399,7 +497,6 @@ export const ordersBySubscriber = /* GraphQL */ `
         updatedAt
         subscriberOrdersId
         periodicalIssueOrdersId
-        itemOrdersId
       }
       nextToken
     }
@@ -436,7 +533,6 @@ export const ordersBySubscriberByStatus = /* GraphQL */ `
         updatedAt
         subscriberOrdersId
         periodicalIssueOrdersId
-        itemOrdersId
       }
       nextToken
     }
@@ -473,7 +569,6 @@ export const ordersBySubscriberByStatusByDate = /* GraphQL */ `
         updatedAt
         subscriberOrdersId
         periodicalIssueOrdersId
-        itemOrdersId
       }
       nextToken
     }
