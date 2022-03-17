@@ -21,7 +21,7 @@ enum OrderStatus {
   CANCELED
 }
 
-enum SubscriptionStatus {
+enum PubSubscriptionStatus {
   ACTIVE
   CANCELED
 }
@@ -49,15 +49,15 @@ type Subscriber @model {
   lastName: String!
   # CONNECTION
   subscriberGroup: SubscriberGroup @belongsTo
-  subscriptions: [Subscription] @hasMany
+  pubSubscriptions: [PubSubscription] @hasMany
   orders: [Order] @hasMany
 }
 
-type Subscription @model {
+type PubSubscription @model {
   id: ID!
   qty: Int!
   startDate: AWSDate
-  status: SubscriptionStatus!
+  status: PubSubscriptionStatus!
   pendingQtyChanges: [PendingQtyChange]
   # CONNECTIONS
   periodical: Periodical! @belongsTo
@@ -70,7 +70,7 @@ type Periodical @model {
   # CONNECTION
   recurrence: PeriodicalRecurrence!
   issues: [PeriodicalIssue] @hasMany
-  subscriptions: [Subscription] @hasMany
+  pubSubscriptions: [PubSubscription] @hasMany
 }
 
 type PeriodicalIssue @model {
@@ -91,7 +91,7 @@ type Order @model {
   id: ID!
   placedDate: AWSDate!
   isAutomaticOrder: Boolean!
-  isSubscriptionOrder: Boolean!
+  isPubSubscriptionOrder: Boolean!
   itemQty: Int!
   status: OrderStatus!
     @index(
