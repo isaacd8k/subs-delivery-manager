@@ -101,7 +101,7 @@ type Order @model {
     )
   cancellationReason: String
   # CONNECTIONS
-  item: item @belongsTo
+  item: Item @belongsTo
   subscriber: Subscriber!
     @belongsTo
     @index(name: "bySubscriber", queryField: "ordersBySubscriber")
