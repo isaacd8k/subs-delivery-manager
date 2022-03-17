@@ -1,9 +1,126 @@
 # This "input" configures a global authorization rule to enable public access to
 # all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
-input AMPLIFY { globalAuthRule: AuthRule = { allow: public } } # FOR TESTING ONLY!
 
-type Todo @model {
+# FOR TESTING ONLY!
+# TODO: Configure secondary index, sort keys, index keys, etc based on access patterns
+# TODO: Configure security, auth access for each model
+input AMPLIFY {
+  globalAuthRule: AuthRule = { allow: public }
+}
+
+enum IssueStatus {
+  UPCOMING
+  RECEIVED
+  CANCELED
+}
+
+enum OrderStatus {
+  PLACED
+  RECEIVED
+  DELIVERED
+  CANCELED
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELED
+}
+
+enum PeriodicalRecurrence {
+  MONTHLY
+  BIMONTHLY
+  QUARTERLY
+}
+
+type PendingQtyChange {
+  qty: Int!
+  effectiveDate: AWSDate!
+}
+
+type SubscriberGroup @model {
+  id: ID!
+  name: String
+  members: [Subscriber] @hasMany
+}
+
+type Subscriber @model {
+  id: ID!
+  firstName: String!
+  lastName: String!
+  # CONNECTION
+  subscriberGroup: SubscriberGroup @belongsTo
+  subscriptions: [Subscription] @hasMany
+  orders: [Order] @hasMany
+}
+
+type Subscription @model {
+  id: ID!
+  qty: Int!
+  startDate: AWSDate
+  status: SubscriptionStatus!
+  pendingQtyChanges: [PendingQtyChange]
+  # CONNECTIONS
+  periodical: Periodical! @belongsTo
+  subscriber: Subscriber @belongsTo
+}
+
+type Periodical @model {
   id: ID!
   name: String!
-  description: String
+  # CONNECTION
+  recurrence: PeriodicalRecurrence!
+  issues: [PeriodicalIssue] @hasMany
+  subscriptions: [Subscription] @hasMany
+}
+
+type PeriodicalIssue @model {
+  id: ID!
+  issueDate: AWSDate!
+  status: IssueStatus!
+    @index(
+      name: "byStatus"
+      queryField: "periodicalIssuesByStatus"
+      sortKeyFields: ["id"]
+    )
+  # CONNECTIONS
+  periodical: Periodical! @belongsTo
+  orders: [Order] @hasMany
+}
+
+type Order @model {
+  id: ID!
+  placedDate: AWSDate!
+  isAutomaticOrder: Boolean!
+  isSubscriptionOrder: Boolean!
+  itemQty: Int!
+  status: OrderStatus!
+    @index(
+      name: "byStatus"
+      queryField: "ordersByStatus"
+      sortKeyFields: ["id"]
+    )
+  cancellationReason: String
+  # CONNECTIONS
+  item: item @belongsTo
+  subscriber: Subscriber!
+    @belongsTo
+    @index(name: "bySubscriber", queryField: "ordersBySubscriber")
+    @index(
+      name: "bySubscriberByStatus"
+      sortKeyFields: ["status"]
+      queryField: "ordersBySubscriberByStatus"
+    )
+    @index(
+      name: "bySubscriberByStatusByDate"
+      sortKeyFields: ["status", "placedDate"]
+      queryField: "ordersBySubscriberByStatusByDate"
+    )
+  periodicalIssue: PeriodicalIssue @belongsTo
+}
+
+type Item @model {
+  id: ID!
+  name: String!
+  orders: [Order] @hasMany
+  notes: String
 }
