@@ -1,0 +1,16 @@
+projects:
+  subsdeliverymanager:
+    schemaPath: graphql/schema.json
+    includes:
+      - ./graphql/**/*.ts
+    excludes:
+      - ./amplify/**
+    extensions:
+      amplify:
+        codeGenTarget: typescript
+        generatedFileName: ./graphql/APITypes.ts
+        docsFilePath: ./graphql
+        maxDepth: 2
+extensions:
+  amplify:
+    version: 3
