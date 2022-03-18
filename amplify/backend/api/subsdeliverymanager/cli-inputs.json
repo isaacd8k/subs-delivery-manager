@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "serviceConfiguration": {
+    "apiName": "subsdeliverymanager",
+    "serviceName": "AppSync",
+    "gqlSchemaPath": "/Users/isaacfarciert/Documents/Development/subs-delivery-manager/amplify/backend/api/subsdeliverymanager/schema.graphql",
+    "defaultAuthType": {
+      "mode": "API_KEY",
+      "expirationTime": 365,
+      "apiKeyExpirationDate": "2023-03-18T18:12:14.186Z",
+      "keyDescription": "SubsDeliveryManager"
+    }
+  }
+}
