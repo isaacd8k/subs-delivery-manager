@@ -1,24 +1,37 @@
 import type { NextPage } from "next";
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { API } from "aws-amplify";
+import { listSubscribers } from "../graphql/queries";
 
-import { Button, Flex, Heading, Input } from "@chakra-ui/react";
-
-// Show home page if authenticated
 const Home: NextPage = () => {
-  return (
-    <Flex height="100vh" alignItems="center" justifyContent="center">
-      <Flex direction="column" p={12} rounded={6}>
-        <Heading mb={6}>Log in</Heading>
+  const [subscribers, setSubscribers] = useState([]);
 
-        <Input
-          placeholder="email@email.com"
-          variant="filled"
-          mb={3}
-          type="email"
-        />
-        <Input placeholder="******" variant="filled" mb={6} type="password" />
-        <Button colorScheme="teal">Log in</Button>
-      </Flex>
-    </Flex>
+  async function fetchSubscribers() {
+    const subscriberData = await API.graphql({
+      query: listSubscribers,
+    });
+    setSubscribers(subscriberData.data.listSubscribers.items);
+  }
+
+  function fetchSubscribersTest() {
+    setSubscribers([{ id: 0, firstName: "Mock Data", lastName: "Last" }]);
+  }
+
+  useEffect(() => {
+    fetchSubscribers();
+  }, []);
+
+  return (
+    <div>
+      <h1>Subscribers</h1>
+
+      {subscribers.map((sub) => (
+        <p key={sub.id}>
+          {sub.id} | {sub.lastName}, {sub.firstName}
+        </p>
+      ))}
+    </div>
   );
 };
 
