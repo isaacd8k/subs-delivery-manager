@@ -98,8 +98,6 @@ export type PubSubscription = {
   subscriberID: string,
   createdAt: string,
   updatedAt: string,
-  subscriberPubSubscriptionsId?: string | null,
-  periodicalPubSubscriptionsId?: string | null,
 };
 
 export enum PubSubscriptionStatus {
@@ -129,39 +127,17 @@ export type Order = {
   itemQty: number,
   status: OrderStatus,
   cancellationReason?: string | null,
-  itemID: string,
+  itemID?: string | null,
   subscriberID: string,
-  periodicalIssue?: PeriodicalIssue | null,
+  periodicalIssueID?: string | null,
   createdAt: string,
   updatedAt: string,
-  subscriberOrdersId?: string | null,
-  periodicalIssueOrdersId?: string | null,
 };
 
 export enum OrderStatus {
   PLACED = "PLACED",
   RECEIVED = "RECEIVED",
   DELIVERED = "DELIVERED",
-  CANCELED = "CANCELED",
-}
-
-
-export type PeriodicalIssue = {
-  __typename: "PeriodicalIssue",
-  id: string,
-  issueDate: string,
-  status: IssueStatus,
-  periodicalID: string,
-  orders?: ModelOrderConnection | null,
-  notes?: string | null,
-  createdAt: string,
-  updatedAt: string,
-  periodicalIssuesId?: string | null,
-};
-
-export enum IssueStatus {
-  UPCOMING = "UPCOMING",
-  RECEIVED = "RECEIVED",
   CANCELED = "CANCELED",
 }
 
@@ -226,8 +202,6 @@ export type CreatePubSubscriptionInput = {
   pendingQtyChanges?: Array< PendingQtyChangeInput | null > | null,
   periodicalID: string,
   subscriberID: string,
-  subscriberPubSubscriptionsId?: string | null,
-  periodicalPubSubscriptionsId?: string | null,
 };
 
 export type PendingQtyChangeInput = {
@@ -244,8 +218,6 @@ export type ModelPubSubscriptionConditionInput = {
   and?: Array< ModelPubSubscriptionConditionInput | null > | null,
   or?: Array< ModelPubSubscriptionConditionInput | null > | null,
   not?: ModelPubSubscriptionConditionInput | null,
-  subscriberPubSubscriptionsId?: ModelIDInput | null,
-  periodicalPubSubscriptionsId?: ModelIDInput | null,
 };
 
 export type ModelIntInput = {
@@ -273,8 +245,6 @@ export type UpdatePubSubscriptionInput = {
   pendingQtyChanges?: Array< PendingQtyChangeInput | null > | null,
   periodicalID?: string | null,
   subscriberID?: string | null,
-  subscriberPubSubscriptionsId?: string | null,
-  periodicalPubSubscriptionsId?: string | null,
 };
 
 export type DeletePubSubscriptionInput = {
@@ -324,6 +294,25 @@ export type ModelPeriodicalIssueConnection = {
   nextToken?: string | null,
 };
 
+export type PeriodicalIssue = {
+  __typename: "PeriodicalIssue",
+  id: string,
+  issueDate: string,
+  status: IssueStatus,
+  periodicalID: string,
+  orders?: ModelOrderConnection | null,
+  notes?: string | null,
+  createdAt: string,
+  updatedAt: string,
+};
+
+export enum IssueStatus {
+  UPCOMING = "UPCOMING",
+  RECEIVED = "RECEIVED",
+  CANCELED = "CANCELED",
+}
+
+
 export type UpdatePeriodicalInput = {
   id: string,
   name?: string | null,
@@ -340,7 +329,6 @@ export type CreatePeriodicalIssueInput = {
   status: IssueStatus,
   periodicalID: string,
   notes?: string | null,
-  periodicalIssuesId?: string | null,
 };
 
 export type ModelPeriodicalIssueConditionInput = {
@@ -351,7 +339,6 @@ export type ModelPeriodicalIssueConditionInput = {
   and?: Array< ModelPeriodicalIssueConditionInput | null > | null,
   or?: Array< ModelPeriodicalIssueConditionInput | null > | null,
   not?: ModelPeriodicalIssueConditionInput | null,
-  periodicalIssuesId?: ModelIDInput | null,
 };
 
 export type ModelIssueStatusInput = {
@@ -365,7 +352,6 @@ export type UpdatePeriodicalIssueInput = {
   status?: IssueStatus | null,
   periodicalID?: string | null,
   notes?: string | null,
-  periodicalIssuesId?: string | null,
 };
 
 export type DeletePeriodicalIssueInput = {
@@ -380,10 +366,9 @@ export type CreateOrderInput = {
   itemQty: number,
   status: OrderStatus,
   cancellationReason?: string | null,
-  itemID: string,
+  itemID?: string | null,
   subscriberID: string,
-  subscriberOrdersId?: string | null,
-  periodicalIssueOrdersId?: string | null,
+  periodicalIssueID?: string | null,
 };
 
 export type ModelOrderConditionInput = {
@@ -395,11 +380,10 @@ export type ModelOrderConditionInput = {
   cancellationReason?: ModelStringInput | null,
   itemID?: ModelIDInput | null,
   subscriberID?: ModelIDInput | null,
+  periodicalIssueID?: ModelIDInput | null,
   and?: Array< ModelOrderConditionInput | null > | null,
   or?: Array< ModelOrderConditionInput | null > | null,
   not?: ModelOrderConditionInput | null,
-  subscriberOrdersId?: ModelIDInput | null,
-  periodicalIssueOrdersId?: ModelIDInput | null,
 };
 
 export type ModelBooleanInput = {
@@ -424,8 +408,7 @@ export type UpdateOrderInput = {
   cancellationReason?: string | null,
   itemID?: string | null,
   subscriberID?: string | null,
-  subscriberOrdersId?: string | null,
-  periodicalIssueOrdersId?: string | null,
+  periodicalIssueID?: string | null,
 };
 
 export type DeleteOrderInput = {
@@ -500,8 +483,6 @@ export type ModelPubSubscriptionFilterInput = {
   and?: Array< ModelPubSubscriptionFilterInput | null > | null,
   or?: Array< ModelPubSubscriptionFilterInput | null > | null,
   not?: ModelPubSubscriptionFilterInput | null,
-  subscriberPubSubscriptionsId?: ModelIDInput | null,
-  periodicalPubSubscriptionsId?: ModelIDInput | null,
 };
 
 export type ModelPeriodicalFilterInput = {
@@ -528,7 +509,6 @@ export type ModelPeriodicalIssueFilterInput = {
   and?: Array< ModelPeriodicalIssueFilterInput | null > | null,
   or?: Array< ModelPeriodicalIssueFilterInput | null > | null,
   not?: ModelPeriodicalIssueFilterInput | null,
-  periodicalIssuesId?: ModelIDInput | null,
 };
 
 export type ModelOrderFilterInput = {
@@ -541,11 +521,10 @@ export type ModelOrderFilterInput = {
   cancellationReason?: ModelStringInput | null,
   itemID?: ModelIDInput | null,
   subscriberID?: ModelIDInput | null,
+  periodicalIssueID?: ModelIDInput | null,
   and?: Array< ModelOrderFilterInput | null > | null,
   or?: Array< ModelOrderFilterInput | null > | null,
   not?: ModelOrderFilterInput | null,
-  subscriberOrdersId?: ModelIDInput | null,
-  periodicalIssueOrdersId?: ModelIDInput | null,
 };
 
 export type ModelItemFilterInput = {
@@ -577,21 +556,6 @@ export type ModelStringKeyConditionInput = {
   gt?: string | null,
   between?: Array< string | null > | null,
   beginsWith?: string | null,
-};
-
-export type ModelOrderBySubscriberByStatusByDateCompositeKeyConditionInput = {
-  eq?: ModelOrderBySubscriberByStatusByDateCompositeKeyInput | null,
-  le?: ModelOrderBySubscriberByStatusByDateCompositeKeyInput | null,
-  lt?: ModelOrderBySubscriberByStatusByDateCompositeKeyInput | null,
-  ge?: ModelOrderBySubscriberByStatusByDateCompositeKeyInput | null,
-  gt?: ModelOrderBySubscriberByStatusByDateCompositeKeyInput | null,
-  between?: Array< ModelOrderBySubscriberByStatusByDateCompositeKeyInput | null > | null,
-  beginsWith?: ModelOrderBySubscriberByStatusByDateCompositeKeyInput | null,
-};
-
-export type ModelOrderBySubscriberByStatusByDateCompositeKeyInput = {
-  status?: OrderStatus | null,
-  placedDate?: string | null,
 };
 
 export type CreateSubscriberGroupMutationVariables = {
@@ -747,8 +711,6 @@ export type CreatePubSubscriptionMutation = {
     subscriberID: string,
     createdAt: string,
     updatedAt: string,
-    subscriberPubSubscriptionsId?: string | null,
-    periodicalPubSubscriptionsId?: string | null,
   } | null,
 };
 
@@ -773,8 +735,6 @@ export type UpdatePubSubscriptionMutation = {
     subscriberID: string,
     createdAt: string,
     updatedAt: string,
-    subscriberPubSubscriptionsId?: string | null,
-    periodicalPubSubscriptionsId?: string | null,
   } | null,
 };
 
@@ -799,8 +759,6 @@ export type DeletePubSubscriptionMutation = {
     subscriberID: string,
     createdAt: string,
     updatedAt: string,
-    subscriberPubSubscriptionsId?: string | null,
-    periodicalPubSubscriptionsId?: string | null,
   } | null,
 };
 
@@ -895,7 +853,6 @@ export type CreatePeriodicalIssueMutation = {
     notes?: string | null,
     createdAt: string,
     updatedAt: string,
-    periodicalIssuesId?: string | null,
   } | null,
 };
 
@@ -918,7 +875,6 @@ export type UpdatePeriodicalIssueMutation = {
     notes?: string | null,
     createdAt: string,
     updatedAt: string,
-    periodicalIssuesId?: string | null,
   } | null,
 };
 
@@ -941,7 +897,6 @@ export type DeletePeriodicalIssueMutation = {
     notes?: string | null,
     createdAt: string,
     updatedAt: string,
-    periodicalIssuesId?: string | null,
   } | null,
 };
 
@@ -960,23 +915,11 @@ export type CreateOrderMutation = {
     itemQty: number,
     status: OrderStatus,
     cancellationReason?: string | null,
-    itemID: string,
+    itemID?: string | null,
     subscriberID: string,
-    periodicalIssue?:  {
-      __typename: "PeriodicalIssue",
-      id: string,
-      issueDate: string,
-      status: IssueStatus,
-      periodicalID: string,
-      notes?: string | null,
-      createdAt: string,
-      updatedAt: string,
-      periodicalIssuesId?: string | null,
-    } | null,
+    periodicalIssueID?: string | null,
     createdAt: string,
     updatedAt: string,
-    subscriberOrdersId?: string | null,
-    periodicalIssueOrdersId?: string | null,
   } | null,
 };
 
@@ -995,23 +938,11 @@ export type UpdateOrderMutation = {
     itemQty: number,
     status: OrderStatus,
     cancellationReason?: string | null,
-    itemID: string,
+    itemID?: string | null,
     subscriberID: string,
-    periodicalIssue?:  {
-      __typename: "PeriodicalIssue",
-      id: string,
-      issueDate: string,
-      status: IssueStatus,
-      periodicalID: string,
-      notes?: string | null,
-      createdAt: string,
-      updatedAt: string,
-      periodicalIssuesId?: string | null,
-    } | null,
+    periodicalIssueID?: string | null,
     createdAt: string,
     updatedAt: string,
-    subscriberOrdersId?: string | null,
-    periodicalIssueOrdersId?: string | null,
   } | null,
 };
 
@@ -1030,23 +961,11 @@ export type DeleteOrderMutation = {
     itemQty: number,
     status: OrderStatus,
     cancellationReason?: string | null,
-    itemID: string,
+    itemID?: string | null,
     subscriberID: string,
-    periodicalIssue?:  {
-      __typename: "PeriodicalIssue",
-      id: string,
-      issueDate: string,
-      status: IssueStatus,
-      periodicalID: string,
-      notes?: string | null,
-      createdAt: string,
-      updatedAt: string,
-      periodicalIssuesId?: string | null,
-    } | null,
+    periodicalIssueID?: string | null,
     createdAt: string,
     updatedAt: string,
-    subscriberOrdersId?: string | null,
-    periodicalIssueOrdersId?: string | null,
   } | null,
 };
 
@@ -1214,8 +1133,6 @@ export type GetPubSubscriptionQuery = {
     subscriberID: string,
     createdAt: string,
     updatedAt: string,
-    subscriberPubSubscriptionsId?: string | null,
-    periodicalPubSubscriptionsId?: string | null,
   } | null,
 };
 
@@ -1238,8 +1155,6 @@ export type ListPubSubscriptionsQuery = {
       subscriberID: string,
       createdAt: string,
       updatedAt: string,
-      subscriberPubSubscriptionsId?: string | null,
-      periodicalPubSubscriptionsId?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -1307,7 +1222,6 @@ export type GetPeriodicalIssueQuery = {
     notes?: string | null,
     createdAt: string,
     updatedAt: string,
-    periodicalIssuesId?: string | null,
   } | null,
 };
 
@@ -1329,7 +1243,6 @@ export type ListPeriodicalIssuesQuery = {
       notes?: string | null,
       createdAt: string,
       updatedAt: string,
-      periodicalIssuesId?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -1349,23 +1262,11 @@ export type GetOrderQuery = {
     itemQty: number,
     status: OrderStatus,
     cancellationReason?: string | null,
-    itemID: string,
+    itemID?: string | null,
     subscriberID: string,
-    periodicalIssue?:  {
-      __typename: "PeriodicalIssue",
-      id: string,
-      issueDate: string,
-      status: IssueStatus,
-      periodicalID: string,
-      notes?: string | null,
-      createdAt: string,
-      updatedAt: string,
-      periodicalIssuesId?: string | null,
-    } | null,
+    periodicalIssueID?: string | null,
     createdAt: string,
     updatedAt: string,
-    subscriberOrdersId?: string | null,
-    periodicalIssueOrdersId?: string | null,
   } | null,
 };
 
@@ -1387,12 +1288,11 @@ export type ListOrdersQuery = {
       itemQty: number,
       status: OrderStatus,
       cancellationReason?: string | null,
-      itemID: string,
+      itemID?: string | null,
       subscriberID: string,
+      periodicalIssueID?: string | null,
       createdAt: string,
       updatedAt: string,
-      subscriberOrdersId?: string | null,
-      periodicalIssueOrdersId?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -1462,6 +1362,32 @@ export type SubscribersByGroupQuery = {
   } | null,
 };
 
+export type PubSubscriptionsByPeriodicalQueryVariables = {
+  periodicalID: string,
+  sortDirection?: ModelSortDirection | null,
+  filter?: ModelPubSubscriptionFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type PubSubscriptionsByPeriodicalQuery = {
+  pubSubscriptionsByPeriodical?:  {
+    __typename: "ModelPubSubscriptionConnection",
+    items:  Array< {
+      __typename: "PubSubscription",
+      id: string,
+      qty: number,
+      startDate?: string | null,
+      status: PubSubscriptionStatus,
+      periodicalID: string,
+      subscriberID: string,
+      createdAt: string,
+      updatedAt: string,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
 export type PubSubscriptionsBySubscriberQueryVariables = {
   subscriberID: string,
   sortDirection?: ModelSortDirection | null,
@@ -1483,8 +1409,6 @@ export type PubSubscriptionsBySubscriberQuery = {
       subscriberID: string,
       createdAt: string,
       updatedAt: string,
-      subscriberPubSubscriptionsId?: string | null,
-      periodicalPubSubscriptionsId?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -1510,7 +1434,6 @@ export type PeriodicalIssuesByStatusQuery = {
       notes?: string | null,
       createdAt: string,
       updatedAt: string,
-      periodicalIssuesId?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -1536,7 +1459,6 @@ export type PeriodicalIssuesByPeriodicalQuery = {
       notes?: string | null,
       createdAt: string,
       updatedAt: string,
-      periodicalIssuesId?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -1562,12 +1484,11 @@ export type OrdersByStatusQuery = {
       itemQty: number,
       status: OrderStatus,
       cancellationReason?: string | null,
-      itemID: string,
+      itemID?: string | null,
       subscriberID: string,
+      periodicalIssueID?: string | null,
       createdAt: string,
       updatedAt: string,
-      subscriberOrdersId?: string | null,
-      periodicalIssueOrdersId?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -1593,12 +1514,11 @@ export type OrdersByItemQuery = {
       itemQty: number,
       status: OrderStatus,
       cancellationReason?: string | null,
-      itemID: string,
+      itemID?: string | null,
       subscriberID: string,
+      periodicalIssueID?: string | null,
       createdAt: string,
       updatedAt: string,
-      subscriberOrdersId?: string | null,
-      periodicalIssueOrdersId?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -1624,12 +1544,11 @@ export type OrdersBySubscriberQuery = {
       itemQty: number,
       status: OrderStatus,
       cancellationReason?: string | null,
-      itemID: string,
+      itemID?: string | null,
       subscriberID: string,
+      periodicalIssueID?: string | null,
       createdAt: string,
       updatedAt: string,
-      subscriberOrdersId?: string | null,
-      periodicalIssueOrdersId?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -1656,28 +1575,27 @@ export type OrdersBySubscriberByStatusQuery = {
       itemQty: number,
       status: OrderStatus,
       cancellationReason?: string | null,
-      itemID: string,
+      itemID?: string | null,
       subscriberID: string,
+      periodicalIssueID?: string | null,
       createdAt: string,
       updatedAt: string,
-      subscriberOrdersId?: string | null,
-      periodicalIssueOrdersId?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
 };
 
-export type OrdersBySubscriberByStatusByDateQueryVariables = {
+export type OrdersBySubscriberByDateQueryVariables = {
   subscriberID: string,
-  statusPlacedDate?: ModelOrderBySubscriberByStatusByDateCompositeKeyConditionInput | null,
+  placedDate?: ModelStringKeyConditionInput | null,
   sortDirection?: ModelSortDirection | null,
   filter?: ModelOrderFilterInput | null,
   limit?: number | null,
   nextToken?: string | null,
 };
 
-export type OrdersBySubscriberByStatusByDateQuery = {
-  ordersBySubscriberByStatusByDate?:  {
+export type OrdersBySubscriberByDateQuery = {
+  ordersBySubscriberByDate?:  {
     __typename: "ModelOrderConnection",
     items:  Array< {
       __typename: "Order",
@@ -1688,12 +1606,41 @@ export type OrdersBySubscriberByStatusByDateQuery = {
       itemQty: number,
       status: OrderStatus,
       cancellationReason?: string | null,
-      itemID: string,
+      itemID?: string | null,
       subscriberID: string,
+      periodicalIssueID?: string | null,
       createdAt: string,
       updatedAt: string,
-      subscriberOrdersId?: string | null,
-      periodicalIssueOrdersId?: string | null,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type OrdersByPeriodicalIssueQueryVariables = {
+  periodicalIssueID: string,
+  sortDirection?: ModelSortDirection | null,
+  filter?: ModelOrderFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type OrdersByPeriodicalIssueQuery = {
+  ordersByPeriodicalIssue?:  {
+    __typename: "ModelOrderConnection",
+    items:  Array< {
+      __typename: "Order",
+      id: string,
+      placedDate: string,
+      isAutomaticOrder: boolean,
+      isPubSubscriptionOrder: boolean,
+      itemQty: number,
+      status: OrderStatus,
+      cancellationReason?: string | null,
+      itemID?: string | null,
+      subscriberID: string,
+      periodicalIssueID?: string | null,
+      createdAt: string,
+      updatedAt: string,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -1817,8 +1764,6 @@ export type OnCreatePubSubscriptionSubscription = {
     subscriberID: string,
     createdAt: string,
     updatedAt: string,
-    subscriberPubSubscriptionsId?: string | null,
-    periodicalPubSubscriptionsId?: string | null,
   } | null,
 };
 
@@ -1838,8 +1783,6 @@ export type OnUpdatePubSubscriptionSubscription = {
     subscriberID: string,
     createdAt: string,
     updatedAt: string,
-    subscriberPubSubscriptionsId?: string | null,
-    periodicalPubSubscriptionsId?: string | null,
   } | null,
 };
 
@@ -1859,8 +1802,6 @@ export type OnDeletePubSubscriptionSubscription = {
     subscriberID: string,
     createdAt: string,
     updatedAt: string,
-    subscriberPubSubscriptionsId?: string | null,
-    periodicalPubSubscriptionsId?: string | null,
   } | null,
 };
 
@@ -1935,7 +1876,6 @@ export type OnCreatePeriodicalIssueSubscription = {
     notes?: string | null,
     createdAt: string,
     updatedAt: string,
-    periodicalIssuesId?: string | null,
   } | null,
 };
 
@@ -1953,7 +1893,6 @@ export type OnUpdatePeriodicalIssueSubscription = {
     notes?: string | null,
     createdAt: string,
     updatedAt: string,
-    periodicalIssuesId?: string | null,
   } | null,
 };
 
@@ -1971,7 +1910,6 @@ export type OnDeletePeriodicalIssueSubscription = {
     notes?: string | null,
     createdAt: string,
     updatedAt: string,
-    periodicalIssuesId?: string | null,
   } | null,
 };
 
@@ -1985,23 +1923,11 @@ export type OnCreateOrderSubscription = {
     itemQty: number,
     status: OrderStatus,
     cancellationReason?: string | null,
-    itemID: string,
+    itemID?: string | null,
     subscriberID: string,
-    periodicalIssue?:  {
-      __typename: "PeriodicalIssue",
-      id: string,
-      issueDate: string,
-      status: IssueStatus,
-      periodicalID: string,
-      notes?: string | null,
-      createdAt: string,
-      updatedAt: string,
-      periodicalIssuesId?: string | null,
-    } | null,
+    periodicalIssueID?: string | null,
     createdAt: string,
     updatedAt: string,
-    subscriberOrdersId?: string | null,
-    periodicalIssueOrdersId?: string | null,
   } | null,
 };
 
@@ -2015,23 +1941,11 @@ export type OnUpdateOrderSubscription = {
     itemQty: number,
     status: OrderStatus,
     cancellationReason?: string | null,
-    itemID: string,
+    itemID?: string | null,
     subscriberID: string,
-    periodicalIssue?:  {
-      __typename: "PeriodicalIssue",
-      id: string,
-      issueDate: string,
-      status: IssueStatus,
-      periodicalID: string,
-      notes?: string | null,
-      createdAt: string,
-      updatedAt: string,
-      periodicalIssuesId?: string | null,
-    } | null,
+    periodicalIssueID?: string | null,
     createdAt: string,
     updatedAt: string,
-    subscriberOrdersId?: string | null,
-    periodicalIssueOrdersId?: string | null,
   } | null,
 };
 
@@ -2045,23 +1959,11 @@ export type OnDeleteOrderSubscription = {
     itemQty: number,
     status: OrderStatus,
     cancellationReason?: string | null,
-    itemID: string,
+    itemID?: string | null,
     subscriberID: string,
-    periodicalIssue?:  {
-      __typename: "PeriodicalIssue",
-      id: string,
-      issueDate: string,
-      status: IssueStatus,
-      periodicalID: string,
-      notes?: string | null,
-      createdAt: string,
-      updatedAt: string,
-      periodicalIssuesId?: string | null,
-    } | null,
+    periodicalIssueID?: string | null,
     createdAt: string,
     updatedAt: string,
-    subscriberOrdersId?: string | null,
-    periodicalIssueOrdersId?: string | null,
   } | null,
 };
 

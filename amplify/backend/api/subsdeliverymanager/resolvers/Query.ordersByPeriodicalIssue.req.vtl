@@ -3,14 +3,14 @@
   $util.error("sortDirection is not supported for List operations without a Sort key defined.", "InvalidArgumentsError")
 #end
 #set( $modelQueryExpression = {} )
-#if( !$util.isNull($ctx.args.subscriberID) )
-  #set( $modelQueryExpression.expression = "#subscriberID = :subscriberID" )
+#if( !$util.isNull($ctx.args.periodicalIssueID) )
+  #set( $modelQueryExpression.expression = "#periodicalIssueID = :periodicalIssueID" )
   #set( $modelQueryExpression.expressionNames = {
-  "#subscriberID": "subscriberID"
+  "#periodicalIssueID": "periodicalIssueID"
 } )
   #set( $modelQueryExpression.expressionValues = {
-  ":subscriberID": {
-      "S": "$ctx.args.subscriberID"
+  ":periodicalIssueID": {
+      "S": "$ctx.args.periodicalIssueID"
   }
 } )
 #end
@@ -21,7 +21,7 @@
   "operation": "Query",
   "limit": $limit,
   "query": $modelQueryExpression,
-  "index": "bySubscriber"
+  "index": "byPeriodicalIssue"
 } )
 #if( !$util.isNull($ctx.args.sortDirection)
                       && $ctx.args.sortDirection == "DESC" )

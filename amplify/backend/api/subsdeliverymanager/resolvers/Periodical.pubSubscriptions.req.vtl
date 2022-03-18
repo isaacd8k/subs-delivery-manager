@@ -11,7 +11,7 @@
   #set( $query = {
   "expression": "#partitionKey = :partitionKey",
   "expressionNames": {
-      "#partitionKey": "periodicalPubSubscriptionsId"
+      "#partitionKey": "periodicalID"
   },
   "expressionValues": {
       ":partitionKey": $util.dynamodb.toDynamoDB($context.source.id)
@@ -63,6 +63,6 @@ $util.toJson($context.args.nextToken)
     #else
 null
     #end,
-      "index": "gsi-Periodical.pubSubscriptions"
+      "index": "byPeriodical"
   }
 #end

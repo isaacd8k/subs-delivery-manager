@@ -49,8 +49,9 @@ type Subscriber @model {
   # store the hasMany relationship in this index instead of creating a new one by default
   subscriberGroupID: ID
     @index(name: "bySubscriberGroup", queryField: "subscribersByGroup")
-  pubSubscriptions: [PubSubscription] @hasMany
-  orders: [Order] @hasMany
+  pubSubscriptions: [PubSubscription]
+    @hasMany(indexName: "bySubscriber", fields: ["id"])
+  orders: [Order] @hasMany(indexName: "bySubscriber", fields: ["id"])
 }
 
 type PubSubscription @model {
@@ -61,6 +62,7 @@ type PubSubscription @model {
   pendingQtyChanges: [PendingQtyChange]
   # CONNECTIONS
   periodicalID: ID!
+    @index(name: "byPeriodical", queryField: "pubSubscriptionsByPeriodical")
   subscriberID: ID!
     @index(name: "bySubscriber", queryField: "pubSubscriptionsBySubscriber")
 }
@@ -70,8 +72,9 @@ type Periodical @model {
   name: String!
   # CONNECTION
   recurrence: PeriodicalRecurrence!
-  issues: [PeriodicalIssue] @hasMany
-  pubSubscriptions: [PubSubscription] @hasMany
+  issues: [PeriodicalIssue] @hasMany(indexName: "byPeriodical", fields: ["id"])
+  pubSubscriptions: [PubSubscription]
+    @hasMany(indexName: "byPeriodical", fields: ["id"])
 }
 
 type PeriodicalIssue @model {
@@ -82,24 +85,23 @@ type PeriodicalIssue @model {
   # CONNECTIONS
   periodicalID: ID!
     @index(name: "byPeriodical", queryField: "periodicalIssuesByPeriodical")
-  orders: [Order] @hasMany
+  orders: [Order] @hasMany(indexName: "byPeriodicalIssue", fields: ["id"])
   notes: String
 }
 
 type Order @model {
   id: ID!
   placedDate: AWSDate!
-  isAutomaticOrder: Boolean!
-  isPubSubscriptionOrder: Boolean!
-  itemQty: Int!
+  isAutomaticOrder: Boolean! @default(value: "false")
+  isPubSubscriptionOrder: Boolean! @default(value: "false")
+  itemQty: Int! @default(value: "1")
   status: OrderStatus!
     @default(value: "PLACED")
     @index(name: "byStatus", queryField: "ordersByStatus")
   cancellationReason: String
   # CONNECTIONS
   # Get all orders of a given item
-  itemID: ID! @index(name: "byItem", queryField: "ordersByItem")
-  # subscriber: Subscriber! @belongsTo
+  itemID: ID @index(name: "byItem", queryField: "ordersByItem")
   subscriberID: ID!
     @index(name: "bySubscriber", queryField: "ordersBySubscriber")
     @index(
@@ -108,11 +110,12 @@ type Order @model {
       queryField: "ordersBySubscriberByStatus"
     )
     @index(
-      name: "bySubscriberByStatusByDate"
-      sortKeyFields: ["status", "placedDate"]
-      queryField: "ordersBySubscriberByStatusByDate"
+      name: "bySubscriberByDate"
+      sortKeyFields: ["placedDate"]
+      queryField: "ordersBySubscriberByDate"
     )
-  periodicalIssue: PeriodicalIssue @belongsTo
+  periodicalIssueID: ID
+    @index(name: "byPeriodicalIssue", queryField: "ordersByPeriodicalIssue")
 }
 
 type Item @model {

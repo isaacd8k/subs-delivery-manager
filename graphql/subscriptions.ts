@@ -110,8 +110,6 @@ export const onCreatePubSubscription = /* GraphQL */ `
       subscriberID
       createdAt
       updatedAt
-      subscriberPubSubscriptionsId
-      periodicalPubSubscriptionsId
     }
   }
 `;
@@ -130,8 +128,6 @@ export const onUpdatePubSubscription = /* GraphQL */ `
       subscriberID
       createdAt
       updatedAt
-      subscriberPubSubscriptionsId
-      periodicalPubSubscriptionsId
     }
   }
 `;
@@ -150,8 +146,6 @@ export const onDeletePubSubscription = /* GraphQL */ `
       subscriberID
       createdAt
       updatedAt
-      subscriberPubSubscriptionsId
-      periodicalPubSubscriptionsId
     }
   }
 `;
@@ -219,7 +213,6 @@ export const onCreatePeriodicalIssue = /* GraphQL */ `
       notes
       createdAt
       updatedAt
-      periodicalIssuesId
     }
   }
 `;
@@ -236,7 +229,6 @@ export const onUpdatePeriodicalIssue = /* GraphQL */ `
       notes
       createdAt
       updatedAt
-      periodicalIssuesId
     }
   }
 `;
@@ -253,7 +245,6 @@ export const onDeletePeriodicalIssue = /* GraphQL */ `
       notes
       createdAt
       updatedAt
-      periodicalIssuesId
     }
   }
 `;
@@ -269,20 +260,9 @@ export const onCreateOrder = /* GraphQL */ `
       cancellationReason
       itemID
       subscriberID
-      periodicalIssue {
-        id
-        issueDate
-        status
-        periodicalID
-        notes
-        createdAt
-        updatedAt
-        periodicalIssuesId
-      }
+      periodicalIssueID
       createdAt
       updatedAt
-      subscriberOrdersId
-      periodicalIssueOrdersId
     }
   }
 `;
@@ -298,20 +278,9 @@ export const onUpdateOrder = /* GraphQL */ `
       cancellationReason
       itemID
       subscriberID
-      periodicalIssue {
-        id
-        issueDate
-        status
-        periodicalID
-        notes
-        createdAt
-        updatedAt
-        periodicalIssuesId
-      }
+      periodicalIssueID
       createdAt
       updatedAt
-      subscriberOrdersId
-      periodicalIssueOrdersId
     }
   }
 `;
@@ -327,20 +296,9 @@ export const onDeleteOrder = /* GraphQL */ `
       cancellationReason
       itemID
       subscriberID
-      periodicalIssue {
-        id
-        issueDate
-        status
-        periodicalID
-        notes
-        createdAt
-        updatedAt
-        periodicalIssuesId
-      }
+      periodicalIssueID
       createdAt
       updatedAt
-      subscriberOrdersId
-      periodicalIssueOrdersId
     }
   }
 `;
