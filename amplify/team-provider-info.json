@@ -10,6 +10,11 @@
       "StackName": "amplify-subsdeliverymanager-dev-113026",
       "StackId": "arn:aws:cloudformation:us-east-1:696674044336:stack/amplify-subsdeliverymanager-dev-113026/58b57c60-a6d0-11ec-ab6c-12a88e1ef9ef",
       "AmplifyAppId": "d2fiy6rzu2k7t9"
+    },
+    "categories": {
+      "auth": {
+        "subsdeliverymanager9e284eb1": {}
+      }
     }
   }
 }
