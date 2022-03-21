@@ -4,8 +4,11 @@ import { API } from "aws-amplify";
 import { Authenticator } from "@aws-amplify/ui-react";
 import { listSubscribers } from "../graphql/queries";
 import { ListSubscribersQuery, Subscriber } from "../graphql/types";
+import { AdditionalPageProps } from "./_app";
 
-const Home: NextPage = () => {
+type PageProps = AdditionalPageProps & {};
+
+const Home: NextPage<PageProps> = ({ auth }) => {
   const [subscribers, setSubscribers] = useState<Array<Subscriber> | null[]>(
     []
   );
@@ -19,34 +22,24 @@ const Home: NextPage = () => {
     setSubscribers(subscriberData.data.listSubscribers?.items as Subscriber[]);
   }
 
-  // useEffect(() => {
-  //   fetchSubscribers();
-  // }, []);
+  useEffect(() => {
+    fetchSubscribers();
+  }, []);
 
   return (
-    <Authenticator>
-      {({ signOut, user }) => {
-        // Since whole app is authenticated, the Authenticator component should
-        // probably exist in the _app.tsx level
-        fetchSubscribers();
+    <div>
+      <h2>Hello, {auth.user.username}</h2>
+      <h1>Subscribers</h1>
 
-        return (
-          <div>
-            <h2>Hello, {user.username}</h2>
-            <h1>Subscribers</h1>
-
-            {subscribers?.map(
-              (sub) =>
-                sub && (
-                  <p key={sub.id}>
-                    {sub.id} | {sub.lastName}, {sub.firstName}
-                  </p>
-                )
-            )}
-          </div>
-        );
-      }}
-    </Authenticator>
+      {subscribers?.map(
+        (sub) =>
+          sub && (
+            <p key={sub.id}>
+              {sub.id} | {sub.lastName}, {sub.firstName}
+            </p>
+          )
+      )}
+    </div>
   );
 };
 
