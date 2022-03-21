@@ -1,11 +1,11 @@
 import type { NextPage } from "next";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { API } from "aws-amplify";
 import { listSubscribers } from "../graphql/queries";
 import { ListSubscribersQuery, Subscriber } from "../graphql/types";
 import { AdditionalPageProps } from "./_app";
-import Header from "../components/common/Header";
-import Dashboard from "../components/home/Dashboard";
+import Dashboard from "../components/home/Dashboard/Dashboard";
+import { Container, Text } from "@chakra-ui/react";
 
 type PageProps = AdditionalPageProps & {};
 
@@ -23,17 +23,16 @@ const Home: NextPage<PageProps> = ({ auth }) => {
     setSubscribers(subscriberData.data.listSubscribers?.items as Subscriber[]);
   }
 
-  useEffect(() => {
-    fetchSubscribers();
-  }, []);
-
   return (
-    <div>
-      <h2>Hello, {auth.user.username}</h2>
+    <Container maxW="container.xl">
+      {/* Greeting */}
+      <Text fontSize="3xl">
+        <h2>Hello, {auth.user.username}</h2>
+      </Text>
 
-      <Header />
+      {/* Render the dashboard */}
       <Dashboard />
-    </div>
+    </Container>
   );
 };
 
