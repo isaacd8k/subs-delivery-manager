@@ -6,6 +6,7 @@ import {
   createTheme,
   defaultTheme,
   AmplifyProvider,
+  Authenticator,
 } from "@aws-amplify/ui-react";
 import theme from "./../chakra/theme";
 import "@aws-amplify/ui-react/styles.css";
@@ -49,7 +50,9 @@ function MyApp({ Component, pageProps }: AppProps) {
         </nav>
 
         <AmplifyProvider theme={amplifyTheme} colorMode="system">
-          <Component {...pageProps} />
+          <Authenticator variation="default" hideSignUp>
+            {(auth) => <Component {...pageProps} auth={auth} />}
+          </Authenticator>
         </AmplifyProvider>
       </div>
     </ChakraProvider>
