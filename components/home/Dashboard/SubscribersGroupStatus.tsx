@@ -1,5 +1,10 @@
+import { Box, GridItem } from "@chakra-ui/react";
 import React from "react";
 
 export default function SubscribersGroupStatus() {
-  return <div>SubscribersGroupStatus</div>;
+  return (
+    <GridItem p={2} bg="yellow.100">
+      SubscribersGroupStatus
+    </GridItem>
+  );
 }

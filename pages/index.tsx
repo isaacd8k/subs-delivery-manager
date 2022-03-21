@@ -4,7 +4,7 @@ import { API } from "aws-amplify";
 import { listSubscribers } from "../graphql/queries";
 import { ListSubscribersQuery, Subscriber } from "../graphql/types";
 import { AdditionalPageProps } from "./_app";
-import Dashboard from "../components/home/Dashboard/Dashboard";
+import Dashboard from "../components/Home/Dashboard/Dashboard";
 import { Container, Text } from "@chakra-ui/react";
 
 type PageProps = AdditionalPageProps & {};
