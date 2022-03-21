@@ -36,13 +36,27 @@ type PendingQtyChange {
   effectiveDate: AWSDate!
 }
 
-type SubscriberGroup @model {
+type SubscriberGroup
+  @model
+  @auth(
+    rules: [
+      { allow: private, operations: [read] }
+      { allow: groups, groups: ["Admin"] }
+    ]
+  ) {
   id: ID!
   name: String
   members: [Subscriber] @hasMany(indexName: "bySubscriberGroup", fields: ["id"])
 }
 
-type Subscriber @model {
+type Subscriber
+  @model
+  @auth(
+    rules: [
+      { allow: private, operations: [read] }
+      { allow: groups, groups: ["Admin"] }
+    ]
+  ) {
   id: ID!
   firstName: String!
   lastName: String!
@@ -54,7 +68,14 @@ type Subscriber @model {
   orders: [Order] @hasMany(indexName: "bySubscriber", fields: ["id"])
 }
 
-type PubSubscription @model {
+type PubSubscription
+  @model
+  @auth(
+    rules: [
+      { allow: private, operations: [read] }
+      { allow: groups, groups: ["Admin"] }
+    ]
+  ) {
   id: ID!
   qty: Int!
   startDate: AWSDate
@@ -67,7 +88,14 @@ type PubSubscription @model {
     @index(name: "bySubscriber", queryField: "pubSubscriptionsBySubscriber")
 }
 
-type Periodical @model {
+type Periodical
+  @model
+  @auth(
+    rules: [
+      { allow: private, operations: [read] }
+      { allow: groups, groups: ["Admin"] }
+    ]
+  ) {
   id: ID!
   name: String!
   # CONNECTION
@@ -77,7 +105,14 @@ type Periodical @model {
     @hasMany(indexName: "byPeriodical", fields: ["id"])
 }
 
-type PeriodicalIssue @model {
+type PeriodicalIssue
+  @model
+  @auth(
+    rules: [
+      { allow: private, operations: [read] }
+      { allow: groups, groups: ["Admin"] }
+    ]
+  ) {
   id: ID!
   issueDate: AWSDate!
   status: IssueStatus!
@@ -89,7 +124,14 @@ type PeriodicalIssue @model {
   notes: String
 }
 
-type Order @model {
+type Order
+  @model
+  @auth(
+    rules: [
+      { allow: private, operations: [read] }
+      { allow: groups, groups: ["Admin"] }
+    ]
+  ) {
   id: ID!
   placedDate: AWSDate!
   isAutomaticOrder: Boolean! @default(value: "false")
@@ -118,7 +160,14 @@ type Order @model {
     @index(name: "byPeriodicalIssue", queryField: "ordersByPeriodicalIssue")
 }
 
-type Item @model {
+type Item
+  @model
+  @auth(
+    rules: [
+      { allow: private, operations: [read] }
+      { allow: groups, groups: ["Admin"] }
+    ]
+  ) {
   id: ID!
   name: String!
   orders: [Order] @hasMany(indexName: "byItem", fields: ["id"])

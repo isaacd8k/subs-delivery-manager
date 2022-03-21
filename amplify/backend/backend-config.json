@@ -9,11 +9,18 @@
             "authenticationType": "API_KEY",
             "apiKeyConfig": {
               "apiKeyExpirationDays": 365,
-              "apiKeyExpirationDate": "2023-03-18T18:12:14.186Z",
+              "apiKeyExpirationDate": "2023-03-20T16:27:43.476Z",
               "description": "SubsDeliveryManager"
             }
           },
-          "additionalAuthenticationProviders": []
+          "additionalAuthenticationProviders": [
+            {
+              "authenticationType": "AMAZON_COGNITO_USER_POOLS",
+              "userPoolConfig": {
+                "userPoolId": "authsubsdeliverymanager9e284eb1"
+              }
+            }
+          ]
         }
       }
     }

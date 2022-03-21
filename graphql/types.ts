@@ -473,6 +473,12 @@ export type ModelSubscriberFilterInput = {
   not?: ModelSubscriberFilterInput | null,
 };
 
+export enum ModelSortDirection {
+  ASC = "ASC",
+  DESC = "DESC",
+}
+
+
 export type ModelPubSubscriptionFilterInput = {
   id?: ModelIDInput | null,
   qty?: ModelIntInput | null,
@@ -527,6 +533,16 @@ export type ModelOrderFilterInput = {
   not?: ModelOrderFilterInput | null,
 };
 
+export type ModelStringKeyConditionInput = {
+  eq?: string | null,
+  le?: string | null,
+  lt?: string | null,
+  ge?: string | null,
+  gt?: string | null,
+  between?: Array< string | null > | null,
+  beginsWith?: string | null,
+};
+
 export type ModelItemFilterInput = {
   id?: ModelIDInput | null,
   name?: ModelStringInput | null,
@@ -540,22 +556,6 @@ export type ModelItemConnection = {
   __typename: "ModelItemConnection",
   items:  Array<Item | null >,
   nextToken?: string | null,
-};
-
-export enum ModelSortDirection {
-  ASC = "ASC",
-  DESC = "DESC",
-}
-
-
-export type ModelStringKeyConditionInput = {
-  eq?: string | null,
-  le?: string | null,
-  lt?: string | null,
-  ge?: string | null,
-  gt?: string | null,
-  between?: Array< string | null > | null,
-  beginsWith?: string | null,
 };
 
 export type CreateSubscriberGroupMutationVariables = {
@@ -1418,6 +1418,38 @@ export type ListSubscribersQuery = {
   } | null,
 };
 
+export type SubscribersByGroupQueryVariables = {
+  subscriberGroupID: string,
+  sortDirection?: ModelSortDirection | null,
+  filter?: ModelSubscriberFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type SubscribersByGroupQuery = {
+  subscribersByGroup?:  {
+    __typename: "ModelSubscriberConnection",
+    items:  Array< {
+      __typename: "Subscriber",
+      id: string,
+      firstName: string,
+      lastName: string,
+      subscriberGroupID?: string | null,
+      pubSubscriptions?:  {
+        __typename: "ModelPubSubscriptionConnection",
+        nextToken?: string | null,
+      } | null,
+      orders?:  {
+        __typename: "ModelOrderConnection",
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
 export type GetPubSubscriptionQueryVariables = {
   id: string,
 };
@@ -1449,6 +1481,68 @@ export type ListPubSubscriptionsQueryVariables = {
 
 export type ListPubSubscriptionsQuery = {
   listPubSubscriptions?:  {
+    __typename: "ModelPubSubscriptionConnection",
+    items:  Array< {
+      __typename: "PubSubscription",
+      id: string,
+      qty: number,
+      startDate?: string | null,
+      status: PubSubscriptionStatus,
+      pendingQtyChanges?:  Array< {
+        __typename: "PendingQtyChange",
+        qty: number,
+        effectiveDate: string,
+      } | null > | null,
+      periodicalID: string,
+      subscriberID: string,
+      createdAt: string,
+      updatedAt: string,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type PubSubscriptionsByPeriodicalQueryVariables = {
+  periodicalID: string,
+  sortDirection?: ModelSortDirection | null,
+  filter?: ModelPubSubscriptionFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type PubSubscriptionsByPeriodicalQuery = {
+  pubSubscriptionsByPeriodical?:  {
+    __typename: "ModelPubSubscriptionConnection",
+    items:  Array< {
+      __typename: "PubSubscription",
+      id: string,
+      qty: number,
+      startDate?: string | null,
+      status: PubSubscriptionStatus,
+      pendingQtyChanges?:  Array< {
+        __typename: "PendingQtyChange",
+        qty: number,
+        effectiveDate: string,
+      } | null > | null,
+      periodicalID: string,
+      subscriberID: string,
+      createdAt: string,
+      updatedAt: string,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type PubSubscriptionsBySubscriberQueryVariables = {
+  subscriberID: string,
+  sortDirection?: ModelSortDirection | null,
+  filter?: ModelPubSubscriptionFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type PubSubscriptionsBySubscriberQuery = {
+  pubSubscriptionsBySubscriber?:  {
     __typename: "ModelPubSubscriptionConnection",
     items:  Array< {
       __typename: "PubSubscription",
@@ -1606,209 +1700,6 @@ export type ListPeriodicalIssuesQuery = {
   } | null,
 };
 
-export type GetOrderQueryVariables = {
-  id: string,
-};
-
-export type GetOrderQuery = {
-  getOrder?:  {
-    __typename: "Order",
-    id: string,
-    placedDate: string,
-    isAutomaticOrder: boolean,
-    isPubSubscriptionOrder: boolean,
-    itemQty: number,
-    status: OrderStatus,
-    cancellationReason?: string | null,
-    itemID?: string | null,
-    subscriberID: string,
-    periodicalIssueID?: string | null,
-    createdAt: string,
-    updatedAt: string,
-  } | null,
-};
-
-export type ListOrdersQueryVariables = {
-  filter?: ModelOrderFilterInput | null,
-  limit?: number | null,
-  nextToken?: string | null,
-};
-
-export type ListOrdersQuery = {
-  listOrders?:  {
-    __typename: "ModelOrderConnection",
-    items:  Array< {
-      __typename: "Order",
-      id: string,
-      placedDate: string,
-      isAutomaticOrder: boolean,
-      isPubSubscriptionOrder: boolean,
-      itemQty: number,
-      status: OrderStatus,
-      cancellationReason?: string | null,
-      itemID?: string | null,
-      subscriberID: string,
-      periodicalIssueID?: string | null,
-      createdAt: string,
-      updatedAt: string,
-    } | null >,
-    nextToken?: string | null,
-  } | null,
-};
-
-export type GetItemQueryVariables = {
-  id: string,
-};
-
-export type GetItemQuery = {
-  getItem?:  {
-    __typename: "Item",
-    id: string,
-    name: string,
-    orders?:  {
-      __typename: "ModelOrderConnection",
-      items:  Array< {
-        __typename: "Order",
-        id: string,
-        placedDate: string,
-        isAutomaticOrder: boolean,
-        isPubSubscriptionOrder: boolean,
-        itemQty: number,
-        status: OrderStatus,
-        cancellationReason?: string | null,
-        itemID?: string | null,
-        subscriberID: string,
-        periodicalIssueID?: string | null,
-        createdAt: string,
-        updatedAt: string,
-      } | null >,
-      nextToken?: string | null,
-    } | null,
-    notes?: string | null,
-    createdAt: string,
-    updatedAt: string,
-  } | null,
-};
-
-export type ListItemsQueryVariables = {
-  filter?: ModelItemFilterInput | null,
-  limit?: number | null,
-  nextToken?: string | null,
-};
-
-export type ListItemsQuery = {
-  listItems?:  {
-    __typename: "ModelItemConnection",
-    items:  Array< {
-      __typename: "Item",
-      id: string,
-      name: string,
-      orders?:  {
-        __typename: "ModelOrderConnection",
-        nextToken?: string | null,
-      } | null,
-      notes?: string | null,
-      createdAt: string,
-      updatedAt: string,
-    } | null >,
-    nextToken?: string | null,
-  } | null,
-};
-
-export type SubscribersByGroupQueryVariables = {
-  subscriberGroupID: string,
-  sortDirection?: ModelSortDirection | null,
-  filter?: ModelSubscriberFilterInput | null,
-  limit?: number | null,
-  nextToken?: string | null,
-};
-
-export type SubscribersByGroupQuery = {
-  subscribersByGroup?:  {
-    __typename: "ModelSubscriberConnection",
-    items:  Array< {
-      __typename: "Subscriber",
-      id: string,
-      firstName: string,
-      lastName: string,
-      subscriberGroupID?: string | null,
-      pubSubscriptions?:  {
-        __typename: "ModelPubSubscriptionConnection",
-        nextToken?: string | null,
-      } | null,
-      orders?:  {
-        __typename: "ModelOrderConnection",
-        nextToken?: string | null,
-      } | null,
-      createdAt: string,
-      updatedAt: string,
-    } | null >,
-    nextToken?: string | null,
-  } | null,
-};
-
-export type PubSubscriptionsByPeriodicalQueryVariables = {
-  periodicalID: string,
-  sortDirection?: ModelSortDirection | null,
-  filter?: ModelPubSubscriptionFilterInput | null,
-  limit?: number | null,
-  nextToken?: string | null,
-};
-
-export type PubSubscriptionsByPeriodicalQuery = {
-  pubSubscriptionsByPeriodical?:  {
-    __typename: "ModelPubSubscriptionConnection",
-    items:  Array< {
-      __typename: "PubSubscription",
-      id: string,
-      qty: number,
-      startDate?: string | null,
-      status: PubSubscriptionStatus,
-      pendingQtyChanges?:  Array< {
-        __typename: "PendingQtyChange",
-        qty: number,
-        effectiveDate: string,
-      } | null > | null,
-      periodicalID: string,
-      subscriberID: string,
-      createdAt: string,
-      updatedAt: string,
-    } | null >,
-    nextToken?: string | null,
-  } | null,
-};
-
-export type PubSubscriptionsBySubscriberQueryVariables = {
-  subscriberID: string,
-  sortDirection?: ModelSortDirection | null,
-  filter?: ModelPubSubscriptionFilterInput | null,
-  limit?: number | null,
-  nextToken?: string | null,
-};
-
-export type PubSubscriptionsBySubscriberQuery = {
-  pubSubscriptionsBySubscriber?:  {
-    __typename: "ModelPubSubscriptionConnection",
-    items:  Array< {
-      __typename: "PubSubscription",
-      id: string,
-      qty: number,
-      startDate?: string | null,
-      status: PubSubscriptionStatus,
-      pendingQtyChanges?:  Array< {
-        __typename: "PendingQtyChange",
-        qty: number,
-        effectiveDate: string,
-      } | null > | null,
-      periodicalID: string,
-      subscriberID: string,
-      createdAt: string,
-      updatedAt: string,
-    } | null >,
-    nextToken?: string | null,
-  } | null,
-};
-
 export type PeriodicalIssuesByStatusQueryVariables = {
   status: IssueStatus,
   sortDirection?: ModelSortDirection | null,
@@ -1860,6 +1751,56 @@ export type PeriodicalIssuesByPeriodicalQuery = {
         nextToken?: string | null,
       } | null,
       notes?: string | null,
+      createdAt: string,
+      updatedAt: string,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type GetOrderQueryVariables = {
+  id: string,
+};
+
+export type GetOrderQuery = {
+  getOrder?:  {
+    __typename: "Order",
+    id: string,
+    placedDate: string,
+    isAutomaticOrder: boolean,
+    isPubSubscriptionOrder: boolean,
+    itemQty: number,
+    status: OrderStatus,
+    cancellationReason?: string | null,
+    itemID?: string | null,
+    subscriberID: string,
+    periodicalIssueID?: string | null,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type ListOrdersQueryVariables = {
+  filter?: ModelOrderFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type ListOrdersQuery = {
+  listOrders?:  {
+    __typename: "ModelOrderConnection",
+    items:  Array< {
+      __typename: "Order",
+      id: string,
+      placedDate: string,
+      isAutomaticOrder: boolean,
+      isPubSubscriptionOrder: boolean,
+      itemQty: number,
+      status: OrderStatus,
+      cancellationReason?: string | null,
+      itemID?: string | null,
+      subscriberID: string,
+      periodicalIssueID?: string | null,
       createdAt: string,
       updatedAt: string,
     } | null >,
@@ -2042,6 +1983,65 @@ export type OrdersByPeriodicalIssueQuery = {
       itemID?: string | null,
       subscriberID: string,
       periodicalIssueID?: string | null,
+      createdAt: string,
+      updatedAt: string,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type GetItemQueryVariables = {
+  id: string,
+};
+
+export type GetItemQuery = {
+  getItem?:  {
+    __typename: "Item",
+    id: string,
+    name: string,
+    orders?:  {
+      __typename: "ModelOrderConnection",
+      items:  Array< {
+        __typename: "Order",
+        id: string,
+        placedDate: string,
+        isAutomaticOrder: boolean,
+        isPubSubscriptionOrder: boolean,
+        itemQty: number,
+        status: OrderStatus,
+        cancellationReason?: string | null,
+        itemID?: string | null,
+        subscriberID: string,
+        periodicalIssueID?: string | null,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    notes?: string | null,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type ListItemsQueryVariables = {
+  filter?: ModelItemFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type ListItemsQuery = {
+  listItems?:  {
+    __typename: "ModelItemConnection",
+    items:  Array< {
+      __typename: "Item",
+      id: string,
+      name: string,
+      orders?:  {
+        __typename: "ModelOrderConnection",
+        nextToken?: string | null,
+      } | null,
+      notes?: string | null,
       createdAt: string,
       updatedAt: string,
     } | null >,
