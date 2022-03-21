@@ -1,7 +1,7 @@
 import "../styles/globals.css";
 import "../configureAmplify";
 import type { AppProps } from "next/app";
-import { ChakraProvider } from "@chakra-ui/react";
+import { ChakraProvider, Container } from "@chakra-ui/react";
 import { AmplifyProvider, Authenticator } from "@aws-amplify/ui-react";
 import theme from "../theming/chakra-theme";
 import amplifyTheme from "../theming/amplify-theme";
@@ -21,12 +21,17 @@ function MyApp({ Component, pageProps }: AppProps) {
           <Link href="/profile">
             <a>Profile</a>
           </Link>
+          <Link href="/subscribers">
+            <a>Subscribers</a>
+          </Link>
         </nav>
 
         <AmplifyProvider theme={amplifyTheme} colorMode="system">
           <Authenticator variation="default" hideSignUp components={components}>
             {(auth) => (
-              <Component {...pageProps} auth={auth} isAuthEnabled={true} />
+              <Container maxW="container.xl">
+                <Component {...pageProps} auth={auth} isAuthEnabled={true} />
+              </Container>
             )}
           </Authenticator>
         </AmplifyProvider>

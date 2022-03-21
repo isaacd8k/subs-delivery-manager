@@ -24,7 +24,7 @@ const Home: NextPage<PageProps> = ({ auth }) => {
   }
 
   return (
-    <Container maxW="container.xl">
+    <>
       {/* Greeting */}
       <Text fontSize="3xl">
         <h2>Hello, {auth.user.username}</h2>
@@ -32,7 +32,7 @@ const Home: NextPage<PageProps> = ({ auth }) => {
 
       {/* Render the dashboard */}
       <Dashboard />
-    </Container>
+    </>
   );
 };
 
