@@ -8,7 +8,7 @@ import {
   AmplifyProvider,
   Authenticator,
 } from "@aws-amplify/ui-react";
-import theme from "./../chakra/theme";
+import theme from "../theming/chakra-theme";
 import "@aws-amplify/ui-react/styles.css";
 import Link from "next/link";
 
