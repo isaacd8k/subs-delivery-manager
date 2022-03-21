@@ -1,10 +1,11 @@
 import type { NextPage } from "next";
 import { useState, useEffect } from "react";
 import { API } from "aws-amplify";
-import { Authenticator } from "@aws-amplify/ui-react";
 import { listSubscribers } from "../graphql/queries";
 import { ListSubscribersQuery, Subscriber } from "../graphql/types";
 import { AdditionalPageProps } from "./_app";
+import Header from "../components/common/Header";
+import Dashboard from "../components/home/Dashboard";
 
 type PageProps = AdditionalPageProps & {};
 
@@ -29,16 +30,9 @@ const Home: NextPage<PageProps> = ({ auth }) => {
   return (
     <div>
       <h2>Hello, {auth.user.username}</h2>
-      <h1>Subscribers</h1>
 
-      {subscribers?.map(
-        (sub) =>
-          sub && (
-            <p key={sub.id}>
-              {sub.id} | {sub.lastName}, {sub.firstName}
-            </p>
-          )
-      )}
+      <Header />
+      <Dashboard />
     </div>
   );
 };
