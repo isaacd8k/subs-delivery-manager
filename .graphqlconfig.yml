@@ -1,6 +1,6 @@
 projects:
   subsdeliverymanager:
-    schemaPath: graphql/schema.json
+    schemaPath: amplify/backend/api/subsdeliverymanager/build/schema.graphql
     includes:
       - ./graphql/**/*.ts
     excludes:
