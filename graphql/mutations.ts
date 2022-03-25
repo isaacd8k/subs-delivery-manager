@@ -16,6 +16,12 @@ export const createSubscriberGroup = /* GraphQL */ `
           firstName
           lastName
           subscriberGroupID
+          pubSubscriptions {
+            nextToken
+          }
+          orders {
+            nextToken
+          }
           createdAt
           updatedAt
         }
@@ -40,6 +46,12 @@ export const updateSubscriberGroup = /* GraphQL */ `
           firstName
           lastName
           subscriberGroupID
+          pubSubscriptions {
+            nextToken
+          }
+          orders {
+            nextToken
+          }
           createdAt
           updatedAt
         }
@@ -64,6 +76,12 @@ export const deleteSubscriberGroup = /* GraphQL */ `
           firstName
           lastName
           subscriberGroupID
+          pubSubscriptions {
+            nextToken
+          }
+          orders {
+            nextToken
+          }
           createdAt
           updatedAt
         }
@@ -90,6 +108,10 @@ export const createSubscriber = /* GraphQL */ `
           qty
           startDate
           status
+          pendingQtyChanges {
+            qty
+            effectiveDate
+          }
           periodicalID
           subscriberID
           createdAt
@@ -135,6 +157,10 @@ export const updateSubscriber = /* GraphQL */ `
           qty
           startDate
           status
+          pendingQtyChanges {
+            qty
+            effectiveDate
+          }
           periodicalID
           subscriberID
           createdAt
@@ -180,6 +206,10 @@ export const deleteSubscriber = /* GraphQL */ `
           qty
           startDate
           status
+          pendingQtyChanges {
+            qty
+            effectiveDate
+          }
           periodicalID
           subscriberID
           createdAt
@@ -287,6 +317,9 @@ export const createPeriodical = /* GraphQL */ `
           issueDate
           status
           periodicalID
+          orders {
+            nextToken
+          }
           notes
           createdAt
           updatedAt
@@ -299,6 +332,10 @@ export const createPeriodical = /* GraphQL */ `
           qty
           startDate
           status
+          pendingQtyChanges {
+            qty
+            effectiveDate
+          }
           periodicalID
           subscriberID
           createdAt
@@ -326,6 +363,9 @@ export const updatePeriodical = /* GraphQL */ `
           issueDate
           status
           periodicalID
+          orders {
+            nextToken
+          }
           notes
           createdAt
           updatedAt
@@ -338,6 +378,10 @@ export const updatePeriodical = /* GraphQL */ `
           qty
           startDate
           status
+          pendingQtyChanges {
+            qty
+            effectiveDate
+          }
           periodicalID
           subscriberID
           createdAt
@@ -365,6 +409,9 @@ export const deletePeriodical = /* GraphQL */ `
           issueDate
           status
           periodicalID
+          orders {
+            nextToken
+          }
           notes
           createdAt
           updatedAt
@@ -377,6 +424,10 @@ export const deletePeriodical = /* GraphQL */ `
           qty
           startDate
           status
+          pendingQtyChanges {
+            qty
+            effectiveDate
+          }
           periodicalID
           subscriberID
           createdAt
