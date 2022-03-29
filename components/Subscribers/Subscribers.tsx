@@ -20,6 +20,7 @@ import {
   Spacer,
   Text,
   UnorderedList,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import React, { useEffect, useState } from "react";
@@ -35,6 +36,15 @@ import {
 import NewSubscriber from "./NewSubscriber";
 import NextLink from "next/link";
 import { updateSubscriber } from "../../graphql/mutations";
+import NewGroupModal from "./NewGroupModal";
+import EditGroupModal from "./EditGroupModal";
+
+type GroupEditDetails = {
+  groupID: string;
+  name: string;
+  members: Subscriber[];
+  unassigned: Subscriber[];
+};
 
 export default function Subscribers() {
   const [subscribers, setSubscribers] = useState<Subscriber[] | null>([]);
@@ -45,16 +55,44 @@ export default function Subscribers() {
   const [assignedSubscribers, setAssignedSubscribers] = useState<Subscriber[]>(
     []
   );
+  const {
+    isOpen: isNewGroupModalOpen,
+    onOpen: onNewGroupModalOpen,
+    onClose: onNewGroupModalClose,
+  } = useDisclosure();
+  const {
+    isOpen: isEditGroupModalOpen,
+    onOpen: onEditGroupModalOpen,
+    onClose: onEditGroupModalClose,
+  } = useDisclosure();
 
+  const [groupEditDetails, setGroupEditDetails] = useState<GroupEditDetails>({
+    groupID: "",
+    name: "",
+    members: [],
+    unassigned: [],
+  });
   const [isNewSubVisible, setNewSubVisible] = useState(false);
+  const [selectedGroupToEdit, setSelectedGroupToEdit] = useState<string | null>(
+    null
+  );
 
   async function fetchSubscribers() {
-    const subscriberData = (await API.graphql<ListSubscribersQuery>({
-      query: listSubscribers,
-      authMode: "AMAZON_COGNITO_USER_POOLS",
-    })) as { data: ListSubscribersQuery };
-
-    setSubscribers(subscriberData.data.listSubscribers?.items as Subscriber[]);
+    try {
+      const subscriberData = (await API.graphql<ListSubscribersQuery>({
+        query: listSubscribers,
+        authMode: "AMAZON_COGNITO_USER_POOLS",
+      })) as { data: ListSubscribersQuery };
+      setSubscribers(
+        subscriberData.data.listSubscribers?.items as Subscriber[]
+      );
+    } catch (error) {
+      // handle network error
+      // handle GQL errors?
+      console.error(
+        "UNHANDLED  error in fetchSubscribers() gql promise. Come fix!"
+      );
+    }
   }
 
   async function fetchSubGroups() {
@@ -102,8 +140,8 @@ export default function Subscribers() {
     memberID,
     groupID,
   }: {
-    memberID: String;
-    groupID: String;
+    memberID: string;
+    groupID: string;
   }) {
     const data = (await API.graphql({
       query: updateSubscriber,
@@ -118,6 +156,58 @@ export default function Subscribers() {
 
     // refresh data
     fetchSubscribers();
+  }
+
+  async function onRemoveGroupMember({
+    memberID,
+    groupID,
+  }: {
+    memberID: string;
+    groupID: string;
+  }) {
+    const data = (await API.graphql({
+      query: updateSubscriber,
+      variables: {
+        input: {
+          id: memberID,
+          subscriberGroupID: null,
+        },
+      },
+      authMode: "AMAZON_COGNITO_USER_POOLS",
+    })) as { data: UpdateSubscriberMutation };
+
+    // refresh data
+    fetchSubscribers();
+  }
+
+  function onAddGroup() {
+    // open modal
+    onNewGroupModalOpen();
+  }
+
+  function openEditGroupModal({ groupID }: { groupID: string }) {
+    // ensure the groupID and name are not blank
+    if (!groupID) {
+      return console.error("Edit group modal triggered without valid details");
+    }
+
+    // set the edit state
+    setSelectedGroupToEdit(groupID);
+
+    // open edit modal
+    onEditGroupModalOpen();
+  }
+
+  function onNewGroupSuccess() {
+    // refresh local list & close modal
+    fetchSubGroups();
+    onNewGroupModalClose();
+  }
+
+  function onEditGroupSuccess() {
+    // refresh local list & close modal
+    fetchSubGroups();
+    onEditGroupModalClose();
   }
 
   return (
@@ -155,15 +245,38 @@ export default function Subscribers() {
                     Members: {group.members?.items?.length ?? "0"}
                   </Text>
                   <Text fontSize="sm">Show members:</Text>
-                  <UnorderedList>
+                  {/* <UnorderedList>
                     {assignedSubscribers
                       .filter((sub) => sub.subscriberGroupID === group.id)
                       .map((sub) => (
-                        <ListItem
-                          key={sub.id}
-                        >{`${sub.firstName} ${sub.lastName}`}</ListItem>
+                        <ListItem key={sub.id}>
+                          {`${sub.firstName} ${sub.lastName}`}{" "}
+                          <Link
+                            onClick={() =>
+                              onRemoveGroupMember({
+                                memberID: sub.id,
+                                groupID: group.id,
+                              })
+                            }
+                          >
+                            <Text as="span" fontSize="xs">
+                              Remove
+                            </Text>
+                          </Link>
+                        </ListItem>
                       ))}
-                  </UnorderedList>
+                  </UnorderedList> */}
+                  <Text fontSize="sm">
+                    <Link
+                      onClick={() =>
+                        openEditGroupModal({
+                          groupID: group.id,
+                        })
+                      }
+                    >
+                      Edit group
+                    </Link>
+                  </Text>
 
                   {/* EDIT MODE: Add members */}
                   <Text>Add members:</Text>
@@ -190,7 +303,9 @@ export default function Subscribers() {
 
               {/* EDIT MODE: Add a group button */}
               <Box bg="blue.700" borderRadius="lg" p={6}>
-                <Center height="100%">Add a group</Center>
+                <Link onClick={onAddGroup}>
+                  <Center height="100%">Add a group</Center>
+                </Link>
               </Box>
             </>
           )}
@@ -211,7 +326,9 @@ export default function Subscribers() {
               {/* Unassigned subscribers list */}
               <OrderedList>
                 {unassignedSubscribers.map((sub) => (
-                  <ListItem key={sub.id}>{sub.firstName}</ListItem>
+                  <ListItem key={sub.id}>
+                    {sub.firstName} {sub.lastName}
+                  </ListItem>
                 ))}
               </OrderedList>
 
@@ -269,6 +386,40 @@ export default function Subscribers() {
             )}
         </OrderedList>
       </Box>
+
+      {/* Modals */}
+      {/* Reset modal state by unmounting when not visible */}
+      {/* Update: by unmounting, exit animations are broken when closing the modal */}
+      {isNewGroupModalOpen && (
+        <NewGroupModal
+          isOpen={isNewGroupModalOpen}
+          onClose={onNewGroupModalClose}
+          onSuccess={onNewGroupSuccess}
+        />
+      )}
+
+      {/* Devise new method for data flow. Changes in subscribers here do not reflect
+      in the modal when data is edited there */}
+      {selectedGroupToEdit && subGroups && (
+        <EditGroupModal
+          key={selectedGroupToEdit}
+          isOpen={isEditGroupModalOpen}
+          onClose={onEditGroupModalClose}
+          onEditName={onEditGroupSuccess}
+          onEditSubscriber={() => {
+            fetchSubscribers();
+          }}
+          groupData={{
+            name:
+              subGroups.find((s) => s.id === selectedGroupToEdit)?.name || "",
+            members: assignedSubscribers.filter(
+              (sub) => sub.subscriberGroupID === selectedGroupToEdit
+            ),
+            unassigned: unassignedSubscribers,
+            id: selectedGroupToEdit,
+          }}
+        />
+      )}
     </div>
   );
 }
