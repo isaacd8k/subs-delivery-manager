@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Accordion,
   AccordionButton,
@@ -65,6 +65,11 @@ export default function EditGroupModal({
   groupData,
 }: Props) {
   const [groupName, setGroupName] = useState(groupData.name);
+  const [submitNameBtnIsLoading, setSubmitNameBtnIsLoading] = useState(false);
+  const [loadingRemoveButtons, setLoadingRemoveButtons] = useState<string[]>(
+    []
+  );
+  const [loadingAddButtons, setLoadingAddButtons] = useState<string[]>([]);
 
   async function submitNameEdit() {
     // error: must enter group name
@@ -75,6 +80,9 @@ export default function EditGroupModal({
       );
     }
 
+    // set loading state
+    setSubmitNameBtnIsLoading(true);
+
     const data = await (
       API.graphql({
         query: updateSubscriberGroup,
@@ -84,6 +92,9 @@ export default function EditGroupModal({
     ).catch(() => {
       console.error("New Group promise rejected. Add error message in Toast?");
     });
+
+    // remove loading state
+    setSubmitNameBtnIsLoading(false);
 
     // call onEditName callback
     onEditName && onEditName();
@@ -96,6 +107,13 @@ export default function EditGroupModal({
     memberID: string;
     groupID: string;
   }) {
+    // update loading state
+    setLoadingAddButtons((oldState) => {
+      const newState = oldState.slice();
+      newState.push(memberID);
+      return newState;
+    });
+
     await (
       API.graphql({
         query: updateSubscriber,
@@ -106,11 +124,30 @@ export default function EditGroupModal({
       console.log("err");
     });
 
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    // remove loading state
+    setLoadingAddButtons((oldState) => {
+      const newState = oldState.slice();
+      const idx = newState.findIndex((id) => id === memberID);
+      if (idx > -1) {
+        newState.splice(idx, 1);
+      }
+      return newState;
+    });
+
     // call onEditSubscriber
     onEditSubscriber && onEditSubscriber();
   }
 
   async function removeSubscriberFromGroup({ memberID }: { memberID: string }) {
+    // set loading status
+    setLoadingRemoveButtons((oldState) => {
+      const newState = oldState.slice();
+      newState.push(memberID);
+      return newState;
+    });
+
     await (
       API.graphql({
         query: updateSubscriber,
@@ -119,6 +156,18 @@ export default function EditGroupModal({
       }) as Promise<GraphQLResult<UpdateSubscriberMutation>>
     ).catch(() => {
       console.log("err");
+    });
+
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    // remove loading status
+    setLoadingRemoveButtons((oldState) => {
+      const newState = oldState.slice();
+      const idx = newState.findIndex((id) => id === memberID);
+      if (idx > -1) {
+        newState.splice(idx, 1);
+      }
+      return newState;
     });
 
     // call onEditSubscriber
@@ -147,6 +196,7 @@ export default function EditGroupModal({
                 variant="outline"
                 mr={3}
                 onClick={submitNameEdit}
+                isLoading={submitNameBtnIsLoading}
               >
                 Save
               </Button>
@@ -197,6 +247,7 @@ export default function EditGroupModal({
                             memberID: sub.id,
                           })
                         }
+                        isLoading={loadingRemoveButtons.includes(sub.id)}
                       >
                         <MinusIcon />
                       </Button>
@@ -255,6 +306,7 @@ export default function EditGroupModal({
                             groupID: groupData.id,
                           })
                         }
+                        isLoading={loadingAddButtons.includes(sub.id)}
                       >
                         Add
                       </Button>

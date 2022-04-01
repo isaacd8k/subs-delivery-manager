@@ -322,6 +322,7 @@ export default function Subscribers() {
           isOpen={isEditGroupModalOpen}
           onClose={onEditGroupModalClose}
           onEditName={onEditGroupSuccess}
+          // TODO: Do we need to make another network request when child network request was already successful?
           onEditSubscriber={() => {
             fetchSubscribers();
           }}
