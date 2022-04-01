@@ -50,8 +50,15 @@ export default function NewGroupModal({ isOpen, onSuccess, onClose }: Props) {
     onSuccess && onSuccess();
   }
 
+  function closeModal() {
+    // reset state
+    setGroupName("");
+    // close modal
+    onClose();
+  }
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={closeModal}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>New Group</ModalHeader>
@@ -75,7 +82,7 @@ export default function NewGroupModal({ isOpen, onSuccess, onClose }: Props) {
           <Button colorScheme="blue" mr={3} onClick={addGroup}>
             Create
           </Button>
-          <Button variant="ghost" onClick={onClose}>
+          <Button variant="ghost" onClick={closeModal}>
             Cancel
           </Button>
         </ModalFooter>

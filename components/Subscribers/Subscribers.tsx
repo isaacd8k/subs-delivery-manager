@@ -39,13 +39,6 @@ import { updateSubscriber } from "../../graphql/mutations";
 import NewGroupModal from "./NewGroupModal";
 import EditGroupModal from "./EditGroupModal";
 
-type GroupEditDetails = {
-  groupID: string;
-  name: string;
-  members: Subscriber[];
-  unassigned: Subscriber[];
-};
-
 export default function Subscribers() {
   const [subscribers, setSubscribers] = useState<Subscriber[] | null>([]);
   const [subGroups, setSubGroups] = useState<SubscriberGroup[] | null>(null);
@@ -66,12 +59,6 @@ export default function Subscribers() {
     onClose: onEditGroupModalClose,
   } = useDisclosure();
 
-  const [groupEditDetails, setGroupEditDetails] = useState<GroupEditDetails>({
-    groupID: "",
-    name: "",
-    members: [],
-    unassigned: [],
-  });
   const [isNewSubVisible, setNewSubVisible] = useState(false);
   const [selectedGroupToEdit, setSelectedGroupToEdit] = useState<string | null>(
     null
@@ -158,28 +145,6 @@ export default function Subscribers() {
     fetchSubscribers();
   }
 
-  async function onRemoveGroupMember({
-    memberID,
-    groupID,
-  }: {
-    memberID: string;
-    groupID: string;
-  }) {
-    const data = (await API.graphql({
-      query: updateSubscriber,
-      variables: {
-        input: {
-          id: memberID,
-          subscriberGroupID: null,
-        },
-      },
-      authMode: "AMAZON_COGNITO_USER_POOLS",
-    })) as { data: UpdateSubscriberMutation };
-
-    // refresh data
-    fetchSubscribers();
-  }
-
   function onAddGroup() {
     // open modal
     onNewGroupModalOpen();
@@ -244,28 +209,6 @@ export default function Subscribers() {
                   <Text fontSize="sm">
                     Members: {group.members?.items?.length ?? "0"}
                   </Text>
-                  <Text fontSize="sm">Show members:</Text>
-                  {/* <UnorderedList>
-                    {assignedSubscribers
-                      .filter((sub) => sub.subscriberGroupID === group.id)
-                      .map((sub) => (
-                        <ListItem key={sub.id}>
-                          {`${sub.firstName} ${sub.lastName}`}{" "}
-                          <Link
-                            onClick={() =>
-                              onRemoveGroupMember({
-                                memberID: sub.id,
-                                groupID: group.id,
-                              })
-                            }
-                          >
-                            <Text as="span" fontSize="xs">
-                              Remove
-                            </Text>
-                          </Link>
-                        </ListItem>
-                      ))}
-                  </UnorderedList> */}
                   <Text fontSize="sm">
                     <Link
                       onClick={() =>
@@ -277,27 +220,6 @@ export default function Subscribers() {
                       Edit group
                     </Link>
                   </Text>
-
-                  {/* EDIT MODE: Add members */}
-                  <Text>Add members:</Text>
-                  <List fontSize="xs">
-                    {unassignedSubscribers.map((sub) => (
-                      <Link
-                        key={sub.id}
-                        onClick={() =>
-                          onAddGroupMember({
-                            memberID: sub.id,
-                            groupID: group.id,
-                          })
-                        }
-                      >
-                        <ListItem>
-                          <ListIcon as={AddIcon} />
-                          {`${sub.firstName} ${sub.lastName}`}
-                        </ListItem>
-                      </Link>
-                    ))}
-                  </List>
                 </Box>
               ))}
 
@@ -388,18 +310,12 @@ export default function Subscribers() {
       </Box>
 
       {/* Modals */}
-      {/* Reset modal state by unmounting when not visible */}
-      {/* Update: by unmounting, exit animations are broken when closing the modal */}
-      {isNewGroupModalOpen && (
-        <NewGroupModal
-          isOpen={isNewGroupModalOpen}
-          onClose={onNewGroupModalClose}
-          onSuccess={onNewGroupSuccess}
-        />
-      )}
+      <NewGroupModal
+        isOpen={isNewGroupModalOpen}
+        onClose={onNewGroupModalClose}
+        onSuccess={onNewGroupSuccess}
+      />
 
-      {/* Devise new method for data flow. Changes in subscribers here do not reflect
-      in the modal when data is edited there */}
       {selectedGroupToEdit && subGroups && (
         <EditGroupModal
           key={selectedGroupToEdit}
