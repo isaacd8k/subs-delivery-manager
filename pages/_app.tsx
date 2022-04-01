@@ -24,6 +24,9 @@ function MyApp({ Component, pageProps }: AppProps) {
           <Link href="/subscribers">
             <a>Subscribers</a>
           </Link>
+          <Link href="/periodicals">
+            <a>Periodicals</a>
+          </Link>
         </nav>
 
         <AmplifyProvider theme={amplifyTheme} colorMode="system">
