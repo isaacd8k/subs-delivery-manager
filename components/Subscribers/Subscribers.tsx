@@ -18,11 +18,12 @@ import {
   OrderedList,
   SimpleGrid,
   Spacer,
+  Stack,
   Text,
   UnorderedList,
   useDisclosure,
 } from "@chakra-ui/react";
-import { AddIcon } from "@chakra-ui/icons";
+import { AddIcon, MinusIcon } from "@chakra-ui/icons";
 import React, { useEffect, useState } from "react";
 import { API } from "aws-amplify";
 import { listSubscriberGroups, listSubscribers } from "../../graphql/queries";
@@ -98,6 +99,14 @@ export default function Subscribers() {
     fetchSubGroups();
   }, []);
 
+  // sort by last name
+  useEffect(() => {
+    if (subscribers) {
+      const assigned = subscribers.filter((sub) => sub.subscriberGroupID);
+      setAssignedSubscribers(assigned);
+    }
+  }, [subscribers]);
+
   useEffect(() => {
     if (subscribers) {
       const unassigned = subscribers.filter((sub) => !sub.subscriberGroupID);
@@ -122,27 +131,6 @@ export default function Subscribers() {
   }
   function newSubscriberCancel() {
     setNewSubVisible(false);
-  }
-  async function onAddGroupMember({
-    memberID,
-    groupID,
-  }: {
-    memberID: string;
-    groupID: string;
-  }) {
-    const data = (await API.graphql({
-      query: updateSubscriber,
-      variables: {
-        input: {
-          id: memberID,
-          subscriberGroupID: groupID,
-        },
-      },
-      authMode: "AMAZON_COGNITO_USER_POOLS",
-    })) as { data: UpdateSubscriberMutation };
-
-    // refresh data
-    fetchSubscribers();
   }
 
   function onAddGroup() {
@@ -288,25 +276,28 @@ export default function Subscribers() {
           Add new subscriber
         </Button>
         {/* List */}
-        <OrderedList>
+        <SimpleGrid columns={3} spacing={2} maxH={400} overflow="scroll" py={6}>
           {subscribers &&
-            subscribers.map(
-              (sub) =>
-                sub && (
-                  <NextLink
-                    href={`/subscriber/${sub.id}`}
-                    key={sub.id}
-                    passHref
-                  >
-                    <Link>
-                      <ListItem key={sub.id}>
-                        {sub.firstName} {sub.lastName}
-                      </ListItem>
-                    </Link>
-                  </NextLink>
-                )
-            )}
-        </OrderedList>
+            subscribers.map((sub) => (
+              <Stack
+                direction="row"
+                key={sub.id}
+                align="center"
+                justify="space-between"
+              >
+                <NextLink href={`/subscriber/${sub.id}`} key={sub.id} passHref>
+                  <Link>
+                    <Text maxW="48" isTruncated>
+                      {sub.firstName} {sub.lastName}
+                    </Text>
+                  </Link>
+                </NextLink>
+                <Button colorScheme="red" size="xs" variant="ghost">
+                  <MinusIcon />
+                </Button>
+              </Stack>
+            ))}
+        </SimpleGrid>
       </Box>
 
       {/* Modals */}
