@@ -1,5 +1,6 @@
 import {
   Box,
+  Center,
   Divider,
   Flex,
   Heading,
@@ -7,14 +8,21 @@ import {
   SimpleGrid,
   Spacer,
   Text,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { API } from "aws-amplify";
 import React, { useEffect, useState } from "react";
 import { listPeriodicals } from "../../graphql/queries";
 import { ListPeriodicalsQuery, Periodical } from "../../graphql/types";
+import NewPeriodicalModal from "./NewPeriodicalModal";
 
 export default function Periodicals() {
   const [periodicals, setPeriodicals] = useState<Periodical[]>([]);
+  const {
+    isOpen: isNewPeriodicalModalOpen,
+    onOpen: onNewPeriodicalModalOpen,
+    onClose: onNewPeriodicalModalClose,
+  } = useDisclosure();
 
   useEffect(() => {
     // fetch Periodicals
@@ -39,6 +47,11 @@ export default function Periodicals() {
     }
   }
 
+  function onNewPeriodicalSuccess() {
+    // refresh local list and close modal
+    fetchPeriodicals();
+    onNewPeriodicalModalClose();
+  }
   return (
     <div>
       <Heading>Periodicals & Subscriptions</Heading>
@@ -70,8 +83,22 @@ export default function Periodicals() {
               </Text>
             </Box>
           ))}
+
+          {/* EDIT MODE: Add a group button */}
+          <Box bg="blue.700" borderRadius="lg" p={6}>
+            <Link onClick={onNewPeriodicalModalOpen}>
+              <Center height="100%">Add a group</Center>
+            </Link>
+          </Box>
         </SimpleGrid>
       </Box>
+
+      {/* Modals */}
+      <NewPeriodicalModal
+        isOpen={isNewPeriodicalModalOpen}
+        onClose={onNewPeriodicalModalClose}
+        onSuccess={onNewPeriodicalSuccess}
+      />
     </div>
   );
 }
