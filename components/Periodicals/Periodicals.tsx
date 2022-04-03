@@ -13,15 +13,28 @@ import {
 import { API } from "aws-amplify";
 import React, { useEffect, useState } from "react";
 import { listPeriodicals } from "../../graphql/queries";
-import { ListPeriodicalsQuery, Periodical } from "../../graphql/types";
+import {
+  ListPeriodicalsQuery,
+  Periodical,
+  PeriodicalRecurrence,
+} from "../../graphql/types";
 import NewPeriodicalModal from "./NewPeriodicalModal";
 
 export default function Periodicals() {
   const [periodicals, setPeriodicals] = useState<Periodical[]>([]);
+  const [periodicalToEdit, setPeriodicalToEdit] = useState<Pick<
+    Periodical,
+    "id" | "name" | "recurrence"
+  > | null>(null);
   const {
     isOpen: isNewPeriodicalModalOpen,
     onOpen: onNewPeriodicalModalOpen,
     onClose: onNewPeriodicalModalClose,
+  } = useDisclosure();
+  const {
+    isOpen: isEditPeriodicalModalOpen,
+    onOpen: onEditPeriodicalModalOpen,
+    onClose: onEditPeriodicalModalClose,
   } = useDisclosure();
 
   useEffect(() => {
@@ -52,6 +65,24 @@ export default function Periodicals() {
     fetchPeriodicals();
     onNewPeriodicalModalClose();
   }
+
+  function onEditPeriodicalSuccess() {
+    fetchPeriodicals();
+    onEditPeriodicalModalClose();
+  }
+
+  function openEditPeriodical({
+    id,
+    name,
+    recurrence,
+  }: Pick<Periodical, "id" | "name" | "recurrence">) {
+    setPeriodicalToEdit({
+      id,
+      name,
+      recurrence,
+    });
+    onEditPeriodicalModalOpen();
+  }
   return (
     <div>
       <Heading>Periodicals & Subscriptions</Heading>
@@ -81,6 +112,20 @@ export default function Periodicals() {
               <Text fontSize="sm">
                 Subscribers: {periodical.pubSubscriptions?.items.length ?? "0"}
               </Text>
+
+              <Text fontSize="sm">
+                <Link
+                  onClick={() =>
+                    openEditPeriodical({
+                      id: periodical.id,
+                      name: periodical.name,
+                      recurrence: periodical.recurrence,
+                    })
+                  }
+                >
+                  Edit Periodical
+                </Link>
+              </Text>
             </Box>
           ))}
 
@@ -99,6 +144,17 @@ export default function Periodicals() {
         onClose={onNewPeriodicalModalClose}
         onSuccess={onNewPeriodicalSuccess}
       />
+
+      {periodicalToEdit && (
+        <NewPeriodicalModal
+          key={periodicalToEdit?.id}
+          variation="EDIT"
+          isOpen={isEditPeriodicalModalOpen}
+          onClose={onEditPeriodicalModalClose}
+          onSuccess={onEditPeriodicalSuccess}
+          periodical={periodicalToEdit}
+        />
+      )}
     </div>
   );
 }

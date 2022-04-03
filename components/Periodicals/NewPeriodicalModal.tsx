@@ -18,36 +18,48 @@ import {
   Radio,
 } from "@chakra-ui/react";
 import { API } from "aws-amplify";
-import { createPeriodical } from "../../graphql/mutations";
+import { createPeriodical, updatePeriodical } from "../../graphql/mutations";
 import { GraphQLResult } from "@aws-amplify/api-graphql";
-import { CreatePeriodicalMutation } from "../../graphql/types";
+import {
+  CreatePeriodicalMutation,
+  Periodical,
+  UpdatePeriodicalMutation,
+} from "../../graphql/types";
 
 type Props = {
+  variation?: "NEW" | "EDIT";
   isOpen: boolean;
   onSuccess?: () => any;
-  onCancel?: () => any;
   onClose: () => any;
+  periodical?: Pick<Periodical, "name" | "recurrence" | "id">;
 };
 
 export default function NewPeriodicalModal({
+  variation = "NEW",
   isOpen,
   onSuccess,
   onClose,
+  periodical,
 }: Props) {
-  const [periodicalName, setPeriodicalName] = useState("");
-  const [periodicalFreq, setPeriodicalFreq] = useState("MONTHLY");
+  const [periodicalName, setPeriodicalName] = useState(periodical?.name ?? "");
+  const [periodicalFreq, setPeriodicalFreq] = useState(
+    periodical?.recurrence ?? "MONTHLY"
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   function closeModal() {
-    // reset state
-    setPeriodicalName("");
-    setPeriodicalFreq("");
+    // reset state only on 'New' form
+    if (variation === "NEW") {
+      setPeriodicalName("");
+      setPeriodicalFreq("");
+    }
+
     setIsSubmitting(false);
     // close modal
     onClose();
   }
 
-  async function submitPeriodical() {
+  async function submitNewPeriodical() {
     // must enter periodical name and frequency
     if (!periodicalName || !periodicalFreq) {
       return console.error("Error: must enter periodical name and freq.");
@@ -75,11 +87,56 @@ export default function NewPeriodicalModal({
     onSuccess && onSuccess();
   }
 
+  async function editPeriodical() {
+    if (!periodical) {
+      return console.error("No Periodical provided to edit component");
+    }
+
+    if (!periodicalName || !periodicalFreq) {
+      return console.error("Error: must enter periodical name and freq");
+    }
+
+    // enter submitting state
+    setIsSubmitting(true);
+
+    // make request
+    const data = await (
+      API.graphql({
+        query: updatePeriodical,
+        variables: {
+          input: {
+            id: periodical.id,
+            name: periodicalName,
+            recurrence: periodicalFreq,
+          },
+        },
+        authMode: "AMAZON_COGNITO_USER_POOLS",
+      }) as Promise<GraphQLResult<UpdatePeriodicalMutation>>
+    ).catch((error) => {
+      console.error("Error. Add error in toast");
+    });
+
+    // restore submitting state
+    setIsSubmitting(false);
+
+    // call success callback
+    onSuccess && onSuccess();
+  }
+
+  function submitEditOrCreatePeriodical() {
+    if (variation === "EDIT") {
+      return editPeriodical();
+    }
+    submitNewPeriodical;
+  }
+
   return (
     <Modal isOpen={isOpen} onClose={closeModal}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>New Periodical</ModalHeader>
+        <ModalHeader>
+          {variation === "EDIT" ? "Edit" : "New"} Periodical
+        </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <HStack>
@@ -120,10 +177,10 @@ export default function NewPeriodicalModal({
           <Button
             colorScheme="blue"
             mr={3}
-            onClick={submitPeriodical}
+            onClick={submitEditOrCreatePeriodical}
             isLoading={isSubmitting}
           >
-            Create
+            Submit
           </Button>
           <Button variant="ghost" onClick={closeModal}>
             Cancel
