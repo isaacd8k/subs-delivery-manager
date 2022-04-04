@@ -190,37 +190,33 @@ export default function EditGroupModal({
   }
 
   async function deleteGroup() {
-    // dispatch event
-    await (
-      API.graphql({
+    try {
+      (await API.graphql({
         query: deleteSubscriberGroup,
         variables: { input: { id: groupData.id } },
         authMode: "AMAZON_COGNITO_USER_POOLS",
-      }) as Promise<GraphQLResult<DeleteSubscriberGroupMutation>>
-    )
-      .then(() => {
-        // success toast
-        toast({
-          title: "Subscriber group has been successfully deleted",
-          position: "top-right",
-          status: "success",
-        });
+      })) as Promise<GraphQLResult<DeleteSubscriberGroupMutation>>;
 
-        // close modal
-        setIsDeleting(false);
-        onEditSubscriber();
-        onClose();
-      })
-      .catch(() => {
-        // error toast
-        toast({
-          title: "Error deleting subscriber group. Please try again",
-          position: "top-right",
-          status: "error",
-        });
-
-        setIsDeleting(false);
+      // success toast
+      toast({
+        title: "Subscriber group has been successfully deleted",
+        position: "top-right",
+        status: "success",
       });
+
+      // close modal
+      setIsDeleting(false);
+      onEditSubscriber();
+      onClose();
+    } catch {
+      // error toast
+      toast({
+        title: "Error deleting subscriber group. Please try again",
+        position: "top-right",
+        status: "error",
+      });
+      setIsDeleting(false);
+    }
   }
 
   function onDeleteGroup() {
