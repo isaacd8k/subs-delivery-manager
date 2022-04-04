@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   Modal,
@@ -29,7 +29,7 @@ import {
 type Props = {
   variation?: "NEW" | "EDIT";
   isOpen: boolean;
-  onSuccess?: () => any;
+  onSuccess?: (periodical: Periodical) => any;
   onClose: () => any;
   periodical?: Pick<Periodical, "name" | "recurrence" | "id">;
 };
@@ -47,11 +47,21 @@ export default function NewPeriodicalModal({
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  function resetState() {
+    setPeriodicalName("");
+  }
+
+  // unmount cleanup
+  useEffect(() => {
+    return () => {
+      resetState();
+    };
+  }, []);
+
   function closeModal() {
     // reset state only on 'New' form
     if (variation === "NEW") {
-      setPeriodicalName("");
-      setPeriodicalFreq("");
+      resetState();
     }
 
     setIsSubmitting(false);
@@ -68,7 +78,7 @@ export default function NewPeriodicalModal({
     // enter submitting state
     setIsSubmitting(true);
 
-    const data = await (
+    const { data } = (await (
       API.graphql({
         query: createPeriodical,
         variables: {
@@ -78,13 +88,20 @@ export default function NewPeriodicalModal({
       }) as Promise<GraphQLResult<CreatePeriodicalMutation>>
     ).catch((error) => {
       console.error("Error. Add error in toast");
-    });
+    })) as GraphQLResult<CreatePeriodicalMutation>;
+
+    await new Promise((resolve) => setTimeout(resolve, 3000));
 
     // restore submitting state
     setIsSubmitting(false);
+    // reset state
+    if (variation === "NEW") {
+      resetState();
+    }
+    console.log(data);
 
     // call success callback
-    onSuccess && onSuccess();
+    onSuccess && onSuccess(data?.createPeriodical as Periodical);
   }
 
   async function editPeriodical() {
@@ -100,7 +117,7 @@ export default function NewPeriodicalModal({
     setIsSubmitting(true);
 
     // make request
-    const data = await (
+    const { data } = (await (
       API.graphql({
         query: updatePeriodical,
         variables: {
@@ -113,21 +130,26 @@ export default function NewPeriodicalModal({
         authMode: "AMAZON_COGNITO_USER_POOLS",
       }) as Promise<GraphQLResult<UpdatePeriodicalMutation>>
     ).catch((error) => {
+      // TODO: Add error in toast
       console.error("Error. Add error in toast");
-    });
+    })) as GraphQLResult<UpdatePeriodicalMutation>;
 
     // restore submitting state
     setIsSubmitting(false);
+    // reset state
+    if (variation === "NEW") {
+      resetState();
+    }
 
     // call success callback
-    onSuccess && onSuccess();
+    onSuccess && onSuccess(data?.updatePeriodical as Periodical);
   }
 
   function submitEditOrCreatePeriodical() {
     if (variation === "EDIT") {
       return editPeriodical();
     }
-    submitNewPeriodical;
+    submitNewPeriodical();
   }
 
   return (
