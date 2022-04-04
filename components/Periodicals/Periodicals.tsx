@@ -109,6 +109,25 @@ export default function Periodicals() {
                 {periodical.name}
               </Heading>
 
+              {/* Recurrence */}
+              <Text color="gray.500" fontSize="xs">
+                {periodical.recurrence}
+              </Text>
+
+              {/* Last issue date */}
+              {periodical.issues &&
+                periodical.issues.items &&
+                periodical.issues.items.length > 0 && (
+                  <Text color="gray.500" fontSize="xs">
+                    Last issue:{" "}
+                    {
+                      periodical.issues.items[
+                        periodical.issues.items.length - 1
+                      ]?.issueDate
+                    }
+                  </Text>
+                )}
+
               <Text fontSize="sm">
                 Subscribers: {periodical.pubSubscriptions?.items.length ?? "0"}
               </Text>
