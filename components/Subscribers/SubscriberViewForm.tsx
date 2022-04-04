@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -50,7 +50,8 @@ export default function SubscriberViewForm({ subscriberID }: Props) {
     onClose: onWarningClose,
   } = useDisclosure();
 
-  async function fetchSubscriberDetails() {
+  // memoized to prevent function identity changes on every render
+  const fetchSubscriberDetails = useCallback(async () => {
     const subscriber = (await API.graphql<GetSubscriberQuery>({
       query: getSubscriber,
       variables: { id: subscriberID },
@@ -58,11 +59,11 @@ export default function SubscriberViewForm({ subscriberID }: Props) {
     })) as { data: GetSubscriberQuery };
 
     setSubscriber(subscriber.data.getSubscriber);
-  }
+  }, [subscriberID]);
 
   useEffect(() => {
     fetchSubscriberDetails();
-  }, []);
+  }, [fetchSubscriberDetails]);
 
   // bind subscriber changes to edit form
   useEffect(() => {
