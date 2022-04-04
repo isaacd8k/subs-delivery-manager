@@ -19,6 +19,7 @@ import {
   PeriodicalRecurrence,
 } from "../../graphql/types";
 import NewPeriodicalModal from "./NewPeriodicalModal";
+import NextLink from "next/link";
 
 export default function Periodicals() {
   const [periodicals, setPeriodicals] = useState<Periodical[]>([]);
@@ -106,7 +107,13 @@ export default function Periodicals() {
           {periodicals.map((periodical) => (
             <Box key={periodical.id} bg="blue" borderRadius="lg" p={6}>
               <Heading size="sm" isTruncated>
-                {periodical.name}
+                <NextLink
+                  href={`/periodical/${periodical.id}`}
+                  key={periodical.id}
+                  passHref
+                >
+                  <Link>{periodical.name}</Link>
+                </NextLink>
               </Heading>
 
               {/* Recurrence */}
