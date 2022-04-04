@@ -27,20 +27,24 @@ import {
   Spacer,
   Text,
   Stack,
+  toast,
+  useToast,
 } from "@chakra-ui/react";
 import { API } from "aws-amplify";
 import {
   createSubscriberGroup,
+  deleteSubscriberGroup,
   updateSubscriber,
   updateSubscriberGroup,
 } from "../../graphql/mutations";
 import { GraphQLResult } from "@aws-amplify/api-graphql";
 import {
   CreateSubscriberGroupMutation,
+  DeleteSubscriberGroupMutation,
   Subscriber,
   UpdateSubscriberMutation,
 } from "../../graphql/types";
-import { MinusIcon } from "@chakra-ui/icons";
+import { MinusIcon, WarningTwoIcon } from "@chakra-ui/icons";
 
 type Props = {
   isOpen: boolean;
@@ -69,7 +73,18 @@ export default function EditGroupModal({
   const [loadingRemoveButtons, setLoadingRemoveButtons] = useState<string[]>(
     []
   );
+  const toast = useToast();
   const [loadingAddButtons, setLoadingAddButtons] = useState<string[]>([]);
+  const [isQualifiedForDeletion, setIsQualifiedForDeletion] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    if (groupData.members.length === 0) {
+      setIsQualifiedForDeletion(true);
+    } else {
+      setIsQualifiedForDeletion(false);
+    }
+  }, [groupData]);
 
   async function submitNameEdit() {
     // error: must enter group name
@@ -174,6 +189,48 @@ export default function EditGroupModal({
     onEditSubscriber && onEditSubscriber();
   }
 
+  async function deleteGroup() {
+    // dispatch event
+    await (
+      API.graphql({
+        query: deleteSubscriberGroup,
+        variables: { input: { id: groupData.id } },
+        authMode: "AMAZON_COGNITO_USER_POOLS",
+      }) as Promise<GraphQLResult<DeleteSubscriberGroupMutation>>
+    )
+      .then(() => {
+        // success toast
+        toast({
+          title: "Subscriber group has been successfully deleted",
+          position: "top-right",
+          status: "success",
+        });
+
+        // close modal
+        setIsDeleting(false);
+        onEditSubscriber();
+        onClose();
+      })
+      .catch(() => {
+        // error toast
+        toast({
+          title: "Error deleting subscriber group. Please try again",
+          position: "top-right",
+          status: "error",
+        });
+
+        setIsDeleting(false);
+      });
+  }
+
+  function onDeleteGroup() {
+    // set loading status
+    setIsDeleting(true);
+
+    // dispatch event
+    deleteGroup();
+  }
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
@@ -220,8 +277,14 @@ export default function EditGroupModal({
                 {/* Edit btn */}
                 <Link fontSize="sm">Edit</Link>
 
-                {/* Members list */}
+                {/* No unassigned */}
+                {groupData.members.length < 1 && (
+                  <Text align="center">
+                    There are no subscribers belonging to this group.
+                  </Text>
+                )}
 
+                {/* Members list */}
                 <SimpleGrid
                   columns={2}
                   spacing={2}
@@ -313,6 +376,36 @@ export default function EditGroupModal({
                     </Stack>
                   ))}
                 </SimpleGrid>
+              </AccordionPanel>
+            </AccordionItem>
+
+            {/* Delete group */}
+            <AccordionItem>
+              <Heading size="xs">
+                <AccordionButton>
+                  <Box flex="1" textAlign="left" fontSize="xs">
+                    DELETE GROUP
+                  </Box>
+                  <AccordionIcon />
+                </AccordionButton>
+              </Heading>
+
+              <AccordionPanel pb={2}>
+                {/* Warning */}
+                <Text fontSize="xs" mb={2}>
+                  <WarningTwoIcon /> Note: Deleting is permanent. Before
+                  deleting a group, you must remove all members.
+                </Text>
+
+                <Button
+                  variant="outline"
+                  colorScheme="red"
+                  onClick={onDeleteGroup}
+                  isLoading={isDeleting}
+                  isDisabled={!isQualifiedForDeletion}
+                >
+                  Delete
+                </Button>
               </AccordionPanel>
             </AccordionItem>
           </Accordion>

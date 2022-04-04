@@ -316,6 +316,7 @@ export default function Subscribers() {
           // TODO: Do we need to make another network request when child network request was already successful?
           onEditSubscriber={() => {
             fetchSubscribers();
+            fetchSubGroups();
           }}
           groupData={{
             name:

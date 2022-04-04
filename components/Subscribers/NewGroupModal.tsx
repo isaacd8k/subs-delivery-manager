@@ -46,6 +46,8 @@ export default function NewGroupModal({ isOpen, onSuccess, onClose }: Props) {
       console.error("New Group promise rejected. Add error message in Toast?");
     });
 
+    // reset state
+    setGroupName("");
     // call success callback
     onSuccess && onSuccess();
   }
