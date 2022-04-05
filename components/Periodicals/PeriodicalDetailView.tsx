@@ -5,6 +5,7 @@ import {
   Divider,
   Flex,
   Heading,
+  Link,
   Spacer,
   Text,
   useDisclosure,
@@ -13,7 +14,12 @@ import {
 import { API } from "aws-amplify";
 import React, { useCallback, useEffect, useState } from "react";
 import { getPeriodical } from "../../graphql/queries";
-import { GetPeriodicalQuery, Periodical } from "../../graphql/types";
+import {
+  GetPeriodicalQuery,
+  Periodical,
+  Subscriber,
+} from "../../graphql/types";
+import AddSubscriptionModal from "./AddSubscriptionModal";
 import NewPeriodicalModal from "./NewPeriodicalModal";
 
 export type Props = {
@@ -22,11 +28,18 @@ export type Props = {
 
 export default function PeriodicalDetailView({ periodicalID }: Props) {
   const [periodical, setPeriodical] = useState<Periodical | null>(null);
+  const [subscribers, setSubscribers] = useState<Subscriber[] | null>(null);
+
   const toast = useToast();
   const {
     isOpen: isEditPeriodicalModalOpen,
     onOpen: onEditPeriodicalModalOpen,
     onClose: onEditPeriodicalModalClose,
+  } = useDisclosure();
+  const {
+    isOpen: isCreateSubscriptionModalOpen,
+    onOpen: onCreateSubscriptionModalOpen,
+    onClose: onCreateSubscriptionModalClose,
   } = useDisclosure();
 
   const fetchPeriodicalDetails = useCallback(async () => {
@@ -65,6 +78,10 @@ export default function PeriodicalDetailView({ periodicalID }: Props) {
   if (!periodical) {
     // TODO: Return skeleton? Also in SubscriberViewForm loading
     return <>Loading...</>;
+  }
+
+  function test() {
+    console.log("test");
   }
 
   return (
@@ -117,10 +134,10 @@ export default function PeriodicalDetailView({ periodicalID }: Props) {
 
         {/* Subscribers */}
         <Flex>
-          <Heading size="md">Subscribers</Heading>
+          <Heading size="md">Subscriptions</Heading>
           <Spacer />
           <Button colorScheme="blue" variant="link" fontSize="xs">
-            Actions [menu?]
+            Edit subscriptions
           </Button>
         </Flex>
         <Box
@@ -130,7 +147,19 @@ export default function PeriodicalDetailView({ periodicalID }: Props) {
           borderRadius="md"
           mt={2}
           mb={2}
-        ></Box>
+        >
+          Add a subscription. Opens modal with subscriber list and search field.
+          Once user selects the subscriber, he can then select quantity and a
+          button to add the subscription. Summary view. Then, View All button
+          (with list of subscribers)
+          <Link
+            onClick={() => {
+              onCreateSubscriptionModalOpen();
+            }}
+          >
+            Add Subscription
+          </Link>
+        </Box>
       </Container>
 
       {/* Modals */}
@@ -140,6 +169,13 @@ export default function PeriodicalDetailView({ periodicalID }: Props) {
         onClose={onEditPeriodicalModalClose}
         onSuccess={onEditPeriodicalSuccess}
         periodical={periodical}
+      />
+
+      <AddSubscriptionModal
+        isOpen={isCreateSubscriptionModalOpen}
+        onClose={onCreateSubscriptionModalClose}
+        onSuccess={() => {}}
+        periodicalID={periodical.id}
       />
     </div>
   );
