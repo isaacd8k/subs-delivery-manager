@@ -80,10 +80,6 @@ export default function PeriodicalDetailView({ periodicalID }: Props) {
     return <>Loading...</>;
   }
 
-  function test() {
-    console.log("test");
-  }
-
   return (
     <div>
       <Flex>
@@ -134,10 +130,10 @@ export default function PeriodicalDetailView({ periodicalID }: Props) {
 
         {/* Subscribers */}
         <Flex>
-          <Heading size="md">Subscriptions</Heading>
+          <Heading size="md">Active subscriptions</Heading>
           <Spacer />
           <Button colorScheme="blue" variant="link" fontSize="xs">
-            Edit subscriptions
+            View all
           </Button>
         </Flex>
         <Box
@@ -148,10 +144,6 @@ export default function PeriodicalDetailView({ periodicalID }: Props) {
           mt={2}
           mb={2}
         >
-          Add a subscription. Opens modal with subscriber list and search field.
-          Once user selects the subscriber, he can then select quantity and a
-          button to add the subscription. Summary view. Then, View All button
-          (with list of subscribers)
           <Link
             onClick={() => {
               onCreateSubscriptionModalOpen();
@@ -174,7 +166,10 @@ export default function PeriodicalDetailView({ periodicalID }: Props) {
       <AddSubscriptionModal
         isOpen={isCreateSubscriptionModalOpen}
         onClose={onCreateSubscriptionModalClose}
-        onSuccess={() => {}}
+        onSuccess={() => {
+          fetchPeriodicalDetails();
+          onCreateSubscriptionModalClose();
+        }}
         periodicalID={periodical.id}
       />
     </div>
