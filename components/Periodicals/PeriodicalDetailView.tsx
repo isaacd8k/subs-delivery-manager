@@ -30,9 +30,11 @@ import { getPeriodical } from "../../graphql/queries";
 import {
   GetPeriodicalQuery,
   Periodical,
+  PubSubscription,
   Subscriber,
 } from "../../graphql/types";
 import AddSubscriptionModal from "./AddSubscriptionModal";
+import EditSubscriptionModal from "./EditSubscriptionModal";
 import NewPeriodicalModal from "./NewPeriodicalModal";
 
 export type Props = {
@@ -42,6 +44,9 @@ export type Props = {
 export default function PeriodicalDetailView({ periodicalID }: Props) {
   const [periodical, setPeriodical] = useState<Periodical | null>(null);
   const [subscribers, setSubscribers] = useState<Subscriber[] | null>(null);
+  const [selectedPubSub, setSelectedPubSub] = useState<PubSubscription | null>(
+    null
+  );
 
   const toast = useToast();
   const {
@@ -53,6 +58,11 @@ export default function PeriodicalDetailView({ periodicalID }: Props) {
     isOpen: isCreateSubscriptionModalOpen,
     onOpen: onCreateSubscriptionModalOpen,
     onClose: onCreateSubscriptionModalClose,
+  } = useDisclosure();
+  const {
+    isOpen: isEditPubSubscriptionModalOpen,
+    onOpen: onEditPubSubscriptionModalOpen,
+    onClose: onEditPubSubscriptionModalClose,
   } = useDisclosure();
 
   const fetchPeriodicalDetails = useCallback(async () => {
@@ -237,9 +247,7 @@ export default function PeriodicalDetailView({ periodicalID }: Props) {
                   colorScheme="purple"
                   variant="ghost"
                   size="sm"
-                  onClick={() => {
-                    onCreateSubscriptionModalOpen();
-                  }}
+                  onClick={() => onCreateSubscriptionModalOpen()}
                 >
                   New subscription
                 </Button>
@@ -290,6 +298,10 @@ export default function PeriodicalDetailView({ periodicalID }: Props) {
                         colorScheme="teal"
                         variant="ghost"
                         size="xs"
+                        onClick={() => {
+                          setSelectedPubSub(pubSub);
+                          onEditPubSubscriptionModalOpen();
+                        }}
                       >
                         Edit subscription
                       </Button>
@@ -325,6 +337,19 @@ export default function PeriodicalDetailView({ periodicalID }: Props) {
         }}
         periodicalID={periodical.id}
       />
+
+      {selectedPubSub && (
+        <EditSubscriptionModal
+          key={selectedPubSub.id}
+          isOpen={isEditPubSubscriptionModalOpen}
+          onClose={onEditPubSubscriptionModalClose}
+          onSuccess={() => {
+            fetchPeriodicalDetails();
+            onEditPubSubscriptionModalClose();
+          }}
+          pubSubscription={selectedPubSub}
+        />
+      )}
     </div>
   );
 }
