@@ -40,6 +40,8 @@ import { updateSubscriber } from "../../graphql/mutations";
 import NewGroupModal from "./NewGroupModal";
 import EditGroupModal from "./EditGroupModal";
 
+type SubscriberSimple = Pick<Subscriber, "id" | "firstName" | "lastName">;
+
 export default function Subscribers() {
   const [subscribers, setSubscribers] = useState<Subscriber[] | null>([]);
   const [subGroups, setSubGroups] = useState<SubscriberGroup[] | null>(null);
@@ -49,6 +51,11 @@ export default function Subscribers() {
   const [assignedSubscribers, setAssignedSubscribers] = useState<Subscriber[]>(
     []
   );
+  const [filteredSubscribers, setFilteredSubscribers] = useState<
+    SubscriberSimple[]
+  >([]);
+  const [searchSubscribersInput, setSearchSubscribersInput] = useState("");
+
   const {
     isOpen: isNewGroupModalOpen,
     onOpen: onNewGroupModalOpen,
@@ -120,6 +127,38 @@ export default function Subscribers() {
       setAssignedSubscribers(assigned);
     }
   }, [subscribers]);
+
+  useEffect(() => {
+    let filteredSubscriberList: SubscriberSimple[] = [];
+
+    if (subscribers && subscribers.length > 0) {
+      filteredSubscriberList = subscribers.map(
+        ({ id, firstName, lastName }) => ({
+          id,
+          firstName,
+          lastName,
+        })
+      );
+    }
+
+    setFilteredSubscribers(filteredSubscriberList);
+  }, [subscribers]);
+
+  useEffect(() => {
+    if (!subscribers) {
+      return setFilteredSubscribers([]);
+    }
+
+    const input = searchSubscribersInput.toLocaleLowerCase();
+    const list = subscribers.slice();
+
+    setFilteredSubscribers(
+      list.filter((val) => {
+        const fullname = `${val.firstName} ${val.lastName}`.toLocaleLowerCase();
+        return fullname.indexOf(input) > -1;
+      })
+    );
+  }, [searchSubscribersInput, subscribers]);
 
   function toggleNewSubscriber() {
     setNewSubVisible((prev) => !prev);
@@ -252,7 +291,7 @@ export default function Subscribers() {
       </Box>
 
       {/* Subscribers */}
-      <Box bg="darksalmon" p={4} mb={14}>
+      <Box bg="" p={4} mb={14}>
         <Flex>
           <Heading size="md">Subscribers</Heading>
           <Spacer />
@@ -271,14 +310,28 @@ export default function Subscribers() {
         )}
         {/* Filters */}
         <Divider mt={2} mb={2} />
-        <Input placeholder="Type to search subscribers" maxW="sm" />
+        <Input
+          placeholder="Type to search or add a new subscriber"
+          maxW="sm"
+          value={searchSubscribersInput}
+          onChange={(v) => setSearchSubscribersInput(v.target.value)}
+        />
         <Button size="sm" onClick={toggleNewSubscriber}>
           Add new subscriber
         </Button>
         {/* List */}
-        <SimpleGrid columns={3} spacing={2} maxH={400} overflow="scroll" py={6}>
-          {subscribers &&
-            subscribers.map((sub) => (
+        <SimpleGrid
+          columns={3}
+          spacing={2}
+          maxH={400}
+          overflow="scroll"
+          my={6}
+          p={2}
+          borderLeft="1px solid"
+          borderColor="gray.500"
+        >
+          {filteredSubscribers &&
+            filteredSubscribers.map((sub) => (
               <Stack
                 direction="row"
                 key={sub.id}
@@ -292,9 +345,6 @@ export default function Subscribers() {
                     </Text>
                   </Link>
                 </NextLink>
-                <Button colorScheme="red" size="xs" variant="ghost">
-                  <MinusIcon />
-                </Button>
               </Stack>
             ))}
         </SimpleGrid>
