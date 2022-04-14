@@ -74,6 +74,7 @@ export default function NewGroupModal({ isOpen, onSuccess, onClose }: Props) {
                 type="text"
                 size="lg"
                 value={groupName}
+                isRequired
                 onChange={(e) => setGroupName(e.target.value)}
               />
             </FormControl>

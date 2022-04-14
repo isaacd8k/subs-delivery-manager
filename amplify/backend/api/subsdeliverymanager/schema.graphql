@@ -66,6 +66,7 @@ type Subscriber
   pubSubscriptions: [PubSubscription]
     @hasMany(indexName: "bySubscriber", fields: ["id"])
   orders: [Order] @hasMany(indexName: "bySubscriber", fields: ["id"])
+  group: SubscriberGroup @belongsTo(fields: ["subscriberGroupID"])
 }
 
 type PubSubscription

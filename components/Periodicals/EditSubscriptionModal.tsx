@@ -73,7 +73,8 @@ export default function EditSubscriptionModal({
         query: updatePubSubscription,
         variables: {
           input: {
-            id: pubSubscription.id,
+            periodicalID: pubSubscription.periodicalID,
+            subscriberID: pubSubscription.subscriberID,
             status: "CANCELED",
           },
         },
@@ -102,24 +103,22 @@ export default function EditSubscriptionModal({
     // initial/original state
     let qtyAdjustments = {
       qty: pubSubscription.qty,
-      pendingQtyChanges: pubSubscription.pendingQtyChanges,
+      pendingQtyChange: pubSubscription.pendingQtyChange,
     };
 
     // cancel pending changes
     if (isPendingChangeToBeCanceled) {
-      qtyAdjustments.pendingQtyChanges = null;
+      qtyAdjustments.pendingQtyChange = null;
     }
 
     // make any immediate adjustments
     if (isAdjustedQtyImmediate) {
       qtyAdjustments.qty = intQty;
     } else {
-      qtyAdjustments.pendingQtyChanges = [
-        {
-          qty: intQty,
-          effectiveDate: adjustedEffectiveDate,
-        },
-      ] as PendingQtyChange[];
+      qtyAdjustments.pendingQtyChange = {
+        qty: intQty,
+        effectiveDate: adjustedEffectiveDate,
+      } as PendingQtyChange;
     }
 
     // create request
@@ -128,7 +127,8 @@ export default function EditSubscriptionModal({
         query: updatePubSubscription,
         variables: {
           input: {
-            id: pubSubscription.id,
+            subscriberID: pubSubscription.subscriberID,
+            periodicalID: pubSubscription.periodicalID,
             status: adjustedStatus,
             ...qtyAdjustments,
           },
@@ -161,10 +161,7 @@ export default function EditSubscriptionModal({
           <Text>Subscriber: {pubSubscription.subscriberID}</Text>
           <Text>Quantity: {pubSubscription.qty}</Text>
           {/* Pending change? */}
-          {pubSubscription.pendingQtyChanges &&
-            pubSubscription.pendingQtyChanges.length > 0 && (
-              <Box>Pending change</Box>
-            )}
+          {pubSubscription.pendingQtyChange && <Box>Pending change</Box>}
           <Divider mt={4} mb={4} />
 
           <Heading fontSize="xs" mb={2} textTransform="uppercase">

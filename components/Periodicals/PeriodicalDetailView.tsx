@@ -267,10 +267,11 @@ export default function PeriodicalDetailView({ periodicalID }: Props) {
                       border="1px solid"
                       borderColor="blue.600"
                       p={6}
-                      key={pubSub.id}
+                      key={pubSub.subscriberID + pubSub.periodicalID}
                     >
                       <Heading size="sm" isTruncated>
-                        {pubSub.subscriberID}
+                        {pubSub.subscriber.firstName}{" "}
+                        {pubSub.subscriber.lastName}
                       </Heading>
 
                       <Text fontSize="xs">Quantity: {pubSub.qty}</Text>
@@ -340,7 +341,7 @@ export default function PeriodicalDetailView({ periodicalID }: Props) {
 
       {selectedPubSub && (
         <EditSubscriptionModal
-          key={selectedPubSub.id}
+          key={selectedPubSub.subscriberID + selectedPubSub.periodicalID}
           isOpen={isEditPubSubscriptionModalOpen}
           onClose={onEditPubSubscriptionModalClose}
           onSuccess={() => {

@@ -230,7 +230,12 @@ export default function SubscriberViewForm({ subscriberID }: Props) {
         <Box mb={2}>
           <Heading size="sm">Active subscriptions</Heading>
           {subscriber.pubSubscriptions?.items.map(
-            (i) => i && <Box key={i?.id}>Sub</Box>
+            (sub) =>
+              sub && (
+                <Box key={sub.subscriberID + sub.periodicalID}>
+                  {sub.periodical.name}
+                </Box>
+              )
           )}
         </Box>
 

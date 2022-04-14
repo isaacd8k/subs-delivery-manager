@@ -19,6 +19,12 @@ export const getSubscriberGroup = /* GraphQL */ `
           orders {
             nextToken
           }
+          group {
+            id
+            name
+            createdAt
+            updatedAt
+          }
           createdAt
           updatedAt
         }
@@ -116,6 +122,23 @@ export const getSubscriber = /* GraphQL */ `
         }
         nextToken
       }
+      group {
+        id
+        name
+        members {
+          items {
+            id
+            firstName
+            lastName
+            subscriberGroupID
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
     }
@@ -161,6 +184,15 @@ export const listSubscribers = /* GraphQL */ `
             updatedAt
           }
           nextToken
+        }
+        group {
+          id
+          name
+          members {
+            nextToken
+          }
+          createdAt
+          updatedAt
         }
         createdAt
         updatedAt
@@ -217,6 +249,15 @@ export const subscribersByGroup = /* GraphQL */ `
             updatedAt
           }
           nextToken
+        }
+        group {
+          id
+          name
+          members {
+            nextToken
+          }
+          createdAt
+          updatedAt
         }
         createdAt
         updatedAt
@@ -306,6 +347,15 @@ export const getPubSubscription = /* GraphQL */ `
           }
           nextToken
         }
+        group {
+          id
+          name
+          members {
+            nextToken
+          }
+          createdAt
+          updatedAt
+        }
         createdAt
         updatedAt
       }
@@ -364,6 +414,12 @@ export const listPubSubscriptions = /* GraphQL */ `
           }
           orders {
             nextToken
+          }
+          group {
+            id
+            name
+            createdAt
+            updatedAt
           }
           createdAt
           updatedAt
@@ -424,6 +480,12 @@ export const pubSubscriptionsByPeriodical = /* GraphQL */ `
           orders {
             nextToken
           }
+          group {
+            id
+            name
+            createdAt
+            updatedAt
+          }
           createdAt
           updatedAt
         }
@@ -482,6 +544,12 @@ export const pubSubscriptionsBySubscriber = /* GraphQL */ `
           }
           orders {
             nextToken
+          }
+          group {
+            id
+            name
+            createdAt
+            updatedAt
           }
           createdAt
           updatedAt

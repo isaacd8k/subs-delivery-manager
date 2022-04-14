@@ -19,6 +19,12 @@ export const onCreateSubscriberGroup = /* GraphQL */ `
           orders {
             nextToken
           }
+          group {
+            id
+            name
+            createdAt
+            updatedAt
+          }
           createdAt
           updatedAt
         }
@@ -46,6 +52,12 @@ export const onUpdateSubscriberGroup = /* GraphQL */ `
           orders {
             nextToken
           }
+          group {
+            id
+            name
+            createdAt
+            updatedAt
+          }
           createdAt
           updatedAt
         }
@@ -72,6 +84,12 @@ export const onDeleteSubscriberGroup = /* GraphQL */ `
           }
           orders {
             nextToken
+          }
+          group {
+            id
+            name
+            createdAt
+            updatedAt
           }
           createdAt
           updatedAt
@@ -138,6 +156,23 @@ export const onCreateSubscriber = /* GraphQL */ `
         }
         nextToken
       }
+      group {
+        id
+        name
+        members {
+          items {
+            id
+            firstName
+            lastName
+            subscriberGroupID
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
     }
@@ -198,6 +233,23 @@ export const onUpdateSubscriber = /* GraphQL */ `
         }
         nextToken
       }
+      group {
+        id
+        name
+        members {
+          items {
+            id
+            firstName
+            lastName
+            subscriberGroupID
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
     }
@@ -257,6 +309,23 @@ export const onDeleteSubscriber = /* GraphQL */ `
           updatedAt
         }
         nextToken
+      }
+      group {
+        id
+        name
+        members {
+          items {
+            id
+            firstName
+            lastName
+            subscriberGroupID
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        createdAt
+        updatedAt
       }
       createdAt
       updatedAt
@@ -340,6 +409,15 @@ export const onCreatePubSubscription = /* GraphQL */ `
             updatedAt
           }
           nextToken
+        }
+        group {
+          id
+          name
+          members {
+            nextToken
+          }
+          createdAt
+          updatedAt
         }
         createdAt
         updatedAt
@@ -427,6 +505,15 @@ export const onUpdatePubSubscription = /* GraphQL */ `
           }
           nextToken
         }
+        group {
+          id
+          name
+          members {
+            nextToken
+          }
+          createdAt
+          updatedAt
+        }
         createdAt
         updatedAt
       }
@@ -512,6 +599,15 @@ export const onDeletePubSubscription = /* GraphQL */ `
             updatedAt
           }
           nextToken
+        }
+        group {
+          id
+          name
+          members {
+            nextToken
+          }
+          createdAt
+          updatedAt
         }
         createdAt
         updatedAt
