@@ -9,15 +9,15 @@
             "authenticationType": "API_KEY",
             "apiKeyConfig": {
               "apiKeyExpirationDays": 365,
-              "apiKeyExpirationDate": "2023-03-20T16:27:43.476Z",
-              "description": "SubsDeliveryManager"
+              "apiKeyExpirationDate": "2023-04-14T16:55:56.647Z",
+              "description": "public"
             }
           },
           "additionalAuthenticationProviders": [
             {
               "authenticationType": "AMAZON_COGNITO_USER_POOLS",
               "userPoolConfig": {
-                "userPoolId": "authsubsdeliverymanager9e284eb1"
+                "userPoolId": "authsubsdeliverymanager5d76a645"
               }
             }
           ]
@@ -26,14 +26,16 @@
     }
   },
   "auth": {
-    "subsdeliverymanager9e284eb1": {
+    "subsdeliverymanager5d76a645": {
       "service": "Cognito",
       "providerPlugin": "awscloudformation",
       "dependsOn": [],
       "customAuth": false,
       "frontendAuthConfig": {
         "socialProviders": [],
-        "usernameAttributes": [],
+        "usernameAttributes": [
+          "EMAIL"
+        ],
         "signupAttributes": [
           "EMAIL"
         ],

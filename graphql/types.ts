@@ -4,7 +4,7 @@
 
 export type CreateSubscriberGroupInput = {
   id?: string | null,
-  name?: string | null,
+  name: string,
 };
 
 export type ModelSubscriberGroupConditionInput = {
@@ -57,7 +57,7 @@ export type ModelSizeInput = {
 export type SubscriberGroup = {
   __typename: "SubscriberGroup",
   id: string,
-  name?: string | null,
+  name: string,
   members?: ModelSubscriberConnection | null,
   createdAt: string,
   updatedAt: string,
@@ -89,13 +89,14 @@ export type ModelPubSubscriptionConnection = {
 
 export type PubSubscription = {
   __typename: "PubSubscription",
-  id: string,
   qty: number,
   startDate?: string | null,
   status: PubSubscriptionStatus,
-  pendingQtyChanges?:  Array<PendingQtyChange | null > | null,
+  pendingQtyChange?: PendingQtyChange | null,
   periodicalID: string,
   subscriberID: string,
+  periodical: Periodical,
+  subscriber: Subscriber,
   createdAt: string,
   updatedAt: string,
 };
@@ -111,6 +112,50 @@ export type PendingQtyChange = {
   qty: number,
   effectiveDate: string,
 };
+
+export type Periodical = {
+  __typename: "Periodical",
+  id: string,
+  name: string,
+  recurrence: PeriodicalRecurrence,
+  issues?: ModelPeriodicalIssueConnection | null,
+  pubSubscriptions?: ModelPubSubscriptionConnection | null,
+  createdAt: string,
+  updatedAt: string,
+};
+
+export enum PeriodicalRecurrence {
+  MONTHLY = "MONTHLY",
+  BIMONTHLY = "BIMONTHLY",
+  QUARTERLY = "QUARTERLY",
+}
+
+
+export type ModelPeriodicalIssueConnection = {
+  __typename: "ModelPeriodicalIssueConnection",
+  items:  Array<PeriodicalIssue | null >,
+  nextToken?: string | null,
+};
+
+export type PeriodicalIssue = {
+  __typename: "PeriodicalIssue",
+  id: string,
+  issueDate: string,
+  status: IssueStatus,
+  periodicalID: string,
+  orders?: ModelOrderConnection | null,
+  notes?: string | null,
+  isBatchClosed: boolean,
+  createdAt: string,
+  updatedAt: string,
+};
+
+export enum IssueStatus {
+  UPCOMING = "UPCOMING",
+  RECEIVED = "RECEIVED",
+  SKIPPED = "SKIPPED",
+}
+
 
 export type ModelOrderConnection = {
   __typename: "ModelOrderConnection",
@@ -195,11 +240,10 @@ export type DeleteSubscriberInput = {
 };
 
 export type CreatePubSubscriptionInput = {
-  id?: string | null,
   qty: number,
   startDate?: string | null,
   status: PubSubscriptionStatus,
-  pendingQtyChanges?: Array< PendingQtyChangeInput | null > | null,
+  pendingQtyChange?: PendingQtyChangeInput | null,
   periodicalID: string,
   subscriberID: string,
 };
@@ -213,8 +257,6 @@ export type ModelPubSubscriptionConditionInput = {
   qty?: ModelIntInput | null,
   startDate?: ModelStringInput | null,
   status?: ModelPubSubscriptionStatusInput | null,
-  periodicalID?: ModelIDInput | null,
-  subscriberID?: ModelIDInput | null,
   and?: Array< ModelPubSubscriptionConditionInput | null > | null,
   or?: Array< ModelPubSubscriptionConditionInput | null > | null,
   not?: ModelPubSubscriptionConditionInput | null,
@@ -238,17 +280,17 @@ export type ModelPubSubscriptionStatusInput = {
 };
 
 export type UpdatePubSubscriptionInput = {
-  id: string,
   qty?: number | null,
   startDate?: string | null,
   status?: PubSubscriptionStatus | null,
-  pendingQtyChanges?: Array< PendingQtyChangeInput | null > | null,
-  periodicalID?: string | null,
-  subscriberID?: string | null,
+  pendingQtyChange?: PendingQtyChangeInput | null,
+  periodicalID: string,
+  subscriberID: string,
 };
 
 export type DeletePubSubscriptionInput = {
-  id: string,
+  periodicalID: string,
+  subscriberID: string,
 };
 
 export type CreatePeriodicalInput = {
@@ -256,13 +298,6 @@ export type CreatePeriodicalInput = {
   name: string,
   recurrence: PeriodicalRecurrence,
 };
-
-export enum PeriodicalRecurrence {
-  MONTHLY = "MONTHLY",
-  BIMONTHLY = "BIMONTHLY",
-  QUARTERLY = "QUARTERLY",
-}
-
 
 export type ModelPeriodicalConditionInput = {
   name?: ModelStringInput | null,
@@ -276,42 +311,6 @@ export type ModelPeriodicalRecurrenceInput = {
   eq?: PeriodicalRecurrence | null,
   ne?: PeriodicalRecurrence | null,
 };
-
-export type Periodical = {
-  __typename: "Periodical",
-  id: string,
-  name: string,
-  recurrence: PeriodicalRecurrence,
-  issues?: ModelPeriodicalIssueConnection | null,
-  pubSubscriptions?: ModelPubSubscriptionConnection | null,
-  createdAt: string,
-  updatedAt: string,
-};
-
-export type ModelPeriodicalIssueConnection = {
-  __typename: "ModelPeriodicalIssueConnection",
-  items:  Array<PeriodicalIssue | null >,
-  nextToken?: string | null,
-};
-
-export type PeriodicalIssue = {
-  __typename: "PeriodicalIssue",
-  id: string,
-  issueDate: string,
-  status: IssueStatus,
-  periodicalID: string,
-  orders?: ModelOrderConnection | null,
-  notes?: string | null,
-  createdAt: string,
-  updatedAt: string,
-};
-
-export enum IssueStatus {
-  UPCOMING = "UPCOMING",
-  RECEIVED = "RECEIVED",
-  CANCELED = "CANCELED",
-}
-
 
 export type UpdatePeriodicalInput = {
   id: string,
@@ -329,6 +328,7 @@ export type CreatePeriodicalIssueInput = {
   status: IssueStatus,
   periodicalID: string,
   notes?: string | null,
+  isBatchClosed: boolean,
 };
 
 export type ModelPeriodicalIssueConditionInput = {
@@ -336,6 +336,7 @@ export type ModelPeriodicalIssueConditionInput = {
   status?: ModelIssueStatusInput | null,
   periodicalID?: ModelIDInput | null,
   notes?: ModelStringInput | null,
+  isBatchClosed?: ModelBooleanInput | null,
   and?: Array< ModelPeriodicalIssueConditionInput | null > | null,
   or?: Array< ModelPeriodicalIssueConditionInput | null > | null,
   not?: ModelPeriodicalIssueConditionInput | null,
@@ -346,12 +347,20 @@ export type ModelIssueStatusInput = {
   ne?: IssueStatus | null,
 };
 
+export type ModelBooleanInput = {
+  ne?: boolean | null,
+  eq?: boolean | null,
+  attributeExists?: boolean | null,
+  attributeType?: ModelAttributeTypes | null,
+};
+
 export type UpdatePeriodicalIssueInput = {
   id: string,
   issueDate?: string | null,
   status?: IssueStatus | null,
   periodicalID?: string | null,
   notes?: string | null,
+  isBatchClosed?: boolean | null,
 };
 
 export type DeletePeriodicalIssueInput = {
@@ -384,13 +393,6 @@ export type ModelOrderConditionInput = {
   and?: Array< ModelOrderConditionInput | null > | null,
   or?: Array< ModelOrderConditionInput | null > | null,
   not?: ModelOrderConditionInput | null,
-};
-
-export type ModelBooleanInput = {
-  ne?: boolean | null,
-  eq?: boolean | null,
-  attributeExists?: boolean | null,
-  attributeType?: ModelAttributeTypes | null,
 };
 
 export type ModelOrderStatusInput = {
@@ -479,8 +481,17 @@ export enum ModelSortDirection {
 }
 
 
+export type ModelIDKeyConditionInput = {
+  eq?: string | null,
+  le?: string | null,
+  lt?: string | null,
+  ge?: string | null,
+  gt?: string | null,
+  between?: Array< string | null > | null,
+  beginsWith?: string | null,
+};
+
 export type ModelPubSubscriptionFilterInput = {
-  id?: ModelIDInput | null,
   qty?: ModelIntInput | null,
   startDate?: ModelStringInput | null,
   status?: ModelPubSubscriptionStatusInput | null,
@@ -512,6 +523,7 @@ export type ModelPeriodicalIssueFilterInput = {
   status?: ModelIssueStatusInput | null,
   periodicalID?: ModelIDInput | null,
   notes?: ModelStringInput | null,
+  isBatchClosed?: ModelBooleanInput | null,
   and?: Array< ModelPeriodicalIssueFilterInput | null > | null,
   or?: Array< ModelPeriodicalIssueFilterInput | null > | null,
   not?: ModelPeriodicalIssueFilterInput | null,
@@ -567,7 +579,7 @@ export type CreateSubscriberGroupMutation = {
   createSubscriberGroup?:  {
     __typename: "SubscriberGroup",
     id: string,
-    name?: string | null,
+    name: string,
     members?:  {
       __typename: "ModelSubscriberConnection",
       items:  Array< {
@@ -603,7 +615,7 @@ export type UpdateSubscriberGroupMutation = {
   updateSubscriberGroup?:  {
     __typename: "SubscriberGroup",
     id: string,
-    name?: string | null,
+    name: string,
     members?:  {
       __typename: "ModelSubscriberConnection",
       items:  Array< {
@@ -639,7 +651,7 @@ export type DeleteSubscriberGroupMutation = {
   deleteSubscriberGroup?:  {
     __typename: "SubscriberGroup",
     id: string,
-    name?: string | null,
+    name: string,
     members?:  {
       __typename: "ModelSubscriberConnection",
       items:  Array< {
@@ -682,17 +694,33 @@ export type CreateSubscriberMutation = {
       __typename: "ModelPubSubscriptionConnection",
       items:  Array< {
         __typename: "PubSubscription",
-        id: string,
         qty: number,
         startDate?: string | null,
         status: PubSubscriptionStatus,
-        pendingQtyChanges?:  Array< {
+        pendingQtyChange?:  {
           __typename: "PendingQtyChange",
           qty: number,
           effectiveDate: string,
-        } | null > | null,
+        } | null,
         periodicalID: string,
         subscriberID: string,
+        periodical:  {
+          __typename: "Periodical",
+          id: string,
+          name: string,
+          recurrence: PeriodicalRecurrence,
+          createdAt: string,
+          updatedAt: string,
+        },
+        subscriber:  {
+          __typename: "Subscriber",
+          id: string,
+          firstName: string,
+          lastName: string,
+          subscriberGroupID?: string | null,
+          createdAt: string,
+          updatedAt: string,
+        },
         createdAt: string,
         updatedAt: string,
       } | null >,
@@ -738,17 +766,33 @@ export type UpdateSubscriberMutation = {
       __typename: "ModelPubSubscriptionConnection",
       items:  Array< {
         __typename: "PubSubscription",
-        id: string,
         qty: number,
         startDate?: string | null,
         status: PubSubscriptionStatus,
-        pendingQtyChanges?:  Array< {
+        pendingQtyChange?:  {
           __typename: "PendingQtyChange",
           qty: number,
           effectiveDate: string,
-        } | null > | null,
+        } | null,
         periodicalID: string,
         subscriberID: string,
+        periodical:  {
+          __typename: "Periodical",
+          id: string,
+          name: string,
+          recurrence: PeriodicalRecurrence,
+          createdAt: string,
+          updatedAt: string,
+        },
+        subscriber:  {
+          __typename: "Subscriber",
+          id: string,
+          firstName: string,
+          lastName: string,
+          subscriberGroupID?: string | null,
+          createdAt: string,
+          updatedAt: string,
+        },
         createdAt: string,
         updatedAt: string,
       } | null >,
@@ -794,17 +838,33 @@ export type DeleteSubscriberMutation = {
       __typename: "ModelPubSubscriptionConnection",
       items:  Array< {
         __typename: "PubSubscription",
-        id: string,
         qty: number,
         startDate?: string | null,
         status: PubSubscriptionStatus,
-        pendingQtyChanges?:  Array< {
+        pendingQtyChange?:  {
           __typename: "PendingQtyChange",
           qty: number,
           effectiveDate: string,
-        } | null > | null,
+        } | null,
         periodicalID: string,
         subscriberID: string,
+        periodical:  {
+          __typename: "Periodical",
+          id: string,
+          name: string,
+          recurrence: PeriodicalRecurrence,
+          createdAt: string,
+          updatedAt: string,
+        },
+        subscriber:  {
+          __typename: "Subscriber",
+          id: string,
+          firstName: string,
+          lastName: string,
+          subscriberGroupID?: string | null,
+          createdAt: string,
+          updatedAt: string,
+        },
         createdAt: string,
         updatedAt: string,
       } | null >,
@@ -842,17 +902,95 @@ export type CreatePubSubscriptionMutationVariables = {
 export type CreatePubSubscriptionMutation = {
   createPubSubscription?:  {
     __typename: "PubSubscription",
-    id: string,
     qty: number,
     startDate?: string | null,
     status: PubSubscriptionStatus,
-    pendingQtyChanges?:  Array< {
+    pendingQtyChange?:  {
       __typename: "PendingQtyChange",
       qty: number,
       effectiveDate: string,
-    } | null > | null,
+    } | null,
     periodicalID: string,
     subscriberID: string,
+    periodical:  {
+      __typename: "Periodical",
+      id: string,
+      name: string,
+      recurrence: PeriodicalRecurrence,
+      issues?:  {
+        __typename: "ModelPeriodicalIssueConnection",
+        items:  Array< {
+          __typename: "PeriodicalIssue",
+          id: string,
+          issueDate: string,
+          status: IssueStatus,
+          periodicalID: string,
+          notes?: string | null,
+          isBatchClosed: boolean,
+          createdAt: string,
+          updatedAt: string,
+        } | null >,
+        nextToken?: string | null,
+      } | null,
+      pubSubscriptions?:  {
+        __typename: "ModelPubSubscriptionConnection",
+        items:  Array< {
+          __typename: "PubSubscription",
+          qty: number,
+          startDate?: string | null,
+          status: PubSubscriptionStatus,
+          periodicalID: string,
+          subscriberID: string,
+          createdAt: string,
+          updatedAt: string,
+        } | null >,
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    subscriber:  {
+      __typename: "Subscriber",
+      id: string,
+      firstName: string,
+      lastName: string,
+      subscriberGroupID?: string | null,
+      pubSubscriptions?:  {
+        __typename: "ModelPubSubscriptionConnection",
+        items:  Array< {
+          __typename: "PubSubscription",
+          qty: number,
+          startDate?: string | null,
+          status: PubSubscriptionStatus,
+          periodicalID: string,
+          subscriberID: string,
+          createdAt: string,
+          updatedAt: string,
+        } | null >,
+        nextToken?: string | null,
+      } | null,
+      orders?:  {
+        __typename: "ModelOrderConnection",
+        items:  Array< {
+          __typename: "Order",
+          id: string,
+          placedDate: string,
+          isAutomaticOrder: boolean,
+          isPubSubscriptionOrder: boolean,
+          itemQty: number,
+          status: OrderStatus,
+          cancellationReason?: string | null,
+          itemID?: string | null,
+          subscriberID: string,
+          periodicalIssueID?: string | null,
+          createdAt: string,
+          updatedAt: string,
+        } | null >,
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
     createdAt: string,
     updatedAt: string,
   } | null,
@@ -866,17 +1004,95 @@ export type UpdatePubSubscriptionMutationVariables = {
 export type UpdatePubSubscriptionMutation = {
   updatePubSubscription?:  {
     __typename: "PubSubscription",
-    id: string,
     qty: number,
     startDate?: string | null,
     status: PubSubscriptionStatus,
-    pendingQtyChanges?:  Array< {
+    pendingQtyChange?:  {
       __typename: "PendingQtyChange",
       qty: number,
       effectiveDate: string,
-    } | null > | null,
+    } | null,
     periodicalID: string,
     subscriberID: string,
+    periodical:  {
+      __typename: "Periodical",
+      id: string,
+      name: string,
+      recurrence: PeriodicalRecurrence,
+      issues?:  {
+        __typename: "ModelPeriodicalIssueConnection",
+        items:  Array< {
+          __typename: "PeriodicalIssue",
+          id: string,
+          issueDate: string,
+          status: IssueStatus,
+          periodicalID: string,
+          notes?: string | null,
+          isBatchClosed: boolean,
+          createdAt: string,
+          updatedAt: string,
+        } | null >,
+        nextToken?: string | null,
+      } | null,
+      pubSubscriptions?:  {
+        __typename: "ModelPubSubscriptionConnection",
+        items:  Array< {
+          __typename: "PubSubscription",
+          qty: number,
+          startDate?: string | null,
+          status: PubSubscriptionStatus,
+          periodicalID: string,
+          subscriberID: string,
+          createdAt: string,
+          updatedAt: string,
+        } | null >,
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    subscriber:  {
+      __typename: "Subscriber",
+      id: string,
+      firstName: string,
+      lastName: string,
+      subscriberGroupID?: string | null,
+      pubSubscriptions?:  {
+        __typename: "ModelPubSubscriptionConnection",
+        items:  Array< {
+          __typename: "PubSubscription",
+          qty: number,
+          startDate?: string | null,
+          status: PubSubscriptionStatus,
+          periodicalID: string,
+          subscriberID: string,
+          createdAt: string,
+          updatedAt: string,
+        } | null >,
+        nextToken?: string | null,
+      } | null,
+      orders?:  {
+        __typename: "ModelOrderConnection",
+        items:  Array< {
+          __typename: "Order",
+          id: string,
+          placedDate: string,
+          isAutomaticOrder: boolean,
+          isPubSubscriptionOrder: boolean,
+          itemQty: number,
+          status: OrderStatus,
+          cancellationReason?: string | null,
+          itemID?: string | null,
+          subscriberID: string,
+          periodicalIssueID?: string | null,
+          createdAt: string,
+          updatedAt: string,
+        } | null >,
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
     createdAt: string,
     updatedAt: string,
   } | null,
@@ -890,17 +1106,95 @@ export type DeletePubSubscriptionMutationVariables = {
 export type DeletePubSubscriptionMutation = {
   deletePubSubscription?:  {
     __typename: "PubSubscription",
-    id: string,
     qty: number,
     startDate?: string | null,
     status: PubSubscriptionStatus,
-    pendingQtyChanges?:  Array< {
+    pendingQtyChange?:  {
       __typename: "PendingQtyChange",
       qty: number,
       effectiveDate: string,
-    } | null > | null,
+    } | null,
     periodicalID: string,
     subscriberID: string,
+    periodical:  {
+      __typename: "Periodical",
+      id: string,
+      name: string,
+      recurrence: PeriodicalRecurrence,
+      issues?:  {
+        __typename: "ModelPeriodicalIssueConnection",
+        items:  Array< {
+          __typename: "PeriodicalIssue",
+          id: string,
+          issueDate: string,
+          status: IssueStatus,
+          periodicalID: string,
+          notes?: string | null,
+          isBatchClosed: boolean,
+          createdAt: string,
+          updatedAt: string,
+        } | null >,
+        nextToken?: string | null,
+      } | null,
+      pubSubscriptions?:  {
+        __typename: "ModelPubSubscriptionConnection",
+        items:  Array< {
+          __typename: "PubSubscription",
+          qty: number,
+          startDate?: string | null,
+          status: PubSubscriptionStatus,
+          periodicalID: string,
+          subscriberID: string,
+          createdAt: string,
+          updatedAt: string,
+        } | null >,
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    subscriber:  {
+      __typename: "Subscriber",
+      id: string,
+      firstName: string,
+      lastName: string,
+      subscriberGroupID?: string | null,
+      pubSubscriptions?:  {
+        __typename: "ModelPubSubscriptionConnection",
+        items:  Array< {
+          __typename: "PubSubscription",
+          qty: number,
+          startDate?: string | null,
+          status: PubSubscriptionStatus,
+          periodicalID: string,
+          subscriberID: string,
+          createdAt: string,
+          updatedAt: string,
+        } | null >,
+        nextToken?: string | null,
+      } | null,
+      orders?:  {
+        __typename: "ModelOrderConnection",
+        items:  Array< {
+          __typename: "Order",
+          id: string,
+          placedDate: string,
+          isAutomaticOrder: boolean,
+          isPubSubscriptionOrder: boolean,
+          itemQty: number,
+          status: OrderStatus,
+          cancellationReason?: string | null,
+          itemID?: string | null,
+          subscriberID: string,
+          periodicalIssueID?: string | null,
+          createdAt: string,
+          updatedAt: string,
+        } | null >,
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
     createdAt: string,
     updatedAt: string,
   } | null,
@@ -930,6 +1224,7 @@ export type CreatePeriodicalMutation = {
           nextToken?: string | null,
         } | null,
         notes?: string | null,
+        isBatchClosed: boolean,
         createdAt: string,
         updatedAt: string,
       } | null >,
@@ -939,17 +1234,33 @@ export type CreatePeriodicalMutation = {
       __typename: "ModelPubSubscriptionConnection",
       items:  Array< {
         __typename: "PubSubscription",
-        id: string,
         qty: number,
         startDate?: string | null,
         status: PubSubscriptionStatus,
-        pendingQtyChanges?:  Array< {
+        pendingQtyChange?:  {
           __typename: "PendingQtyChange",
           qty: number,
           effectiveDate: string,
-        } | null > | null,
+        } | null,
         periodicalID: string,
         subscriberID: string,
+        periodical:  {
+          __typename: "Periodical",
+          id: string,
+          name: string,
+          recurrence: PeriodicalRecurrence,
+          createdAt: string,
+          updatedAt: string,
+        },
+        subscriber:  {
+          __typename: "Subscriber",
+          id: string,
+          firstName: string,
+          lastName: string,
+          subscriberGroupID?: string | null,
+          createdAt: string,
+          updatedAt: string,
+        },
         createdAt: string,
         updatedAt: string,
       } | null >,
@@ -984,6 +1295,7 @@ export type UpdatePeriodicalMutation = {
           nextToken?: string | null,
         } | null,
         notes?: string | null,
+        isBatchClosed: boolean,
         createdAt: string,
         updatedAt: string,
       } | null >,
@@ -993,17 +1305,33 @@ export type UpdatePeriodicalMutation = {
       __typename: "ModelPubSubscriptionConnection",
       items:  Array< {
         __typename: "PubSubscription",
-        id: string,
         qty: number,
         startDate?: string | null,
         status: PubSubscriptionStatus,
-        pendingQtyChanges?:  Array< {
+        pendingQtyChange?:  {
           __typename: "PendingQtyChange",
           qty: number,
           effectiveDate: string,
-        } | null > | null,
+        } | null,
         periodicalID: string,
         subscriberID: string,
+        periodical:  {
+          __typename: "Periodical",
+          id: string,
+          name: string,
+          recurrence: PeriodicalRecurrence,
+          createdAt: string,
+          updatedAt: string,
+        },
+        subscriber:  {
+          __typename: "Subscriber",
+          id: string,
+          firstName: string,
+          lastName: string,
+          subscriberGroupID?: string | null,
+          createdAt: string,
+          updatedAt: string,
+        },
         createdAt: string,
         updatedAt: string,
       } | null >,
@@ -1038,6 +1366,7 @@ export type DeletePeriodicalMutation = {
           nextToken?: string | null,
         } | null,
         notes?: string | null,
+        isBatchClosed: boolean,
         createdAt: string,
         updatedAt: string,
       } | null >,
@@ -1047,17 +1376,33 @@ export type DeletePeriodicalMutation = {
       __typename: "ModelPubSubscriptionConnection",
       items:  Array< {
         __typename: "PubSubscription",
-        id: string,
         qty: number,
         startDate?: string | null,
         status: PubSubscriptionStatus,
-        pendingQtyChanges?:  Array< {
+        pendingQtyChange?:  {
           __typename: "PendingQtyChange",
           qty: number,
           effectiveDate: string,
-        } | null > | null,
+        } | null,
         periodicalID: string,
         subscriberID: string,
+        periodical:  {
+          __typename: "Periodical",
+          id: string,
+          name: string,
+          recurrence: PeriodicalRecurrence,
+          createdAt: string,
+          updatedAt: string,
+        },
+        subscriber:  {
+          __typename: "Subscriber",
+          id: string,
+          firstName: string,
+          lastName: string,
+          subscriberGroupID?: string | null,
+          createdAt: string,
+          updatedAt: string,
+        },
         createdAt: string,
         updatedAt: string,
       } | null >,
@@ -1100,6 +1445,7 @@ export type CreatePeriodicalIssueMutation = {
       nextToken?: string | null,
     } | null,
     notes?: string | null,
+    isBatchClosed: boolean,
     createdAt: string,
     updatedAt: string,
   } | null,
@@ -1137,6 +1483,7 @@ export type UpdatePeriodicalIssueMutation = {
       nextToken?: string | null,
     } | null,
     notes?: string | null,
+    isBatchClosed: boolean,
     createdAt: string,
     updatedAt: string,
   } | null,
@@ -1174,6 +1521,7 @@ export type DeletePeriodicalIssueMutation = {
       nextToken?: string | null,
     } | null,
     notes?: string | null,
+    isBatchClosed: boolean,
     createdAt: string,
     updatedAt: string,
   } | null,
@@ -1361,7 +1709,7 @@ export type GetSubscriberGroupQuery = {
   getSubscriberGroup?:  {
     __typename: "SubscriberGroup",
     id: string,
-    name?: string | null,
+    name: string,
     members?:  {
       __typename: "ModelSubscriberConnection",
       items:  Array< {
@@ -1400,7 +1748,7 @@ export type ListSubscriberGroupsQuery = {
     items:  Array< {
       __typename: "SubscriberGroup",
       id: string,
-      name?: string | null,
+      name: string,
       members?:  {
         __typename: "ModelSubscriberConnection",
         items:  Array< {
@@ -1436,17 +1784,33 @@ export type GetSubscriberQuery = {
       __typename: "ModelPubSubscriptionConnection",
       items:  Array< {
         __typename: "PubSubscription",
-        id: string,
         qty: number,
         startDate?: string | null,
         status: PubSubscriptionStatus,
-        pendingQtyChanges?:  Array< {
+        pendingQtyChange?:  {
           __typename: "PendingQtyChange",
           qty: number,
           effectiveDate: string,
-        } | null > | null,
+        } | null,
         periodicalID: string,
         subscriberID: string,
+        periodical:  {
+          __typename: "Periodical",
+          id: string,
+          name: string,
+          recurrence: PeriodicalRecurrence,
+          createdAt: string,
+          updatedAt: string,
+        },
+        subscriber:  {
+          __typename: "Subscriber",
+          id: string,
+          firstName: string,
+          lastName: string,
+          subscriberGroupID?: string | null,
+          createdAt: string,
+          updatedAt: string,
+        },
         createdAt: string,
         updatedAt: string,
       } | null >,
@@ -1495,7 +1859,6 @@ export type ListSubscribersQuery = {
         __typename: "ModelPubSubscriptionConnection",
         items:  Array< {
           __typename: "PubSubscription",
-          id: string,
           qty: number,
           startDate?: string | null,
           status: PubSubscriptionStatus,
@@ -1553,7 +1916,6 @@ export type SubscribersByGroupQuery = {
         __typename: "ModelPubSubscriptionConnection",
         items:  Array< {
           __typename: "PubSubscription",
-          id: string,
           qty: number,
           startDate?: string | null,
           status: PubSubscriptionStatus,
@@ -1591,32 +1953,114 @@ export type SubscribersByGroupQuery = {
 };
 
 export type GetPubSubscriptionQueryVariables = {
-  id: string,
+  periodicalID: string,
+  subscriberID: string,
 };
 
 export type GetPubSubscriptionQuery = {
   getPubSubscription?:  {
     __typename: "PubSubscription",
-    id: string,
     qty: number,
     startDate?: string | null,
     status: PubSubscriptionStatus,
-    pendingQtyChanges?:  Array< {
+    pendingQtyChange?:  {
       __typename: "PendingQtyChange",
       qty: number,
       effectiveDate: string,
-    } | null > | null,
+    } | null,
     periodicalID: string,
     subscriberID: string,
+    periodical:  {
+      __typename: "Periodical",
+      id: string,
+      name: string,
+      recurrence: PeriodicalRecurrence,
+      issues?:  {
+        __typename: "ModelPeriodicalIssueConnection",
+        items:  Array< {
+          __typename: "PeriodicalIssue",
+          id: string,
+          issueDate: string,
+          status: IssueStatus,
+          periodicalID: string,
+          notes?: string | null,
+          isBatchClosed: boolean,
+          createdAt: string,
+          updatedAt: string,
+        } | null >,
+        nextToken?: string | null,
+      } | null,
+      pubSubscriptions?:  {
+        __typename: "ModelPubSubscriptionConnection",
+        items:  Array< {
+          __typename: "PubSubscription",
+          qty: number,
+          startDate?: string | null,
+          status: PubSubscriptionStatus,
+          periodicalID: string,
+          subscriberID: string,
+          createdAt: string,
+          updatedAt: string,
+        } | null >,
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    subscriber:  {
+      __typename: "Subscriber",
+      id: string,
+      firstName: string,
+      lastName: string,
+      subscriberGroupID?: string | null,
+      pubSubscriptions?:  {
+        __typename: "ModelPubSubscriptionConnection",
+        items:  Array< {
+          __typename: "PubSubscription",
+          qty: number,
+          startDate?: string | null,
+          status: PubSubscriptionStatus,
+          periodicalID: string,
+          subscriberID: string,
+          createdAt: string,
+          updatedAt: string,
+        } | null >,
+        nextToken?: string | null,
+      } | null,
+      orders?:  {
+        __typename: "ModelOrderConnection",
+        items:  Array< {
+          __typename: "Order",
+          id: string,
+          placedDate: string,
+          isAutomaticOrder: boolean,
+          isPubSubscriptionOrder: boolean,
+          itemQty: number,
+          status: OrderStatus,
+          cancellationReason?: string | null,
+          itemID?: string | null,
+          subscriberID: string,
+          periodicalIssueID?: string | null,
+          createdAt: string,
+          updatedAt: string,
+        } | null >,
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
     createdAt: string,
     updatedAt: string,
   } | null,
 };
 
 export type ListPubSubscriptionsQueryVariables = {
+  periodicalID?: string | null,
+  subscriberID?: ModelIDKeyConditionInput | null,
   filter?: ModelPubSubscriptionFilterInput | null,
   limit?: number | null,
   nextToken?: string | null,
+  sortDirection?: ModelSortDirection | null,
 };
 
 export type ListPubSubscriptionsQuery = {
@@ -1624,17 +2068,49 @@ export type ListPubSubscriptionsQuery = {
     __typename: "ModelPubSubscriptionConnection",
     items:  Array< {
       __typename: "PubSubscription",
-      id: string,
       qty: number,
       startDate?: string | null,
       status: PubSubscriptionStatus,
-      pendingQtyChanges?:  Array< {
+      pendingQtyChange?:  {
         __typename: "PendingQtyChange",
         qty: number,
         effectiveDate: string,
-      } | null > | null,
+      } | null,
       periodicalID: string,
       subscriberID: string,
+      periodical:  {
+        __typename: "Periodical",
+        id: string,
+        name: string,
+        recurrence: PeriodicalRecurrence,
+        issues?:  {
+          __typename: "ModelPeriodicalIssueConnection",
+          nextToken?: string | null,
+        } | null,
+        pubSubscriptions?:  {
+          __typename: "ModelPubSubscriptionConnection",
+          nextToken?: string | null,
+        } | null,
+        createdAt: string,
+        updatedAt: string,
+      },
+      subscriber:  {
+        __typename: "Subscriber",
+        id: string,
+        firstName: string,
+        lastName: string,
+        subscriberGroupID?: string | null,
+        pubSubscriptions?:  {
+          __typename: "ModelPubSubscriptionConnection",
+          nextToken?: string | null,
+        } | null,
+        orders?:  {
+          __typename: "ModelOrderConnection",
+          nextToken?: string | null,
+        } | null,
+        createdAt: string,
+        updatedAt: string,
+      },
       createdAt: string,
       updatedAt: string,
     } | null >,
@@ -1655,17 +2131,49 @@ export type PubSubscriptionsByPeriodicalQuery = {
     __typename: "ModelPubSubscriptionConnection",
     items:  Array< {
       __typename: "PubSubscription",
-      id: string,
       qty: number,
       startDate?: string | null,
       status: PubSubscriptionStatus,
-      pendingQtyChanges?:  Array< {
+      pendingQtyChange?:  {
         __typename: "PendingQtyChange",
         qty: number,
         effectiveDate: string,
-      } | null > | null,
+      } | null,
       periodicalID: string,
       subscriberID: string,
+      periodical:  {
+        __typename: "Periodical",
+        id: string,
+        name: string,
+        recurrence: PeriodicalRecurrence,
+        issues?:  {
+          __typename: "ModelPeriodicalIssueConnection",
+          nextToken?: string | null,
+        } | null,
+        pubSubscriptions?:  {
+          __typename: "ModelPubSubscriptionConnection",
+          nextToken?: string | null,
+        } | null,
+        createdAt: string,
+        updatedAt: string,
+      },
+      subscriber:  {
+        __typename: "Subscriber",
+        id: string,
+        firstName: string,
+        lastName: string,
+        subscriberGroupID?: string | null,
+        pubSubscriptions?:  {
+          __typename: "ModelPubSubscriptionConnection",
+          nextToken?: string | null,
+        } | null,
+        orders?:  {
+          __typename: "ModelOrderConnection",
+          nextToken?: string | null,
+        } | null,
+        createdAt: string,
+        updatedAt: string,
+      },
       createdAt: string,
       updatedAt: string,
     } | null >,
@@ -1686,17 +2194,49 @@ export type PubSubscriptionsBySubscriberQuery = {
     __typename: "ModelPubSubscriptionConnection",
     items:  Array< {
       __typename: "PubSubscription",
-      id: string,
       qty: number,
       startDate?: string | null,
       status: PubSubscriptionStatus,
-      pendingQtyChanges?:  Array< {
+      pendingQtyChange?:  {
         __typename: "PendingQtyChange",
         qty: number,
         effectiveDate: string,
-      } | null > | null,
+      } | null,
       periodicalID: string,
       subscriberID: string,
+      periodical:  {
+        __typename: "Periodical",
+        id: string,
+        name: string,
+        recurrence: PeriodicalRecurrence,
+        issues?:  {
+          __typename: "ModelPeriodicalIssueConnection",
+          nextToken?: string | null,
+        } | null,
+        pubSubscriptions?:  {
+          __typename: "ModelPubSubscriptionConnection",
+          nextToken?: string | null,
+        } | null,
+        createdAt: string,
+        updatedAt: string,
+      },
+      subscriber:  {
+        __typename: "Subscriber",
+        id: string,
+        firstName: string,
+        lastName: string,
+        subscriberGroupID?: string | null,
+        pubSubscriptions?:  {
+          __typename: "ModelPubSubscriptionConnection",
+          nextToken?: string | null,
+        } | null,
+        orders?:  {
+          __typename: "ModelOrderConnection",
+          nextToken?: string | null,
+        } | null,
+        createdAt: string,
+        updatedAt: string,
+      },
       createdAt: string,
       updatedAt: string,
     } | null >,
@@ -1727,6 +2267,7 @@ export type GetPeriodicalQuery = {
           nextToken?: string | null,
         } | null,
         notes?: string | null,
+        isBatchClosed: boolean,
         createdAt: string,
         updatedAt: string,
       } | null >,
@@ -1736,17 +2277,33 @@ export type GetPeriodicalQuery = {
       __typename: "ModelPubSubscriptionConnection",
       items:  Array< {
         __typename: "PubSubscription",
-        id: string,
         qty: number,
         startDate?: string | null,
         status: PubSubscriptionStatus,
-        pendingQtyChanges?:  Array< {
+        pendingQtyChange?:  {
           __typename: "PendingQtyChange",
           qty: number,
           effectiveDate: string,
-        } | null > | null,
+        } | null,
         periodicalID: string,
         subscriberID: string,
+        periodical:  {
+          __typename: "Periodical",
+          id: string,
+          name: string,
+          recurrence: PeriodicalRecurrence,
+          createdAt: string,
+          updatedAt: string,
+        },
+        subscriber:  {
+          __typename: "Subscriber",
+          id: string,
+          firstName: string,
+          lastName: string,
+          subscriberGroupID?: string | null,
+          createdAt: string,
+          updatedAt: string,
+        },
         createdAt: string,
         updatedAt: string,
       } | null >,
@@ -1780,6 +2337,7 @@ export type ListPeriodicalsQuery = {
           status: IssueStatus,
           periodicalID: string,
           notes?: string | null,
+          isBatchClosed: boolean,
           createdAt: string,
           updatedAt: string,
         } | null >,
@@ -1789,7 +2347,6 @@ export type ListPeriodicalsQuery = {
         __typename: "ModelPubSubscriptionConnection",
         items:  Array< {
           __typename: "PubSubscription",
-          id: string,
           qty: number,
           startDate?: string | null,
           status: PubSubscriptionStatus,
@@ -1838,6 +2395,7 @@ export type GetPeriodicalIssueQuery = {
       nextToken?: string | null,
     } | null,
     notes?: string | null,
+    isBatchClosed: boolean,
     createdAt: string,
     updatedAt: string,
   } | null,
@@ -1878,6 +2436,7 @@ export type ListPeriodicalIssuesQuery = {
         nextToken?: string | null,
       } | null,
       notes?: string | null,
+      isBatchClosed: boolean,
       createdAt: string,
       updatedAt: string,
     } | null >,
@@ -1922,6 +2481,7 @@ export type PeriodicalIssuesByStatusQuery = {
         nextToken?: string | null,
       } | null,
       notes?: string | null,
+      isBatchClosed: boolean,
       createdAt: string,
       updatedAt: string,
     } | null >,
@@ -1966,6 +2526,7 @@ export type PeriodicalIssuesByPeriodicalQuery = {
         nextToken?: string | null,
       } | null,
       notes?: string | null,
+      isBatchClosed: boolean,
       createdAt: string,
       updatedAt: string,
     } | null >,
@@ -2205,6 +2766,37 @@ export type OrdersByPeriodicalIssueQuery = {
   } | null,
 };
 
+export type OrdersByPeriodicalIssueByStatusQueryVariables = {
+  periodicalIssueID: string,
+  status?: ModelStringKeyConditionInput | null,
+  sortDirection?: ModelSortDirection | null,
+  filter?: ModelOrderFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type OrdersByPeriodicalIssueByStatusQuery = {
+  ordersByPeriodicalIssueByStatus?:  {
+    __typename: "ModelOrderConnection",
+    items:  Array< {
+      __typename: "Order",
+      id: string,
+      placedDate: string,
+      isAutomaticOrder: boolean,
+      isPubSubscriptionOrder: boolean,
+      itemQty: number,
+      status: OrderStatus,
+      cancellationReason?: string | null,
+      itemID?: string | null,
+      subscriberID: string,
+      periodicalIssueID?: string | null,
+      createdAt: string,
+      updatedAt: string,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
 export type GetItemQueryVariables = {
   id: string,
 };
@@ -2283,7 +2875,7 @@ export type OnCreateSubscriberGroupSubscription = {
   onCreateSubscriberGroup?:  {
     __typename: "SubscriberGroup",
     id: string,
-    name?: string | null,
+    name: string,
     members?:  {
       __typename: "ModelSubscriberConnection",
       items:  Array< {
@@ -2314,7 +2906,7 @@ export type OnUpdateSubscriberGroupSubscription = {
   onUpdateSubscriberGroup?:  {
     __typename: "SubscriberGroup",
     id: string,
-    name?: string | null,
+    name: string,
     members?:  {
       __typename: "ModelSubscriberConnection",
       items:  Array< {
@@ -2345,7 +2937,7 @@ export type OnDeleteSubscriberGroupSubscription = {
   onDeleteSubscriberGroup?:  {
     __typename: "SubscriberGroup",
     id: string,
-    name?: string | null,
+    name: string,
     members?:  {
       __typename: "ModelSubscriberConnection",
       items:  Array< {
@@ -2383,17 +2975,33 @@ export type OnCreateSubscriberSubscription = {
       __typename: "ModelPubSubscriptionConnection",
       items:  Array< {
         __typename: "PubSubscription",
-        id: string,
         qty: number,
         startDate?: string | null,
         status: PubSubscriptionStatus,
-        pendingQtyChanges?:  Array< {
+        pendingQtyChange?:  {
           __typename: "PendingQtyChange",
           qty: number,
           effectiveDate: string,
-        } | null > | null,
+        } | null,
         periodicalID: string,
         subscriberID: string,
+        periodical:  {
+          __typename: "Periodical",
+          id: string,
+          name: string,
+          recurrence: PeriodicalRecurrence,
+          createdAt: string,
+          updatedAt: string,
+        },
+        subscriber:  {
+          __typename: "Subscriber",
+          id: string,
+          firstName: string,
+          lastName: string,
+          subscriberGroupID?: string | null,
+          createdAt: string,
+          updatedAt: string,
+        },
         createdAt: string,
         updatedAt: string,
       } | null >,
@@ -2434,17 +3042,33 @@ export type OnUpdateSubscriberSubscription = {
       __typename: "ModelPubSubscriptionConnection",
       items:  Array< {
         __typename: "PubSubscription",
-        id: string,
         qty: number,
         startDate?: string | null,
         status: PubSubscriptionStatus,
-        pendingQtyChanges?:  Array< {
+        pendingQtyChange?:  {
           __typename: "PendingQtyChange",
           qty: number,
           effectiveDate: string,
-        } | null > | null,
+        } | null,
         periodicalID: string,
         subscriberID: string,
+        periodical:  {
+          __typename: "Periodical",
+          id: string,
+          name: string,
+          recurrence: PeriodicalRecurrence,
+          createdAt: string,
+          updatedAt: string,
+        },
+        subscriber:  {
+          __typename: "Subscriber",
+          id: string,
+          firstName: string,
+          lastName: string,
+          subscriberGroupID?: string | null,
+          createdAt: string,
+          updatedAt: string,
+        },
         createdAt: string,
         updatedAt: string,
       } | null >,
@@ -2485,17 +3109,33 @@ export type OnDeleteSubscriberSubscription = {
       __typename: "ModelPubSubscriptionConnection",
       items:  Array< {
         __typename: "PubSubscription",
-        id: string,
         qty: number,
         startDate?: string | null,
         status: PubSubscriptionStatus,
-        pendingQtyChanges?:  Array< {
+        pendingQtyChange?:  {
           __typename: "PendingQtyChange",
           qty: number,
           effectiveDate: string,
-        } | null > | null,
+        } | null,
         periodicalID: string,
         subscriberID: string,
+        periodical:  {
+          __typename: "Periodical",
+          id: string,
+          name: string,
+          recurrence: PeriodicalRecurrence,
+          createdAt: string,
+          updatedAt: string,
+        },
+        subscriber:  {
+          __typename: "Subscriber",
+          id: string,
+          firstName: string,
+          lastName: string,
+          subscriberGroupID?: string | null,
+          createdAt: string,
+          updatedAt: string,
+        },
         createdAt: string,
         updatedAt: string,
       } | null >,
@@ -2528,17 +3168,95 @@ export type OnDeleteSubscriberSubscription = {
 export type OnCreatePubSubscriptionSubscription = {
   onCreatePubSubscription?:  {
     __typename: "PubSubscription",
-    id: string,
     qty: number,
     startDate?: string | null,
     status: PubSubscriptionStatus,
-    pendingQtyChanges?:  Array< {
+    pendingQtyChange?:  {
       __typename: "PendingQtyChange",
       qty: number,
       effectiveDate: string,
-    } | null > | null,
+    } | null,
     periodicalID: string,
     subscriberID: string,
+    periodical:  {
+      __typename: "Periodical",
+      id: string,
+      name: string,
+      recurrence: PeriodicalRecurrence,
+      issues?:  {
+        __typename: "ModelPeriodicalIssueConnection",
+        items:  Array< {
+          __typename: "PeriodicalIssue",
+          id: string,
+          issueDate: string,
+          status: IssueStatus,
+          periodicalID: string,
+          notes?: string | null,
+          isBatchClosed: boolean,
+          createdAt: string,
+          updatedAt: string,
+        } | null >,
+        nextToken?: string | null,
+      } | null,
+      pubSubscriptions?:  {
+        __typename: "ModelPubSubscriptionConnection",
+        items:  Array< {
+          __typename: "PubSubscription",
+          qty: number,
+          startDate?: string | null,
+          status: PubSubscriptionStatus,
+          periodicalID: string,
+          subscriberID: string,
+          createdAt: string,
+          updatedAt: string,
+        } | null >,
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    subscriber:  {
+      __typename: "Subscriber",
+      id: string,
+      firstName: string,
+      lastName: string,
+      subscriberGroupID?: string | null,
+      pubSubscriptions?:  {
+        __typename: "ModelPubSubscriptionConnection",
+        items:  Array< {
+          __typename: "PubSubscription",
+          qty: number,
+          startDate?: string | null,
+          status: PubSubscriptionStatus,
+          periodicalID: string,
+          subscriberID: string,
+          createdAt: string,
+          updatedAt: string,
+        } | null >,
+        nextToken?: string | null,
+      } | null,
+      orders?:  {
+        __typename: "ModelOrderConnection",
+        items:  Array< {
+          __typename: "Order",
+          id: string,
+          placedDate: string,
+          isAutomaticOrder: boolean,
+          isPubSubscriptionOrder: boolean,
+          itemQty: number,
+          status: OrderStatus,
+          cancellationReason?: string | null,
+          itemID?: string | null,
+          subscriberID: string,
+          periodicalIssueID?: string | null,
+          createdAt: string,
+          updatedAt: string,
+        } | null >,
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
     createdAt: string,
     updatedAt: string,
   } | null,
@@ -2547,17 +3265,95 @@ export type OnCreatePubSubscriptionSubscription = {
 export type OnUpdatePubSubscriptionSubscription = {
   onUpdatePubSubscription?:  {
     __typename: "PubSubscription",
-    id: string,
     qty: number,
     startDate?: string | null,
     status: PubSubscriptionStatus,
-    pendingQtyChanges?:  Array< {
+    pendingQtyChange?:  {
       __typename: "PendingQtyChange",
       qty: number,
       effectiveDate: string,
-    } | null > | null,
+    } | null,
     periodicalID: string,
     subscriberID: string,
+    periodical:  {
+      __typename: "Periodical",
+      id: string,
+      name: string,
+      recurrence: PeriodicalRecurrence,
+      issues?:  {
+        __typename: "ModelPeriodicalIssueConnection",
+        items:  Array< {
+          __typename: "PeriodicalIssue",
+          id: string,
+          issueDate: string,
+          status: IssueStatus,
+          periodicalID: string,
+          notes?: string | null,
+          isBatchClosed: boolean,
+          createdAt: string,
+          updatedAt: string,
+        } | null >,
+        nextToken?: string | null,
+      } | null,
+      pubSubscriptions?:  {
+        __typename: "ModelPubSubscriptionConnection",
+        items:  Array< {
+          __typename: "PubSubscription",
+          qty: number,
+          startDate?: string | null,
+          status: PubSubscriptionStatus,
+          periodicalID: string,
+          subscriberID: string,
+          createdAt: string,
+          updatedAt: string,
+        } | null >,
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    subscriber:  {
+      __typename: "Subscriber",
+      id: string,
+      firstName: string,
+      lastName: string,
+      subscriberGroupID?: string | null,
+      pubSubscriptions?:  {
+        __typename: "ModelPubSubscriptionConnection",
+        items:  Array< {
+          __typename: "PubSubscription",
+          qty: number,
+          startDate?: string | null,
+          status: PubSubscriptionStatus,
+          periodicalID: string,
+          subscriberID: string,
+          createdAt: string,
+          updatedAt: string,
+        } | null >,
+        nextToken?: string | null,
+      } | null,
+      orders?:  {
+        __typename: "ModelOrderConnection",
+        items:  Array< {
+          __typename: "Order",
+          id: string,
+          placedDate: string,
+          isAutomaticOrder: boolean,
+          isPubSubscriptionOrder: boolean,
+          itemQty: number,
+          status: OrderStatus,
+          cancellationReason?: string | null,
+          itemID?: string | null,
+          subscriberID: string,
+          periodicalIssueID?: string | null,
+          createdAt: string,
+          updatedAt: string,
+        } | null >,
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
     createdAt: string,
     updatedAt: string,
   } | null,
@@ -2566,17 +3362,95 @@ export type OnUpdatePubSubscriptionSubscription = {
 export type OnDeletePubSubscriptionSubscription = {
   onDeletePubSubscription?:  {
     __typename: "PubSubscription",
-    id: string,
     qty: number,
     startDate?: string | null,
     status: PubSubscriptionStatus,
-    pendingQtyChanges?:  Array< {
+    pendingQtyChange?:  {
       __typename: "PendingQtyChange",
       qty: number,
       effectiveDate: string,
-    } | null > | null,
+    } | null,
     periodicalID: string,
     subscriberID: string,
+    periodical:  {
+      __typename: "Periodical",
+      id: string,
+      name: string,
+      recurrence: PeriodicalRecurrence,
+      issues?:  {
+        __typename: "ModelPeriodicalIssueConnection",
+        items:  Array< {
+          __typename: "PeriodicalIssue",
+          id: string,
+          issueDate: string,
+          status: IssueStatus,
+          periodicalID: string,
+          notes?: string | null,
+          isBatchClosed: boolean,
+          createdAt: string,
+          updatedAt: string,
+        } | null >,
+        nextToken?: string | null,
+      } | null,
+      pubSubscriptions?:  {
+        __typename: "ModelPubSubscriptionConnection",
+        items:  Array< {
+          __typename: "PubSubscription",
+          qty: number,
+          startDate?: string | null,
+          status: PubSubscriptionStatus,
+          periodicalID: string,
+          subscriberID: string,
+          createdAt: string,
+          updatedAt: string,
+        } | null >,
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    subscriber:  {
+      __typename: "Subscriber",
+      id: string,
+      firstName: string,
+      lastName: string,
+      subscriberGroupID?: string | null,
+      pubSubscriptions?:  {
+        __typename: "ModelPubSubscriptionConnection",
+        items:  Array< {
+          __typename: "PubSubscription",
+          qty: number,
+          startDate?: string | null,
+          status: PubSubscriptionStatus,
+          periodicalID: string,
+          subscriberID: string,
+          createdAt: string,
+          updatedAt: string,
+        } | null >,
+        nextToken?: string | null,
+      } | null,
+      orders?:  {
+        __typename: "ModelOrderConnection",
+        items:  Array< {
+          __typename: "Order",
+          id: string,
+          placedDate: string,
+          isAutomaticOrder: boolean,
+          isPubSubscriptionOrder: boolean,
+          itemQty: number,
+          status: OrderStatus,
+          cancellationReason?: string | null,
+          itemID?: string | null,
+          subscriberID: string,
+          periodicalIssueID?: string | null,
+          createdAt: string,
+          updatedAt: string,
+        } | null >,
+        nextToken?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    },
     createdAt: string,
     updatedAt: string,
   } | null,
@@ -2601,6 +3475,7 @@ export type OnCreatePeriodicalSubscription = {
           nextToken?: string | null,
         } | null,
         notes?: string | null,
+        isBatchClosed: boolean,
         createdAt: string,
         updatedAt: string,
       } | null >,
@@ -2610,17 +3485,33 @@ export type OnCreatePeriodicalSubscription = {
       __typename: "ModelPubSubscriptionConnection",
       items:  Array< {
         __typename: "PubSubscription",
-        id: string,
         qty: number,
         startDate?: string | null,
         status: PubSubscriptionStatus,
-        pendingQtyChanges?:  Array< {
+        pendingQtyChange?:  {
           __typename: "PendingQtyChange",
           qty: number,
           effectiveDate: string,
-        } | null > | null,
+        } | null,
         periodicalID: string,
         subscriberID: string,
+        periodical:  {
+          __typename: "Periodical",
+          id: string,
+          name: string,
+          recurrence: PeriodicalRecurrence,
+          createdAt: string,
+          updatedAt: string,
+        },
+        subscriber:  {
+          __typename: "Subscriber",
+          id: string,
+          firstName: string,
+          lastName: string,
+          subscriberGroupID?: string | null,
+          createdAt: string,
+          updatedAt: string,
+        },
         createdAt: string,
         updatedAt: string,
       } | null >,
@@ -2650,6 +3541,7 @@ export type OnUpdatePeriodicalSubscription = {
           nextToken?: string | null,
         } | null,
         notes?: string | null,
+        isBatchClosed: boolean,
         createdAt: string,
         updatedAt: string,
       } | null >,
@@ -2659,17 +3551,33 @@ export type OnUpdatePeriodicalSubscription = {
       __typename: "ModelPubSubscriptionConnection",
       items:  Array< {
         __typename: "PubSubscription",
-        id: string,
         qty: number,
         startDate?: string | null,
         status: PubSubscriptionStatus,
-        pendingQtyChanges?:  Array< {
+        pendingQtyChange?:  {
           __typename: "PendingQtyChange",
           qty: number,
           effectiveDate: string,
-        } | null > | null,
+        } | null,
         periodicalID: string,
         subscriberID: string,
+        periodical:  {
+          __typename: "Periodical",
+          id: string,
+          name: string,
+          recurrence: PeriodicalRecurrence,
+          createdAt: string,
+          updatedAt: string,
+        },
+        subscriber:  {
+          __typename: "Subscriber",
+          id: string,
+          firstName: string,
+          lastName: string,
+          subscriberGroupID?: string | null,
+          createdAt: string,
+          updatedAt: string,
+        },
         createdAt: string,
         updatedAt: string,
       } | null >,
@@ -2699,6 +3607,7 @@ export type OnDeletePeriodicalSubscription = {
           nextToken?: string | null,
         } | null,
         notes?: string | null,
+        isBatchClosed: boolean,
         createdAt: string,
         updatedAt: string,
       } | null >,
@@ -2708,17 +3617,33 @@ export type OnDeletePeriodicalSubscription = {
       __typename: "ModelPubSubscriptionConnection",
       items:  Array< {
         __typename: "PubSubscription",
-        id: string,
         qty: number,
         startDate?: string | null,
         status: PubSubscriptionStatus,
-        pendingQtyChanges?:  Array< {
+        pendingQtyChange?:  {
           __typename: "PendingQtyChange",
           qty: number,
           effectiveDate: string,
-        } | null > | null,
+        } | null,
         periodicalID: string,
         subscriberID: string,
+        periodical:  {
+          __typename: "Periodical",
+          id: string,
+          name: string,
+          recurrence: PeriodicalRecurrence,
+          createdAt: string,
+          updatedAt: string,
+        },
+        subscriber:  {
+          __typename: "Subscriber",
+          id: string,
+          firstName: string,
+          lastName: string,
+          subscriberGroupID?: string | null,
+          createdAt: string,
+          updatedAt: string,
+        },
         createdAt: string,
         updatedAt: string,
       } | null >,
@@ -2756,6 +3681,7 @@ export type OnCreatePeriodicalIssueSubscription = {
       nextToken?: string | null,
     } | null,
     notes?: string | null,
+    isBatchClosed: boolean,
     createdAt: string,
     updatedAt: string,
   } | null,
@@ -2788,6 +3714,7 @@ export type OnUpdatePeriodicalIssueSubscription = {
       nextToken?: string | null,
     } | null,
     notes?: string | null,
+    isBatchClosed: boolean,
     createdAt: string,
     updatedAt: string,
   } | null,
@@ -2820,6 +3747,7 @@ export type OnDeletePeriodicalIssueSubscription = {
       nextToken?: string | null,
     } | null,
     notes?: string | null,
+    isBatchClosed: boolean,
     createdAt: string,
     updatedAt: string,
   } | null,

@@ -70,16 +70,30 @@ export const getSubscriber = /* GraphQL */ `
       subscriberGroupID
       pubSubscriptions {
         items {
-          id
           qty
           startDate
           status
-          pendingQtyChanges {
+          pendingQtyChange {
             qty
             effectiveDate
           }
           periodicalID
           subscriberID
+          periodical {
+            id
+            name
+            recurrence
+            createdAt
+            updatedAt
+          }
+          subscriber {
+            id
+            firstName
+            lastName
+            subscriberGroupID
+            createdAt
+            updatedAt
+          }
           createdAt
           updatedAt
         }
@@ -121,7 +135,6 @@ export const listSubscribers = /* GraphQL */ `
         subscriberGroupID
         pubSubscriptions {
           items {
-            id
             qty
             startDate
             status
@@ -178,7 +191,6 @@ export const subscribersByGroup = /* GraphQL */ `
         subscriberGroupID
         pubSubscriptions {
           items {
-            id
             qty
             startDate
             status
@@ -214,18 +226,89 @@ export const subscribersByGroup = /* GraphQL */ `
   }
 `;
 export const getPubSubscription = /* GraphQL */ `
-  query GetPubSubscription($id: ID!) {
-    getPubSubscription(id: $id) {
-      id
+  query GetPubSubscription($periodicalID: ID!, $subscriberID: ID!) {
+    getPubSubscription(
+      periodicalID: $periodicalID
+      subscriberID: $subscriberID
+    ) {
       qty
       startDate
       status
-      pendingQtyChanges {
+      pendingQtyChange {
         qty
         effectiveDate
       }
       periodicalID
       subscriberID
+      periodical {
+        id
+        name
+        recurrence
+        issues {
+          items {
+            id
+            issueDate
+            status
+            periodicalID
+            notes
+            isBatchClosed
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        pubSubscriptions {
+          items {
+            qty
+            startDate
+            status
+            periodicalID
+            subscriberID
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
+      subscriber {
+        id
+        firstName
+        lastName
+        subscriberGroupID
+        pubSubscriptions {
+          items {
+            qty
+            startDate
+            status
+            periodicalID
+            subscriberID
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        orders {
+          items {
+            id
+            placedDate
+            isAutomaticOrder
+            isPubSubscriptionOrder
+            itemQty
+            status
+            cancellationReason
+            itemID
+            subscriberID
+            periodicalIssueID
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
     }
@@ -233,26 +316,58 @@ export const getPubSubscription = /* GraphQL */ `
 `;
 export const listPubSubscriptions = /* GraphQL */ `
   query ListPubSubscriptions(
+    $periodicalID: ID
+    $subscriberID: ModelIDKeyConditionInput
     $filter: ModelPubSubscriptionFilterInput
     $limit: Int
     $nextToken: String
+    $sortDirection: ModelSortDirection
   ) {
     listPubSubscriptions(
+      periodicalID: $periodicalID
+      subscriberID: $subscriberID
       filter: $filter
       limit: $limit
       nextToken: $nextToken
+      sortDirection: $sortDirection
     ) {
       items {
-        id
         qty
         startDate
         status
-        pendingQtyChanges {
+        pendingQtyChange {
           qty
           effectiveDate
         }
         periodicalID
         subscriberID
+        periodical {
+          id
+          name
+          recurrence
+          issues {
+            nextToken
+          }
+          pubSubscriptions {
+            nextToken
+          }
+          createdAt
+          updatedAt
+        }
+        subscriber {
+          id
+          firstName
+          lastName
+          subscriberGroupID
+          pubSubscriptions {
+            nextToken
+          }
+          orders {
+            nextToken
+          }
+          createdAt
+          updatedAt
+        }
         createdAt
         updatedAt
       }
@@ -276,16 +391,42 @@ export const pubSubscriptionsByPeriodical = /* GraphQL */ `
       nextToken: $nextToken
     ) {
       items {
-        id
         qty
         startDate
         status
-        pendingQtyChanges {
+        pendingQtyChange {
           qty
           effectiveDate
         }
         periodicalID
         subscriberID
+        periodical {
+          id
+          name
+          recurrence
+          issues {
+            nextToken
+          }
+          pubSubscriptions {
+            nextToken
+          }
+          createdAt
+          updatedAt
+        }
+        subscriber {
+          id
+          firstName
+          lastName
+          subscriberGroupID
+          pubSubscriptions {
+            nextToken
+          }
+          orders {
+            nextToken
+          }
+          createdAt
+          updatedAt
+        }
         createdAt
         updatedAt
       }
@@ -309,16 +450,42 @@ export const pubSubscriptionsBySubscriber = /* GraphQL */ `
       nextToken: $nextToken
     ) {
       items {
-        id
         qty
         startDate
         status
-        pendingQtyChanges {
+        pendingQtyChange {
           qty
           effectiveDate
         }
         periodicalID
         subscriberID
+        periodical {
+          id
+          name
+          recurrence
+          issues {
+            nextToken
+          }
+          pubSubscriptions {
+            nextToken
+          }
+          createdAt
+          updatedAt
+        }
+        subscriber {
+          id
+          firstName
+          lastName
+          subscriberGroupID
+          pubSubscriptions {
+            nextToken
+          }
+          orders {
+            nextToken
+          }
+          createdAt
+          updatedAt
+        }
         createdAt
         updatedAt
       }
@@ -342,6 +509,7 @@ export const getPeriodical = /* GraphQL */ `
             nextToken
           }
           notes
+          isBatchClosed
           createdAt
           updatedAt
         }
@@ -349,16 +517,30 @@ export const getPeriodical = /* GraphQL */ `
       }
       pubSubscriptions {
         items {
-          id
           qty
           startDate
           status
-          pendingQtyChanges {
+          pendingQtyChange {
             qty
             effectiveDate
           }
           periodicalID
           subscriberID
+          periodical {
+            id
+            name
+            recurrence
+            createdAt
+            updatedAt
+          }
+          subscriber {
+            id
+            firstName
+            lastName
+            subscriberGroupID
+            createdAt
+            updatedAt
+          }
           createdAt
           updatedAt
         }
@@ -387,6 +569,7 @@ export const listPeriodicals = /* GraphQL */ `
             status
             periodicalID
             notes
+            isBatchClosed
             createdAt
             updatedAt
           }
@@ -394,7 +577,6 @@ export const listPeriodicals = /* GraphQL */ `
         }
         pubSubscriptions {
           items {
-            id
             qty
             startDate
             status
@@ -437,6 +619,7 @@ export const getPeriodicalIssue = /* GraphQL */ `
         nextToken
       }
       notes
+      isBatchClosed
       createdAt
       updatedAt
     }
@@ -476,6 +659,7 @@ export const listPeriodicalIssues = /* GraphQL */ `
           nextToken
         }
         notes
+        isBatchClosed
         createdAt
         updatedAt
       }
@@ -521,6 +705,7 @@ export const periodicalIssuesByStatus = /* GraphQL */ `
           nextToken
         }
         notes
+        isBatchClosed
         createdAt
         updatedAt
       }
@@ -566,6 +751,7 @@ export const periodicalIssuesByPeriodical = /* GraphQL */ `
           nextToken
         }
         notes
+        isBatchClosed
         createdAt
         updatedAt
       }
@@ -795,6 +981,41 @@ export const ordersByPeriodicalIssue = /* GraphQL */ `
   ) {
     ordersByPeriodicalIssue(
       periodicalIssueID: $periodicalIssueID
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        placedDate
+        isAutomaticOrder
+        isPubSubscriptionOrder
+        itemQty
+        status
+        cancellationReason
+        itemID
+        subscriberID
+        periodicalIssueID
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+export const ordersByPeriodicalIssueByStatus = /* GraphQL */ `
+  query OrdersByPeriodicalIssueByStatus(
+    $periodicalIssueID: ID!
+    $status: ModelStringKeyConditionInput
+    $sortDirection: ModelSortDirection
+    $filter: ModelOrderFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    ordersByPeriodicalIssueByStatus(
+      periodicalIssueID: $periodicalIssueID
+      status: $status
       sortDirection: $sortDirection
       filter: $filter
       limit: $limit

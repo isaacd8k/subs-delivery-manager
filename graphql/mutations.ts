@@ -104,16 +104,30 @@ export const createSubscriber = /* GraphQL */ `
       subscriberGroupID
       pubSubscriptions {
         items {
-          id
           qty
           startDate
           status
-          pendingQtyChanges {
+          pendingQtyChange {
             qty
             effectiveDate
           }
           periodicalID
           subscriberID
+          periodical {
+            id
+            name
+            recurrence
+            createdAt
+            updatedAt
+          }
+          subscriber {
+            id
+            firstName
+            lastName
+            subscriberGroupID
+            createdAt
+            updatedAt
+          }
           createdAt
           updatedAt
         }
@@ -153,16 +167,30 @@ export const updateSubscriber = /* GraphQL */ `
       subscriberGroupID
       pubSubscriptions {
         items {
-          id
           qty
           startDate
           status
-          pendingQtyChanges {
+          pendingQtyChange {
             qty
             effectiveDate
           }
           periodicalID
           subscriberID
+          periodical {
+            id
+            name
+            recurrence
+            createdAt
+            updatedAt
+          }
+          subscriber {
+            id
+            firstName
+            lastName
+            subscriberGroupID
+            createdAt
+            updatedAt
+          }
           createdAt
           updatedAt
         }
@@ -202,16 +230,30 @@ export const deleteSubscriber = /* GraphQL */ `
       subscriberGroupID
       pubSubscriptions {
         items {
-          id
           qty
           startDate
           status
-          pendingQtyChanges {
+          pendingQtyChange {
             qty
             effectiveDate
           }
           periodicalID
           subscriberID
+          periodical {
+            id
+            name
+            recurrence
+            createdAt
+            updatedAt
+          }
+          subscriber {
+            id
+            firstName
+            lastName
+            subscriberGroupID
+            createdAt
+            updatedAt
+          }
           createdAt
           updatedAt
         }
@@ -245,16 +287,84 @@ export const createPubSubscription = /* GraphQL */ `
     $condition: ModelPubSubscriptionConditionInput
   ) {
     createPubSubscription(input: $input, condition: $condition) {
-      id
       qty
       startDate
       status
-      pendingQtyChanges {
+      pendingQtyChange {
         qty
         effectiveDate
       }
       periodicalID
       subscriberID
+      periodical {
+        id
+        name
+        recurrence
+        issues {
+          items {
+            id
+            issueDate
+            status
+            periodicalID
+            notes
+            isBatchClosed
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        pubSubscriptions {
+          items {
+            qty
+            startDate
+            status
+            periodicalID
+            subscriberID
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
+      subscriber {
+        id
+        firstName
+        lastName
+        subscriberGroupID
+        pubSubscriptions {
+          items {
+            qty
+            startDate
+            status
+            periodicalID
+            subscriberID
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        orders {
+          items {
+            id
+            placedDate
+            isAutomaticOrder
+            isPubSubscriptionOrder
+            itemQty
+            status
+            cancellationReason
+            itemID
+            subscriberID
+            periodicalIssueID
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
     }
@@ -266,16 +376,84 @@ export const updatePubSubscription = /* GraphQL */ `
     $condition: ModelPubSubscriptionConditionInput
   ) {
     updatePubSubscription(input: $input, condition: $condition) {
-      id
       qty
       startDate
       status
-      pendingQtyChanges {
+      pendingQtyChange {
         qty
         effectiveDate
       }
       periodicalID
       subscriberID
+      periodical {
+        id
+        name
+        recurrence
+        issues {
+          items {
+            id
+            issueDate
+            status
+            periodicalID
+            notes
+            isBatchClosed
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        pubSubscriptions {
+          items {
+            qty
+            startDate
+            status
+            periodicalID
+            subscriberID
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
+      subscriber {
+        id
+        firstName
+        lastName
+        subscriberGroupID
+        pubSubscriptions {
+          items {
+            qty
+            startDate
+            status
+            periodicalID
+            subscriberID
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        orders {
+          items {
+            id
+            placedDate
+            isAutomaticOrder
+            isPubSubscriptionOrder
+            itemQty
+            status
+            cancellationReason
+            itemID
+            subscriberID
+            periodicalIssueID
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
     }
@@ -287,16 +465,84 @@ export const deletePubSubscription = /* GraphQL */ `
     $condition: ModelPubSubscriptionConditionInput
   ) {
     deletePubSubscription(input: $input, condition: $condition) {
-      id
       qty
       startDate
       status
-      pendingQtyChanges {
+      pendingQtyChange {
         qty
         effectiveDate
       }
       periodicalID
       subscriberID
+      periodical {
+        id
+        name
+        recurrence
+        issues {
+          items {
+            id
+            issueDate
+            status
+            periodicalID
+            notes
+            isBatchClosed
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        pubSubscriptions {
+          items {
+            qty
+            startDate
+            status
+            periodicalID
+            subscriberID
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
+      subscriber {
+        id
+        firstName
+        lastName
+        subscriberGroupID
+        pubSubscriptions {
+          items {
+            qty
+            startDate
+            status
+            periodicalID
+            subscriberID
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        orders {
+          items {
+            id
+            placedDate
+            isAutomaticOrder
+            isPubSubscriptionOrder
+            itemQty
+            status
+            cancellationReason
+            itemID
+            subscriberID
+            periodicalIssueID
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
     }
@@ -321,6 +567,7 @@ export const createPeriodical = /* GraphQL */ `
             nextToken
           }
           notes
+          isBatchClosed
           createdAt
           updatedAt
         }
@@ -328,16 +575,30 @@ export const createPeriodical = /* GraphQL */ `
       }
       pubSubscriptions {
         items {
-          id
           qty
           startDate
           status
-          pendingQtyChanges {
+          pendingQtyChange {
             qty
             effectiveDate
           }
           periodicalID
           subscriberID
+          periodical {
+            id
+            name
+            recurrence
+            createdAt
+            updatedAt
+          }
+          subscriber {
+            id
+            firstName
+            lastName
+            subscriberGroupID
+            createdAt
+            updatedAt
+          }
           createdAt
           updatedAt
         }
@@ -367,6 +628,7 @@ export const updatePeriodical = /* GraphQL */ `
             nextToken
           }
           notes
+          isBatchClosed
           createdAt
           updatedAt
         }
@@ -374,16 +636,30 @@ export const updatePeriodical = /* GraphQL */ `
       }
       pubSubscriptions {
         items {
-          id
           qty
           startDate
           status
-          pendingQtyChanges {
+          pendingQtyChange {
             qty
             effectiveDate
           }
           periodicalID
           subscriberID
+          periodical {
+            id
+            name
+            recurrence
+            createdAt
+            updatedAt
+          }
+          subscriber {
+            id
+            firstName
+            lastName
+            subscriberGroupID
+            createdAt
+            updatedAt
+          }
           createdAt
           updatedAt
         }
@@ -413,6 +689,7 @@ export const deletePeriodical = /* GraphQL */ `
             nextToken
           }
           notes
+          isBatchClosed
           createdAt
           updatedAt
         }
@@ -420,16 +697,30 @@ export const deletePeriodical = /* GraphQL */ `
       }
       pubSubscriptions {
         items {
-          id
           qty
           startDate
           status
-          pendingQtyChanges {
+          pendingQtyChange {
             qty
             effectiveDate
           }
           periodicalID
           subscriberID
+          periodical {
+            id
+            name
+            recurrence
+            createdAt
+            updatedAt
+          }
+          subscriber {
+            id
+            firstName
+            lastName
+            subscriberGroupID
+            createdAt
+            updatedAt
+          }
           createdAt
           updatedAt
         }
@@ -468,6 +759,7 @@ export const createPeriodicalIssue = /* GraphQL */ `
         nextToken
       }
       notes
+      isBatchClosed
       createdAt
       updatedAt
     }
@@ -501,6 +793,7 @@ export const updatePeriodicalIssue = /* GraphQL */ `
         nextToken
       }
       notes
+      isBatchClosed
       createdAt
       updatedAt
     }
@@ -534,6 +827,7 @@ export const deletePeriodicalIssue = /* GraphQL */ `
         nextToken
       }
       notes
+      isBatchClosed
       createdAt
       updatedAt
     }

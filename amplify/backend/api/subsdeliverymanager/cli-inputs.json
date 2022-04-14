@@ -7,14 +7,13 @@
     "defaultAuthType": {
       "mode": "API_KEY",
       "expirationTime": 365,
-      "apiKeyExpirationDate": "2023-03-20T16:27:43.476Z",
-      "keyDescription": "SubsDeliveryManager"
+      "apiKeyExpirationDate": "2023-04-14T16:55:56.647Z",
+      "keyDescription": "public"
     },
-    "conflictResolution": {},
     "additionalAuthTypes": [
       {
         "mode": "AMAZON_COGNITO_USER_POOLS",
-        "cognitoUserPoolId": "authsubsdeliverymanager9e284eb1"
+        "cognitoUserPoolId": "authsubsdeliverymanager5d76a645"
       }
     ]
   }
