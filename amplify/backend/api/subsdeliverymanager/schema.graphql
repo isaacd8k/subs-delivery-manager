@@ -10,7 +10,7 @@ input AMPLIFY {
 enum IssueStatus {
   UPCOMING
   RECEIVED
-  CANCELED
+  SKIPPED
 }
 
 enum OrderStatus {
@@ -45,7 +45,7 @@ type SubscriberGroup
     ]
   ) {
   id: ID!
-  name: String
+  name: String!
   members: [Subscriber] @hasMany(indexName: "bySubscriberGroup", fields: ["id"])
 }
 
@@ -76,16 +76,22 @@ type PubSubscription
       { allow: groups, groups: ["Admin"] }
     ]
   ) {
-  id: ID!
   qty: Int!
   startDate: AWSDate
   status: PubSubscriptionStatus!
-  pendingQtyChanges: [PendingQtyChange]
+  pendingQtyChange: PendingQtyChange
   # CONNECTIONS
   periodicalID: ID!
+    @primaryKey(sortKeyFields: ["subscriberID"])
     @index(name: "byPeriodical", queryField: "pubSubscriptionsByPeriodical")
   subscriberID: ID!
     @index(name: "bySubscriber", queryField: "pubSubscriptionsBySubscriber")
+
+  # add periodical connection
+  periodical: Periodical! @belongsTo(fields: ["periodicalID"])
+
+  # add subscriber connection
+  subscriber: Subscriber! @belongsTo(fields: ["subscriberID"])
 }
 
 type Periodical
@@ -122,6 +128,7 @@ type PeriodicalIssue
     @index(name: "byPeriodical", queryField: "periodicalIssuesByPeriodical")
   orders: [Order] @hasMany(indexName: "byPeriodicalIssue", fields: ["id"])
   notes: String
+  isBatchClosed: Boolean! @default(value: "false")
 }
 
 type Order
@@ -158,6 +165,11 @@ type Order
     )
   periodicalIssueID: ID
     @index(name: "byPeriodicalIssue", queryField: "ordersByPeriodicalIssue")
+    @index(
+      name: "byPeriodicalIssueByStatus"
+      sortKeyFields: ["status"]
+      queryField: "ordersByPeriodicalIssueByStatus"
+    )
 }
 
 type Item
