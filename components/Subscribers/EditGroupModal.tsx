@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Accordion,
   AccordionButton,
@@ -37,7 +37,7 @@ import {
   updateSubscriber,
   updateSubscriberGroup,
 } from "../../graphql/mutations";
-import { GraphQLResult } from "@aws-amplify/api-graphql";
+import { GraphQLOptions, GraphQLResult } from "@aws-amplify/api-graphql";
 import {
   CreateSubscriberGroupMutation,
   DeleteSubscriberGroupMutation,
@@ -77,6 +77,14 @@ export default function EditGroupModal({
   const [loadingAddButtons, setLoadingAddButtons] = useState<string[]>([]);
   const [isQualifiedForDeletion, setIsQualifiedForDeletion] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const mountedRef = useRef(true);
+
+  // on unmount, update mounted flag
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (groupData.members.length === 0) {
@@ -98,6 +106,13 @@ export default function EditGroupModal({
     // set loading state
     setSubmitNameBtnIsLoading(true);
 
+    // request
+    const requestOptions: GraphQLOptions = {
+      query: updateSubscriberGroup,
+      variables: { input: { id: groupData.id, name: groupName } },
+      authMode: "AMAZON_COGNITO_USER_POOLS",
+    };
+
     const data = await (
       API.graphql({
         query: updateSubscriberGroup,
@@ -105,8 +120,22 @@ export default function EditGroupModal({
         authMode: "AMAZON_COGNITO_USER_POOLS",
       }) as Promise<GraphQLResult<CreateSubscriberGroupMutation>>
     ).catch(() => {
-      console.error("New Group promise rejected. Add error message in Toast?");
+      if (!mountedRef.current) {
+        return null;
+      }
+      toast({
+        title: "An error has occurred. Please try again",
+        position: "top-right",
+        status: "error",
+      });
+      // close modal
+      onClose();
     });
+
+    // if component is unmounted, ignore update
+    if (!mountedRef.current) {
+      return null;
+    }
 
     // remove loading state
     setSubmitNameBtnIsLoading(false);
@@ -136,10 +165,25 @@ export default function EditGroupModal({
         authMode: "AMAZON_COGNITO_USER_POOLS",
       }) as Promise<GraphQLResult<UpdateSubscriberMutation>>
     ).catch(() => {
-      console.log("err");
+      if (!mountedRef.current) {
+        return null;
+      }
+
+      toast({
+        title: "An error has occurred. Please try again",
+        position: "top-right",
+        status: "error",
+      });
+      // close modal
+      onClose();
     });
 
     await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    // if component is unmounted, ignore
+    if (!mountedRef.current) {
+      return null;
+    }
 
     // remove loading state
     setLoadingAddButtons((oldState) => {
@@ -170,10 +214,26 @@ export default function EditGroupModal({
         authMode: "AMAZON_COGNITO_USER_POOLS",
       }) as Promise<GraphQLResult<UpdateSubscriberMutation>>
     ).catch(() => {
-      console.log("err");
+      // if component is unmounted, ignore
+      if (!mountedRef.current) {
+        return null;
+      }
+
+      toast({
+        title: "An error has occurred. Please try again",
+        position: "top-right",
+        status: "error",
+      });
+      // close modal
+      onClose();
     });
 
     await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    // if component is unmounted, ignore
+    if (!mountedRef.current) {
+      return null;
+    }
 
     // remove loading status
     setLoadingRemoveButtons((oldState) => {
@@ -197,6 +257,11 @@ export default function EditGroupModal({
         authMode: "AMAZON_COGNITO_USER_POOLS",
       })) as Promise<GraphQLResult<DeleteSubscriberGroupMutation>>;
 
+      // if component is unmounted, ignore
+      if (!mountedRef.current) {
+        return null;
+      }
+
       // success toast
       toast({
         title: "Subscriber group has been successfully deleted",
@@ -209,13 +274,18 @@ export default function EditGroupModal({
       onEditSubscriber();
       onClose();
     } catch {
+      // if component is unmounted, ignore
+      if (!mountedRef.current) {
+        return null;
+      }
       // error toast
       toast({
-        title: "Error deleting subscriber group. Please try again",
+        title: "An error has occurred. Please try again",
         position: "top-right",
         status: "error",
       });
       setIsDeleting(false);
+      onClose();
     }
   }
 
@@ -228,7 +298,7 @@ export default function EditGroupModal({
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} closeOnOverlayClick={false}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>Edit Group {groupData.name}</ModalHeader>
@@ -248,7 +318,7 @@ export default function EditGroupModal({
                 colorScheme="blue"
                 variant="outline"
                 mr={3}
-                onClick={submitNameEdit}
+                onClick={() => console.log(submitNameEdit())}
                 isLoading={submitNameBtnIsLoading}
               >
                 Save
@@ -408,7 +478,15 @@ export default function EditGroupModal({
         </ModalBody>
 
         <ModalFooter>
-          <Button colorScheme="blue" onClick={onClose}>
+          <Button
+            colorScheme="blue"
+            onClick={onClose}
+            isLoading={
+              loadingRemoveButtons.length > 0 ||
+              loadingAddButtons.length > 0 ||
+              submitNameBtnIsLoading
+            }
+          >
             Close
           </Button>
         </ModalFooter>
