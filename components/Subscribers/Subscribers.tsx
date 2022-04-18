@@ -78,9 +78,14 @@ export default function Subscribers() {
         query: listSubscribers,
         authMode: "AMAZON_COGNITO_USER_POOLS",
       })) as { data: ListSubscribersQuery };
-      setSubscribers(
-        subscriberData.data.listSubscribers?.items as Subscriber[]
-      );
+
+      // temporarily store list for sorting
+      let list: Subscriber[] = [];
+      if (subscriberData.data.listSubscribers?.items) {
+        list = subscriberData.data.listSubscribers.items as Subscriber[];
+        list.sort((a, b) => a.lastName.localeCompare(b.lastName));
+      }
+      setSubscribers(list);
     } catch (error) {
       // handle network error
       // handle GQL errors?
@@ -96,38 +101,33 @@ export default function Subscribers() {
       authMode: "AMAZON_COGNITO_USER_POOLS",
     })) as { data: ListSubscriberGroupsQuery };
 
-    setSubGroups(
-      subscriberGroups.data.listSubscriberGroups?.items as SubscriberGroup[]
-    );
+    let list: SubscriberGroup[] = [];
+    if (subscriberGroups.data.listSubscriberGroups?.items) {
+      list = subscriberGroups.data.listSubscriberGroups
+        .items as SubscriberGroup[];
+      list.sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    setSubGroups(list);
   }
 
+  // initial data fetch
   useEffect(() => {
     fetchSubscribers();
     fetchSubGroups();
   }, []);
 
-  // sort by last name
+  // populate assigned & unassigned subscribers
   useEffect(() => {
     if (subscribers) {
       const assigned = subscribers.filter((sub) => sub.subscriberGroupID);
       setAssignedSubscribers(assigned);
-    }
-  }, [subscribers]);
-
-  useEffect(() => {
-    if (subscribers) {
       const unassigned = subscribers.filter((sub) => !sub.subscriberGroupID);
       setUnassignedSubscribers(unassigned);
     }
   }, [subscribers]);
 
-  useEffect(() => {
-    if (subscribers) {
-      const assigned = subscribers.filter((sub) => sub.subscriberGroupID);
-      setAssignedSubscribers(assigned);
-    }
-  }, [subscribers]);
-
+  // filtered subscribers list
   useEffect(() => {
     let filteredSubscriberList: SubscriberSimple[] = [];
 
@@ -144,6 +144,7 @@ export default function Subscribers() {
     setFilteredSubscribers(filteredSubscriberList);
   }, [subscribers]);
 
+  // filter subscribers list
   useEffect(() => {
     if (!subscribers) {
       return setFilteredSubscribers([]);
