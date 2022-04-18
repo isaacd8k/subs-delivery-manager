@@ -27,7 +27,12 @@ import {
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
-import { AddIcon, MinusIcon, RepeatIcon } from "@chakra-ui/icons";
+import {
+  AddIcon,
+  ArrowForwardIcon,
+  MinusIcon,
+  RepeatIcon,
+} from "@chakra-ui/icons";
 import React, { useEffect, useState } from "react";
 import { API } from "aws-amplify";
 import { listSubscriberGroups, listSubscribers } from "../../graphql/queries";
@@ -217,7 +222,7 @@ export default function Subscribers() {
       <Heading>Subscribers & Groups</Heading>
 
       {/* Groups */}
-      <Box bg="tomato" p={4} mb={14}>
+      <Box p={4} mb={14}>
         <Flex>
           <Heading size="md">Groups</Heading>
           <Spacer />
@@ -232,13 +237,22 @@ export default function Subscribers() {
           spacing="40px"
           templateColumns="repeat(auto-fill, minmax(220px, 1fr))"
           mb={6}
+          p={2}
+          borderLeft="1px solid"
+          borderColor="green.200"
         >
           {subGroups === null ? (
             <>Loading</>
           ) : (
             <>
               {subGroups.map((group) => (
-                <Box key={group.id} bg="blue" borderRadius="lg" p={6}>
+                <Box
+                  key={group.id}
+                  p={6}
+                  border="1px solid"
+                  borderColor="green.700"
+                  borderRadius="lg"
+                >
                   <Heading size="sm" isTruncated>
                     Group: {group.name}
                   </Heading>
@@ -246,17 +260,20 @@ export default function Subscribers() {
                   <Text fontSize="sm">
                     Members: {group.members?.items?.length ?? "0"}
                   </Text>
-                  <Text fontSize="sm">
-                    <Link
-                      onClick={() =>
-                        openEditGroupModal({
-                          groupID: group.id,
-                        })
-                      }
-                    >
-                      Edit group
-                    </Link>
-                  </Text>
+
+                  <Button
+                    leftIcon={<ArrowForwardIcon />}
+                    colorScheme="teal"
+                    variant="ghost"
+                    size="xs"
+                    onClick={() =>
+                      openEditGroupModal({
+                        groupID: group.id,
+                      })
+                    }
+                  >
+                    Edit group
+                  </Button>
                 </Box>
               ))}
 
@@ -269,35 +286,6 @@ export default function Subscribers() {
             </>
           )}
         </SimpleGrid>
-
-        {/* Unassigned subscribers */}
-        <Accordion allowToggle>
-          <AccordionItem>
-            <Heading size="xs">
-              <AccordionButton>
-                <Box flex="1" textAlign="left">
-                  Unassigned subscribers ({unassignedSubscribers.length})
-                </Box>
-                <AccordionIcon />
-              </AccordionButton>
-            </Heading>
-            <AccordionPanel pb={4}>
-              {/* Unassigned subscribers list */}
-              <OrderedList>
-                {unassignedSubscribers.map((sub) => (
-                  <ListItem key={sub.id}>
-                    {sub.firstName} {sub.lastName}
-                  </ListItem>
-                ))}
-              </OrderedList>
-
-              {/* No unassigned subscribers label */}
-              {unassignedSubscribers.length < 1 && (
-                <Text fontSize="sm">No unassigned subscribers</Text>
-              )}
-            </AccordionPanel>
-          </AccordionItem>
-        </Accordion>
       </Box>
 
       {/* Subscribers */}
