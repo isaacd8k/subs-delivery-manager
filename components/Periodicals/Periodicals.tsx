@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  ButtonGroup,
   Center,
   Divider,
   Flex,
@@ -140,21 +141,32 @@ export default function Periodicals() {
                 Subscribers: {periodical.pubSubscriptions?.items.length ?? "0"}
               </Text>
 
-              <Button
-                leftIcon={<ArrowForwardIcon />}
-                colorScheme="pink"
-                variant="ghost"
-                size="xs"
-                onClick={() =>
-                  openEditPeriodical({
-                    id: periodical.id,
-                    name: periodical.name,
-                    recurrence: periodical.recurrence,
-                  })
-                }
-              >
-                Edit Periodical
-              </Button>
+              <ButtonGroup variant="ghost" spacing="3" mt={4}>
+                <Button
+                  leftIcon={<ArrowForwardIcon />}
+                  colorScheme="pink"
+                  size="xs"
+                  onClick={() =>
+                    openEditPeriodical({
+                      id: periodical.id,
+                      name: periodical.name,
+                      recurrence: periodical.recurrence,
+                    })
+                  }
+                >
+                  Quick edit
+                </Button>
+
+                <Button
+                  leftIcon={<ArrowForwardIcon />}
+                  colorScheme="pink"
+                  size="xs"
+                >
+                  <NextLink href={`/periodical/${periodical.id}`}>
+                    View details
+                  </NextLink>
+                </Button>
+              </ButtonGroup>
             </Box>
           ))}
 
