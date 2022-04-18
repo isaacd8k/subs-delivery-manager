@@ -19,11 +19,15 @@ import {
   SimpleGrid,
   Spacer,
   Stack,
+  Tag,
+  TagLabel,
+  TagLeftIcon,
   Text,
   UnorderedList,
   useDisclosure,
+  VStack,
 } from "@chakra-ui/react";
-import { AddIcon, MinusIcon } from "@chakra-ui/icons";
+import { AddIcon, MinusIcon, RepeatIcon } from "@chakra-ui/icons";
 import React, { useEffect, useState } from "react";
 import { API } from "aws-amplify";
 import { listSubscriberGroups, listSubscribers } from "../../graphql/queries";
@@ -40,7 +44,10 @@ import { updateSubscriber } from "../../graphql/mutations";
 import NewGroupModal from "./NewGroupModal";
 import EditGroupModal from "./EditGroupModal";
 
-type SubscriberSimple = Pick<Subscriber, "id" | "firstName" | "lastName">;
+type SubscriberSimple = Pick<
+  Subscriber,
+  "id" | "firstName" | "lastName" | "group" | "pubSubscriptions"
+>;
 
 export default function Subscribers() {
   const [subscribers, setSubscribers] = useState<Subscriber[] | null>([]);
@@ -133,10 +140,12 @@ export default function Subscribers() {
 
     if (subscribers && subscribers.length > 0) {
       filteredSubscriberList = subscribers.map(
-        ({ id, firstName, lastName }) => ({
+        ({ id, firstName, lastName, group, pubSubscriptions }) => ({
           id,
           firstName,
           lastName,
+          group,
+          pubSubscriptions,
         })
       );
     }
@@ -346,6 +355,22 @@ export default function Subscribers() {
                     </Text>
                   </Link>
                 </NextLink>
+
+                {/* Group name */}
+                {sub.group && (
+                  <Tag size="sm" variant="solid" colorScheme="teal">
+                    {sub.group.name}
+                  </Tag>
+                )}
+
+                {/* Subscriptions */}
+                {sub.pubSubscriptions?.items &&
+                  sub.pubSubscriptions.items.length > 0 && (
+                    <Tag size="sm" variant="outline" colorScheme="pink">
+                      <TagLeftIcon boxSize="12px" as={RepeatIcon} />
+                      <TagLabel>{sub.pubSubscriptions.items.length}</TagLabel>
+                    </Tag>
+                  )}
               </Stack>
             ))}
         </SimpleGrid>

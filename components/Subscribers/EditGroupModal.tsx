@@ -340,9 +340,6 @@ export default function EditGroupModal({
               </Heading>
 
               <AccordionPanel pb={4}>
-                {/* Edit btn */}
-                <Link fontSize="sm">Edit</Link>
-
                 {/* No unassigned */}
                 {groupData.members.length < 1 && (
                   <Text align="center">
@@ -378,7 +375,7 @@ export default function EditGroupModal({
                         }
                         isLoading={loadingRemoveButtons.includes(sub.id)}
                       >
-                        <MinusIcon />
+                        Remove
                       </Button>
                     </Stack>
                   ))}
@@ -398,9 +395,6 @@ export default function EditGroupModal({
               </Heading>
 
               <AccordionPanel pb={2}>
-                {/* Edit btn */}
-                <Link fontSize="sm">Edit</Link>
-
                 {/* No unassigned */}
                 {groupData.unassigned.length < 1 && (
                   <Text align="center">
