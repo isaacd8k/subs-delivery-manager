@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Center,
   Divider,
   Flex,
@@ -13,13 +14,10 @@ import {
 import { API } from "aws-amplify";
 import React, { useEffect, useState } from "react";
 import { listPeriodicals } from "../../graphql/queries";
-import {
-  ListPeriodicalsQuery,
-  Periodical,
-  PeriodicalRecurrence,
-} from "../../graphql/types";
+import { ListPeriodicalsQuery, Periodical } from "../../graphql/types";
 import NewPeriodicalModal from "./NewPeriodicalModal";
 import NextLink from "next/link";
+import { ArrowForwardIcon } from "@chakra-ui/icons";
 
 export default function Periodicals() {
   const [periodicals, setPeriodicals] = useState<Periodical[]>([]);
@@ -88,7 +86,7 @@ export default function Periodicals() {
     <div>
       <Heading>Periodicals & Subscriptions</Heading>
 
-      <Box bg="yellow.600" p={4} mb={14}>
+      <Box p={4} mb={14}>
         {/* Heading */}
         <Flex>
           <Heading size="md">Periodicals</Heading>
@@ -105,7 +103,13 @@ export default function Periodicals() {
           mb={6}
         >
           {periodicals.map((periodical) => (
-            <Box key={periodical.id} bg="blue" borderRadius="lg" p={6}>
+            <Box
+              key={periodical.id}
+              borderRadius="lg"
+              border="1px solid"
+              borderColor="pink.800"
+              p={6}
+            >
               <Heading size="sm" isTruncated>
                 <NextLink
                   href={`/periodical/${periodical.id}`}
@@ -122,43 +126,42 @@ export default function Periodicals() {
               </Text>
 
               {/* Last issue date */}
-              {periodical.issues &&
-                periodical.issues.items &&
-                periodical.issues.items.length > 0 && (
-                  <Text color="gray.500" fontSize="xs">
-                    Last issue:{" "}
-                    {
-                      periodical.issues.items[
-                        periodical.issues.items.length - 1
-                      ]?.issueDate
-                    }
-                  </Text>
-                )}
+              {periodical.issues?.items && periodical.issues.items.length > 0 && (
+                <Text color="gray.500" fontSize="xs">
+                  Last issue:{" "}
+                  {
+                    periodical.issues.items[periodical.issues.items.length - 1]
+                      ?.issueDate
+                  }
+                </Text>
+              )}
 
               <Text fontSize="sm">
                 Subscribers: {periodical.pubSubscriptions?.items.length ?? "0"}
               </Text>
 
-              <Text fontSize="sm">
-                <Link
-                  onClick={() =>
-                    openEditPeriodical({
-                      id: periodical.id,
-                      name: periodical.name,
-                      recurrence: periodical.recurrence,
-                    })
-                  }
-                >
-                  Edit Periodical
-                </Link>
-              </Text>
+              <Button
+                leftIcon={<ArrowForwardIcon />}
+                colorScheme="pink"
+                variant="ghost"
+                size="xs"
+                onClick={() =>
+                  openEditPeriodical({
+                    id: periodical.id,
+                    name: periodical.name,
+                    recurrence: periodical.recurrence,
+                  })
+                }
+              >
+                Edit Periodical
+              </Button>
             </Box>
           ))}
 
           {/* EDIT MODE: Add a group button */}
-          <Box bg="blue.700" borderRadius="lg" p={6}>
+          <Box bg="pink.800" borderRadius="lg" p={6}>
             <Link onClick={onNewPeriodicalModalOpen}>
-              <Center height="100%">Add a group</Center>
+              <Center height="100%">Add a Periodical</Center>
             </Link>
           </Box>
         </SimpleGrid>
