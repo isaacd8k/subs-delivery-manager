@@ -1,16 +1,19 @@
 import {
   ArrowForwardIcon,
+  CheckIcon,
   MinusIcon,
   RepeatClockIcon,
   RepeatIcon,
   SettingsIcon,
   SmallAddIcon,
+  SmallCloseIcon,
   TimeIcon,
 } from "@chakra-ui/icons";
 import {
   Badge,
   Box,
   Button,
+  ButtonGroup,
   Container,
   Divider,
   Flex,
@@ -34,6 +37,7 @@ import {
   PubSubscription,
   Subscriber,
 } from "../../graphql/types";
+import ModalConfirmAction from "../common/ModalConfirmAction";
 import AddSubscriptionModal from "./AddSubscriptionModal";
 import EditSubscriptionModal from "./EditSubscriptionModal";
 import NewPeriodicalModal from "./NewPeriodicalModal";
@@ -45,6 +49,8 @@ export type Props = {
 export default function PeriodicalDetailView({ periodicalID }: Props) {
   const [periodical, setPeriodical] = useState<Periodical | null>(null);
   const [subscribers, setSubscribers] = useState<Subscriber[] | null>(null);
+  const [modalConfirmActionMessage, setModalConfirmActionMessage] =
+    useState("");
   const [selectedPubSub, setSelectedPubSub] = useState<PubSubscription | null>(
     null
   );
@@ -64,6 +70,16 @@ export default function PeriodicalDetailView({ periodicalID }: Props) {
     isOpen: isEditPubSubscriptionModalOpen,
     onOpen: onEditPubSubscriptionModalOpen,
     onClose: onEditPubSubscriptionModalClose,
+  } = useDisclosure();
+  const {
+    isOpen: isModalConfirmAcceptQtyChangeOpen,
+    onOpen: onModalConfirmAcceptQtyChangeOpen,
+    onClose: onModalConfirmAcceptQtyChangeClose,
+  } = useDisclosure();
+  const {
+    isOpen: isModalConfirmCancelQtyChangeOpen,
+    onOpen: onModalConfirmCancelQtyChangeOpen,
+    onClose: onModalConfirmCancelQtyChangeClose,
   } = useDisclosure();
 
   const fetchPeriodicalDetails = useCallback(async () => {
@@ -97,6 +113,18 @@ export default function PeriodicalDetailView({ periodicalID }: Props) {
     });
 
     onEditPeriodicalModalClose();
+  }
+
+  function confirmCancelOrAcceptSubChange(
+    subscriberID: string,
+    operation: "accept" | "cancel"
+  ) {
+    if (operation === "accept") {
+      onModalConfirmAcceptQtyChangeOpen();
+    } else {
+      // cancel
+      onModalConfirmCancelQtyChangeOpen();
+    }
   }
 
   if (!periodical) {
@@ -257,39 +285,111 @@ export default function PeriodicalDetailView({ periodicalID }: Props) {
 
             {/* Upcoming subscription changes */}
             <Box p={2}>
-              <Heading size="xs">Upcoming subscription changes</Heading>
+              <Heading size="xs">Pending subscription changes</Heading>
               {/* Grid */}
               <HStack my={2}>
-                <Box
-                  borderRadius="lg"
-                  border="1px solid"
-                  borderColor="green.700"
-                  p={2}
-                  fontSize="xs"
-                  w="44"
-                >
-                  Name <br />
-                  Current Qty: 3<br />
-                  Pending Qty: 5 (+2)
-                  <br />
-                  Effective: MM-DD-YYYY <br />
-                  Effective status: <Badge colorScheme="green">Ready</Badge>
-                </Box>
-                <Box
-                  borderRadius="lg"
-                  border="1px solid"
-                  borderColor="gray.600"
-                  p={2}
-                  fontSize="xs"
-                  w="44"
-                >
-                  Name <br />
-                  Current Qty: 3<br />
-                  Pending Qty: 1 (-2)
-                  <br />
-                  Effective on: MM-DD-YYYY <br />
-                  Status: <Badge>Pending</Badge>
-                </Box>
+                {periodical.pubSubscriptions?.items
+                  .filter((sub) => sub && sub.pendingQtyChange)
+                  .map(
+                    (sub) =>
+                      sub && (
+                        <Box
+                          borderRadius="lg"
+                          border="1px solid"
+                          borderColor={
+                            // current date
+                            new Date() <=
+                            // effective date
+                            new Date(sub.pendingQtyChange!.effectiveDate)
+                              ? "gray.500"
+                              : "green.700"
+                          }
+                          p={2}
+                          fontSize="xs"
+                          w="44"
+                          key={sub.subscriberID}
+                        >
+                          {/* Name */}
+                          <Text fontWeight="bold">{`${sub.subscriber.firstName} ${sub.subscriber.lastName}`}</Text>
+                          {/* Current qty */}
+                          <Text>Current Qty: {sub.qty}</Text>
+                          {/* Pending change */}
+                          <Text>
+                            Pending Qty: {sub.pendingQtyChange!.qty}{" "}
+                            <Text as="i" color="gray.500">
+                              [{sub.pendingQtyChange!.qty > sub.qty ? "+" : "-"}
+                              {sub.pendingQtyChange!.qty - sub.qty}]
+                            </Text>
+                          </Text>
+                          {/* Effective date */}
+                          <Text>
+                            Effective: {sub.pendingQtyChange!.effectiveDate}{" "}
+                          </Text>
+                          {/* Status */}
+                          <Text>
+                            Status:
+                            {
+                              // current date
+                              new Date() <=
+                              // effective date
+                              new Date(sub.pendingQtyChange!.effectiveDate) ? (
+                                <Badge>Date pending</Badge>
+                              ) : (
+                                <Badge colorScheme="green">Ready</Badge>
+                              )
+                            }
+                          </Text>
+
+                          {/* Commit/cancel button */}
+                          <ButtonGroup
+                            variant="solid"
+                            size="xs"
+                            my={2}
+                            isAttached
+                          >
+                            <Button
+                              leftIcon={<SmallCloseIcon />}
+                              onClick={() =>
+                                confirmCancelOrAcceptSubChange(
+                                  sub.subscriberID,
+                                  "cancel"
+                                )
+                              }
+                              colorScheme={
+                                // current date
+                                new Date() <=
+                                // effective date
+                                new Date(sub.pendingQtyChange!.effectiveDate)
+                                  ? "gray"
+                                  : "red"
+                              }
+                              // if not date, colorscheme: gray
+                            >
+                              Cancel
+                            </Button>
+                            <Button
+                              leftIcon={<CheckIcon />}
+                              onClick={() =>
+                                confirmCancelOrAcceptSubChange(
+                                  sub.subscriberID,
+                                  "accept"
+                                )
+                              }
+                              colorScheme={
+                                // current date
+                                new Date() <=
+                                // effective date
+                                new Date(sub.pendingQtyChange!.effectiveDate)
+                                  ? "gray"
+                                  : "green"
+                              }
+                            >
+                              Accept
+                            </Button>
+                          </ButtonGroup>
+                        </Box>
+                      )
+                  )}
               </HStack>
             </Box>
 
@@ -408,6 +508,26 @@ export default function PeriodicalDetailView({ periodicalID }: Props) {
           pubSubscription={selectedPubSub}
         />
       )}
+
+      {/* Confirm accept qty change */}
+      <ModalConfirmAction
+        isOpen={isModalConfirmAcceptQtyChangeOpen}
+        onClose={onModalConfirmAcceptQtyChangeClose}
+        onSuccess={() => {}}
+        heading="Are you sure?"
+        message="Are you sure you wish to accept this quantity change?"
+      />
+
+      {/* Confirm cancel qty change */}
+      <ModalConfirmAction
+        isOpen={isModalConfirmCancelQtyChangeOpen}
+        onClose={onModalConfirmCancelQtyChangeClose}
+        onSuccess={() => {}}
+        heading="Are you sure?"
+        message="Are you sure you wish to cancel this quantity change?"
+        confirmBtnText="Yes"
+        cancelBtnText="No"
+      />
     </div>
   );
 }

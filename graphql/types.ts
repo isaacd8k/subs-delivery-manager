@@ -2,86 +2,6 @@
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
-export type CreateSubscriberGroupInput = {
-  id?: string | null,
-  name: string,
-};
-
-export type ModelSubscriberGroupConditionInput = {
-  name?: ModelStringInput | null,
-  and?: Array< ModelSubscriberGroupConditionInput | null > | null,
-  or?: Array< ModelSubscriberGroupConditionInput | null > | null,
-  not?: ModelSubscriberGroupConditionInput | null,
-};
-
-export type ModelStringInput = {
-  ne?: string | null,
-  eq?: string | null,
-  le?: string | null,
-  lt?: string | null,
-  ge?: string | null,
-  gt?: string | null,
-  contains?: string | null,
-  notContains?: string | null,
-  between?: Array< string | null > | null,
-  beginsWith?: string | null,
-  attributeExists?: boolean | null,
-  attributeType?: ModelAttributeTypes | null,
-  size?: ModelSizeInput | null,
-};
-
-export enum ModelAttributeTypes {
-  binary = "binary",
-  binarySet = "binarySet",
-  bool = "bool",
-  list = "list",
-  map = "map",
-  number = "number",
-  numberSet = "numberSet",
-  string = "string",
-  stringSet = "stringSet",
-  _null = "_null",
-}
-
-
-export type ModelSizeInput = {
-  ne?: number | null,
-  eq?: number | null,
-  le?: number | null,
-  lt?: number | null,
-  ge?: number | null,
-  gt?: number | null,
-  between?: Array< number | null > | null,
-};
-
-export type SubscriberGroup = {
-  __typename: "SubscriberGroup",
-  id: string,
-  name: string,
-  members?: ModelSubscriberConnection | null,
-  createdAt: string,
-  updatedAt: string,
-};
-
-export type ModelSubscriberConnection = {
-  __typename: "ModelSubscriberConnection",
-  items:  Array<Subscriber | null >,
-  nextToken?: string | null,
-};
-
-export type Subscriber = {
-  __typename: "Subscriber",
-  id: string,
-  firstName: string,
-  lastName: string,
-  subscriberGroupID?: string | null,
-  pubSubscriptions?: ModelPubSubscriptionConnection | null,
-  orders?: ModelOrderConnection | null,
-  group?: SubscriberGroup | null,
-  createdAt: string,
-  updatedAt: string,
-};
-
 export type ModelPubSubscriptionConnection = {
   __typename: "ModelPubSubscriptionConnection",
   items:  Array<PubSubscription | null >,
@@ -187,6 +107,86 @@ export enum OrderStatus {
   CANCELED = "CANCELED",
 }
 
+
+export type Subscriber = {
+  __typename: "Subscriber",
+  id: string,
+  firstName: string,
+  lastName: string,
+  subscriberGroupID?: string | null,
+  pubSubscriptions?: ModelPubSubscriptionConnection | null,
+  orders?: ModelOrderConnection | null,
+  group?: SubscriberGroup | null,
+  createdAt: string,
+  updatedAt: string,
+};
+
+export type SubscriberGroup = {
+  __typename: "SubscriberGroup",
+  id: string,
+  name: string,
+  members?: ModelSubscriberConnection | null,
+  createdAt: string,
+  updatedAt: string,
+};
+
+export type ModelSubscriberConnection = {
+  __typename: "ModelSubscriberConnection",
+  items:  Array<Subscriber | null >,
+  nextToken?: string | null,
+};
+
+export type CreateSubscriberGroupInput = {
+  id?: string | null,
+  name: string,
+};
+
+export type ModelSubscriberGroupConditionInput = {
+  name?: ModelStringInput | null,
+  and?: Array< ModelSubscriberGroupConditionInput | null > | null,
+  or?: Array< ModelSubscriberGroupConditionInput | null > | null,
+  not?: ModelSubscriberGroupConditionInput | null,
+};
+
+export type ModelStringInput = {
+  ne?: string | null,
+  eq?: string | null,
+  le?: string | null,
+  lt?: string | null,
+  ge?: string | null,
+  gt?: string | null,
+  contains?: string | null,
+  notContains?: string | null,
+  between?: Array< string | null > | null,
+  beginsWith?: string | null,
+  attributeExists?: boolean | null,
+  attributeType?: ModelAttributeTypes | null,
+  size?: ModelSizeInput | null,
+};
+
+export enum ModelAttributeTypes {
+  binary = "binary",
+  binarySet = "binarySet",
+  bool = "bool",
+  list = "list",
+  map = "map",
+  number = "number",
+  numberSet = "numberSet",
+  string = "string",
+  stringSet = "stringSet",
+  _null = "_null",
+}
+
+
+export type ModelSizeInput = {
+  ne?: number | null,
+  eq?: number | null,
+  le?: number | null,
+  lt?: number | null,
+  ge?: number | null,
+  gt?: number | null,
+  between?: Array< number | null > | null,
+};
 
 export type UpdateSubscriberGroupInput = {
   id: string,
@@ -569,6 +569,20 @@ export type ModelItemConnection = {
   __typename: "ModelItemConnection",
   items:  Array<Item | null >,
   nextToken?: string | null,
+};
+
+export type ListActiveSubscribersQueryVariables = {
+  periodicalID: string,
+};
+
+export type ListActiveSubscribersQuery = {
+  listPubSubscriptions?:  {
+    __typename: "ModelPubSubscriptionConnection",
+    items:  Array< {
+      __typename: "PubSubscription",
+      subscriberID: string,
+    } | null >,
+  } | null,
 };
 
 export type CreateSubscriberGroupMutationVariables = {
