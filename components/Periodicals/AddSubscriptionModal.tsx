@@ -28,6 +28,8 @@ import { createPubSubscription } from "../../graphql/mutations";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { GraphQLOptions, GraphQLResult } from "@aws-amplify/api-graphql";
+import { ListActiveSubscribersQuery } from "../../graphql/custom/custom-types";
+import { listActiveSubscribers } from "../../graphql/custom/custom-queries";
 
 type Props = {
   isOpen: boolean;
@@ -43,15 +45,6 @@ type DropdownOption = {
 };
 
 type DropdownOptions = Array<DropdownOption>;
-
-type ListActiveSubscribersQuery = {
-  listPubSubscriptions: {
-    __typename: "ModelPubSubscriptionConnection";
-    items: Array<{
-      subscriberID: string;
-    }>;
-  };
-};
 
 export default function AddSubscriptionModal({
   isOpen,
@@ -75,15 +68,7 @@ export default function AddSubscriptionModal({
       authMode: "AMAZON_COGNITO_USER_POOLS",
     };
     const fetchActiveSubscriberIdsQueryObject: GraphQLOptions = {
-      query: /* GraphQL */ `
-        query ListActiveSubscribers($periodicalID: ID) {
-          listPubSubscriptions(periodicalID: $periodicalID) {
-            items {
-              subscriberID
-            }
-          }
-        }
-      `,
+      query: listActiveSubscribers,
       variables: {
         periodicalID: periodicalID,
       },
