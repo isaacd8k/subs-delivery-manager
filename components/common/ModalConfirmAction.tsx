@@ -17,6 +17,7 @@ import {
 type Props = {
   isOpen: boolean;
   onClose: () => any;
+  onCloseComplete: () => void;
   heading?: string;
   message: string;
   confirmBtnText?: string;
@@ -28,6 +29,7 @@ type Props = {
 export default function ModalConfirmAction({
   isOpen,
   onClose,
+  onCloseComplete,
   message,
   heading,
   onCancel,
@@ -36,7 +38,6 @@ export default function ModalConfirmAction({
   cancelBtnText,
 }: Props) {
   function confirmAction() {
-    // call close
     onSuccess();
     onClose();
   }
@@ -46,7 +47,11 @@ export default function ModalConfirmAction({
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={cancelAction}>
+    <Modal
+      isOpen={isOpen}
+      onClose={cancelAction}
+      onCloseComplete={onCloseComplete}
+    >
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{heading ?? "Confirm action"}</ModalHeader>
@@ -55,7 +60,7 @@ export default function ModalConfirmAction({
         <ModalBody>{message}</ModalBody>
 
         <ModalFooter>
-          <Button colorScheme="blue" mr={3} onClick={confirmAction}>
+          <Button colorScheme="blue" mr={3} onClick={() => confirmAction()}>
             {confirmBtnText ?? "Yes"}
           </Button>
           <Button variant="ghost" onClick={cancelAction}>
