@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import {
   Modal,
@@ -7,7 +7,6 @@ import {
   ModalHeader,
   ModalCloseButton,
   ModalBody,
-  HStack,
   FormControl,
   FormLabel,
   ModalFooter,
@@ -18,21 +17,16 @@ import {
   NumberIncrementStepper,
   NumberDecrementStepper,
   useToast,
-  Input,
   Divider,
-  FormHelperText,
   Box,
   Text,
   Heading,
-  Icon,
-  RadioGroup,
-  Radio,
-  Stack,
 } from "@chakra-ui/react";
 import { API } from "aws-amplify";
 import { PendingQtyChange, PubSubscription } from "../../graphql/types";
 import { updatePubSubscription } from "../../graphql/mutations";
-import { WarningTwoIcon } from "@chakra-ui/icons";
+import DatePicker from "react-datepicker";
+import DatePickerButton from "../common/DatePickerButton";
 
 type Props = {
   isOpen: boolean;
@@ -48,78 +42,41 @@ export default function EditSubscriptionModal({
   pubSubscription,
 }: Props) {
   const [adjustedQty, setAdjustedQty] = useState(
-    pubSubscription.qty.toString()
+    pubSubscription.pendingQtyChange?.qty.toString() ||
+      pubSubscription.qty.toString()
   );
-  const [adjustedEffectiveDate, setAdjustedEffectiveDate] = useState("");
-  const [isAdjustedQtyImmediate, setIsAdjustedQtyImmediate] = useState(false);
-  const [isSubToBeCanceled, setIsSubToBeCanceled] = useState(false);
-  const [isPendingChangeToBeCanceled, setIsPendingDateToBeCanceled] =
-    useState(false);
-  const [adjustedStatus, setAdjustedStatus] = useState("");
+
+  const [adjustedEffectiveDate, setAdjustedEffectiveDate] = useState(
+    new Date()
+  );
   const [formIsSubmitting, setFormIsSubmitting] = useState(false);
   const toast = useToast();
 
   function handleClose() {
-    // reset state
-
-    // call close
     onClose();
-  }
-
-  async function submitCancelSubscription() {
-    // create request
-    try {
-      await API.graphql({
-        query: updatePubSubscription,
-        variables: {
-          input: {
-            periodicalID: pubSubscription.periodicalID,
-            subscriberID: pubSubscription.subscriberID,
-            status: "CANCELED",
-          },
-        },
-        authMode: "AMAZON_COGNITO_USER_POOLS",
-      });
-    } catch (e) {
-      return toast({
-        title: "Error updating subscription. Please try again",
-        position: "top-right",
-        status: "error",
-      });
-    }
-
-    // call success callback
-    onSuccess && onSuccess();
   }
 
   async function submitUpdate() {
     // light validation
-    if (!parseInt(adjustedQty)) {
+    if (!parseInt(adjustedQty) || !adjustedEffectiveDate) {
       return;
     }
 
-    const intQty = parseInt(adjustedQty);
+    setFormIsSubmitting(true);
 
-    // initial/original state
+    // parse types
+    const intQty = parseInt(adjustedQty);
+    // locale en-CA outputs in desired format YYYY-MM-DD
+    const parsedDate = adjustedEffectiveDate.toLocaleDateString("en-CA");
+
+    // prepare update
     let qtyAdjustments = {
       qty: pubSubscription.qty,
-      pendingQtyChange: pubSubscription.pendingQtyChange,
-    };
-
-    // cancel pending changes
-    if (isPendingChangeToBeCanceled) {
-      qtyAdjustments.pendingQtyChange = null;
-    }
-
-    // make any immediate adjustments
-    if (isAdjustedQtyImmediate) {
-      qtyAdjustments.qty = intQty;
-    } else {
-      qtyAdjustments.pendingQtyChange = {
+      pendingQtyChange: {
         qty: intQty,
-        effectiveDate: adjustedEffectiveDate,
-      } as PendingQtyChange;
-    }
+        effectiveDate: parsedDate,
+      } as PendingQtyChange,
+    };
 
     // create request
     try {
@@ -129,22 +86,30 @@ export default function EditSubscriptionModal({
           input: {
             subscriberID: pubSubscription.subscriberID,
             periodicalID: pubSubscription.periodicalID,
-            status: adjustedStatus,
             ...qtyAdjustments,
           },
         },
         authMode: "AMAZON_COGNITO_USER_POOLS",
       });
+
+      toast({
+        title: "Successfully updated subscription",
+        position: "top-right",
+        status: "success",
+      });
+
+      // call success callback
+      onSuccess && onSuccess();
     } catch (e) {
-      return toast({
+      toast({
         title: "Error creating subscription. Please try again",
         position: "top-right",
         status: "error",
       });
+    } finally {
+      // restore loading state
+      setFormIsSubmitting(false);
     }
-
-    // call success callback
-    onSuccess && onSuccess();
   }
 
   return (
@@ -156,42 +121,46 @@ export default function EditSubscriptionModal({
         <ModalBody>
           {/* Current subscription */}
           <Heading fontSize="xs" mb={2} textTransform="uppercase">
-            Standing subscription
+            Current subscription
           </Heading>
-          <Text>Subscriber: {pubSubscription.subscriberID}</Text>
-          <Text>Quantity: {pubSubscription.qty}</Text>
-          {/* Pending change? */}
-          {pubSubscription.pendingQtyChange && <Box>Pending change</Box>}
+          <Box pl={2} fontSize="xs">
+            <Text>
+              Subscriber:{" "}
+              {`${pubSubscription.subscriber.firstName} ${pubSubscription.subscriber.lastName}`}
+            </Text>
+            <Text>Quantity: {pubSubscription.qty}</Text>
+
+            {/* Pending change? */}
+            {pubSubscription.pendingQtyChange && (
+              <Box
+                border="1px solid"
+                borderColor="yellow.500"
+                p={2}
+                mt={2}
+                fontSize="xs"
+                borderRadius="md"
+              >
+                <Heading
+                  textDecoration="underline"
+                  fontSize="xs"
+                  textTransform="uppercase"
+                >
+                  Pending qty adjustment
+                </Heading>
+                <Text>New qty: {pubSubscription.pendingQtyChange.qty}</Text>
+
+                <Text>
+                  Effective date:{" "}
+                  {pubSubscription.pendingQtyChange.effectiveDate}
+                </Text>
+              </Box>
+            )}
+          </Box>
           <Divider mt={4} mb={4} />
 
           <Heading fontSize="xs" mb={2} textTransform="uppercase">
             Edit subscription
           </Heading>
-
-          <Box
-            border="1px solid"
-            borderColor="red.500"
-            borderRadius="md"
-            p={1}
-            px={2}
-            mt={2}
-            fontSize="xs"
-          >
-            <HStack mb={1} pl={1}>
-              <Icon as={WarningTwoIcon} color="GrayText" />
-              <Text textAlign="center" textDecoration="underline">
-                Pending change
-              </Text>
-            </HStack>
-
-            <Text>Adjusted qty: 14</Text>
-            <Text>Effective on: 2022-06-01</Text>
-          </Box>
-          {/* Warning already pending change */}
-          <Text fontStyle="italic" fontSize="xs" color="red.500" mb={2}>
-            Existing pending change: This change will replace the current
-            pending change (scheduled for XXXX-XX-XX)
-          </Text>
 
           {/* Edit subscription */}
           {/* Adjust quantity */}
@@ -214,34 +183,30 @@ export default function EditSubscriptionModal({
             </NumberInput>
           </FormControl>
           {/* Effective date */}
-          <HStack>
-            <FormControl mb={4}>
-              <FormLabel htmlFor="adjustedEffectiveDate">
-                Effective date
-              </FormLabel>
+          <FormControl mb={4} isRequired>
+            <FormLabel htmlFor="adjustedEffectiveDate">
+              Effective date:
+            </FormLabel>
+            <DatePicker
+              id="adjustedEffectiveDate"
+              selected={adjustedEffectiveDate}
+              onChange={(date: Date) => setAdjustedEffectiveDate(date)}
+              customInput={<DatePickerButton />}
+              todayButton="Today"
+            />
+          </FormControl>
 
-              <RadioGroup>
-                <Stack spacing={4} direction="row">
-                  <Radio value="1">Next issue</Radio>
-                  <Radio value="2">2nd issue</Radio>
-                  <Radio value="3">Issue after:</Radio>
-                </Stack>
-              </RadioGroup>
+          <Text fontSize="xs">
+            Subscriptions changes are pending by default. Review and activate
+            pending subscriptions in the Pending Subscriptions section.
+          </Text>
 
-              <Input
-                id="adjustedEffectiveDate"
-                type="text"
-                placeholder="YYYY-MM"
-                value={adjustedEffectiveDate}
-                onChange={(e) => setAdjustedEffectiveDate(e.target.value)}
-                maxW={40}
-              />
-              <FormHelperText fontSize="xs">
-                Enter the date in which the quantity date will become effective
-                (defaults to next issue date).
-              </FormHelperText>
-            </FormControl>
-          </HStack>
+          {/* Pending subscription warning */}
+          {pubSubscription.pendingQtyChange && (
+            <Text fontSize="xs" color="red.500" py={1}>
+              NOTE: Your current pending adjustment will be overwritten.
+            </Text>
+          )}
         </ModalBody>
 
         <ModalFooter>
