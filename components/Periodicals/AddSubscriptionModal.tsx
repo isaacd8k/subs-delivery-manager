@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   Modal,
@@ -30,6 +30,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { GraphQLOptions, GraphQLResult } from "@aws-amplify/api-graphql";
 import { ListActiveSubscribersQuery } from "../../graphql/custom/custom-types";
 import { listActiveSubscribers } from "../../graphql/custom/custom-queries";
+import DatePickerButton from "../common/DatePickerButton";
 
 type Props = {
   isOpen: boolean;
@@ -213,17 +214,6 @@ export default function AddSubscriptionModal({
     // call success callback
     onSuccess && onSuccess();
   }
-
-  const DatePickerButton = forwardRef<
-    HTMLButtonElement,
-    React.ButtonHTMLAttributes<HTMLButtonElement>
-  >(function DatePickerButton(props, ref) {
-    return (
-      <Button onClick={props.onClick} variant="outline" ref={ref}>
-        {props.value}
-      </Button>
-    );
-  });
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose}>
