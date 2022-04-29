@@ -147,9 +147,7 @@ export default function PubSubscriptionTile({ pubSub, onEdit }: Props) {
               <>
                 <Button
                   leftIcon={<ArrowForwardIcon />}
-                  onClick={() => {
-                    onEditPubSubscriptionModalOpen();
-                  }}
+                  onClick={onEditPubSubscriptionModalOpen}
                 >
                   Edit qty
                 </Button>
