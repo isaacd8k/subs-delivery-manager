@@ -128,32 +128,38 @@ export default function EditSubscriptionModal({
               Subscriber:{" "}
               {`${pubSubscription.subscriber.firstName} ${pubSubscription.subscriber.lastName}`}
             </Text>
-            <Text>Quantity: {pubSubscription.qty}</Text>
+            <Text>Current quantity: {pubSubscription.qty}</Text>
 
             {/* Pending change? */}
             {pubSubscription.pendingQtyChange && (
-              <Box
-                border="1px solid"
-                borderColor="yellow.500"
-                p={2}
-                mt={2}
-                fontSize="xs"
-                borderRadius="md"
-              >
-                <Heading
-                  textDecoration="underline"
-                  fontSize="xs"
-                  textTransform="uppercase"
-                >
-                  Pending qty adjustment
-                </Heading>
-                <Text>New qty: {pubSubscription.pendingQtyChange.qty}</Text>
-
-                <Text>
-                  Effective date:{" "}
-                  {pubSubscription.pendingQtyChange.effectiveDate}
+              <>
+                {/* Pending subscription warning */}
+                <Text fontSize="xs" color="red.500" py={1}>
+                  NOTE: Your current pending adjustment will be overwritten.
                 </Text>
-              </Box>
+                <Box
+                  border="1px solid"
+                  borderColor="yellow.500"
+                  p={2}
+                  mt={2}
+                  fontSize="xs"
+                  borderRadius="md"
+                >
+                  <Heading
+                    textDecoration="underline"
+                    fontSize="xs"
+                    textTransform="uppercase"
+                  >
+                    Pending qty adjustment
+                  </Heading>
+                  <Text>New qty: {pubSubscription.pendingQtyChange.qty}</Text>
+
+                  <Text>
+                    Effective date:{" "}
+                    {pubSubscription.pendingQtyChange.effectiveDate}
+                  </Text>
+                </Box>
+              </>
             )}
           </Box>
           <Divider mt={4} mb={4} />
@@ -200,13 +206,6 @@ export default function EditSubscriptionModal({
             Subscriptions changes are pending by default. Review and activate
             pending subscriptions in the Pending Subscriptions section.
           </Text>
-
-          {/* Pending subscription warning */}
-          {pubSubscription.pendingQtyChange && (
-            <Text fontSize="xs" color="red.500" py={1}>
-              NOTE: Your current pending adjustment will be overwritten.
-            </Text>
-          )}
         </ModalBody>
 
         <ModalFooter>

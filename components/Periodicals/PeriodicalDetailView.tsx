@@ -435,6 +435,21 @@ export default function PeriodicalDetailView({ periodicalID }: Props) {
                         >
                           {/* Name */}
                           <Text fontWeight="bold">{`${sub.subscriber.firstName} ${sub.subscriber.lastName}`}</Text>
+
+                          {/* Status */}
+                          <Text>
+                            {
+                              // current date
+                              new Date() <=
+                              // effective date
+                              new Date(sub.pendingQtyChange!.effectiveDate) ? (
+                                <Badge>Date pending</Badge>
+                              ) : (
+                                <Badge colorScheme="green">Ready</Badge>
+                              )
+                            }
+                          </Text>
+
                           {/* Current qty */}
                           <Text>Current qty: {sub.qty}</Text>
                           {/* Pending change */}
@@ -448,20 +463,6 @@ export default function PeriodicalDetailView({ periodicalID }: Props) {
                           {/* Effective date */}
                           <Text>
                             Effective: {sub.pendingQtyChange!.effectiveDate}{" "}
-                          </Text>
-                          {/* Status */}
-                          <Text>
-                            Status:
-                            {
-                              // current date
-                              new Date() <=
-                              // effective date
-                              new Date(sub.pendingQtyChange!.effectiveDate) ? (
-                                <Badge>Date pending</Badge>
-                              ) : (
-                                <Badge colorScheme="green">Ready</Badge>
-                              )
-                            }
                           </Text>
 
                           {/* Commit/cancel button */}
