@@ -2,6 +2,7 @@ import {
   ArrowForwardIcon,
   CheckIcon,
   MinusIcon,
+  NotAllowedIcon,
   RepeatClockIcon,
   RepeatIcon,
   SettingsIcon,
@@ -45,6 +46,7 @@ import AddSubscriptionModal from "./AddSubscriptionModal";
 import EditSubscriptionModal from "./EditSubscriptionModal";
 import NewPeriodicalModal from "./NewPeriodicalModal";
 import { findOneAndRemove } from "../../utils/array-utils";
+import PubSubscriptionTile from "./components/PubSubscriptionTile";
 
 export type Props = {
   periodicalID: string;
@@ -551,6 +553,10 @@ export default function PeriodicalDetailView({ periodicalID }: Props) {
             {/* Subscriptions */}
             <Box p={2}>
               <Heading size="xs">Subscriptions</Heading>
+              <Text color="gray.400" fontSize="xs" my={2}>
+                Canceling subscriptions: In order to cancel a subscription, you
+                must first adjust the quantity to 0 and accept the adjustment.
+              </Text>
 
               {/* Subscriptions grid */}
               <SimpleGrid
@@ -561,51 +567,11 @@ export default function PeriodicalDetailView({ periodicalID }: Props) {
                 {periodical?.pubSubscriptions?.items.map(
                   (pubSub) =>
                     pubSub && (
-                      <Box
-                        borderRadius="lg"
-                        border="1px solid"
-                        borderColor="blue.600"
-                        p={6}
-                        key={pubSub.subscriberID + pubSub.periodicalID}
-                      >
-                        <Heading size="sm" isTruncated>
-                          {pubSub.subscriber.firstName}{" "}
-                          {pubSub.subscriber.lastName}
-                        </Heading>
-
-                        <Text fontSize="xs">Quantity: {pubSub.qty}</Text>
-                        <Text fontSize="xs">
-                          Created:{" "}
-                          {new Date(pubSub.createdAt).toLocaleDateString()}
-                        </Text>
-
-                        <Box
-                          border="1px solid"
-                          borderColor="gray.700"
-                          borderRadius="md"
-                          mt={2}
-                          mb={2}
-                          p={2}
-                        >
-                          <Heading size="xs">
-                            <TimeIcon />
-                            Adjusted qty:
-                          </Heading>
-                        </Box>
-
-                        <Button
-                          leftIcon={<ArrowForwardIcon />}
-                          colorScheme="teal"
-                          variant="ghost"
-                          size="xs"
-                          onClick={() => {
-                            setSelectedPubSub(pubSub);
-                            onEditPubSubscriptionModalOpen();
-                          }}
-                        >
-                          Edit subscription
-                        </Button>
-                      </Box>
+                      <PubSubscriptionTile
+                        key={pubSub.subscriberID + "PubSubcriptionTile"}
+                        pubSub={pubSub}
+                        onEdit={fetchPeriodicalDetails}
+                      />
                     )
                 )}
 
@@ -668,7 +634,9 @@ export default function PeriodicalDetailView({ periodicalID }: Props) {
           key={currentQtyChangeAccepting?.subscriberID + "accept"}
           isOpen={isModalConfirmAcceptQtyChangeOpen}
           onClose={onModalConfirmAcceptQtyChangeClose}
-          onCloseComplete={() => setCurrentQtyChangeAccepting(null)}
+          onCloseComplete={() => {
+            // setCurrentQtyChangeAccepting(null);
+          }}
           onSuccess={() =>
             dispatchAcceptSubChange({
               periodicalID,
@@ -686,7 +654,9 @@ export default function PeriodicalDetailView({ periodicalID }: Props) {
           key={currentQtyChangeCanceling?.subscriberID + "cancel"}
           isOpen={isModalConfirmCancelQtyChangeOpen}
           onClose={onModalConfirmCancelQtyChangeClose}
-          onCloseComplete={() => setCurrentQtyChangeCanceling(null)}
+          onCloseComplete={() => {
+            // setCurrentQtyChangeCanceling(null)
+          }}
           onSuccess={() =>
             dispatchCancelSubChange({
               periodicalID,
