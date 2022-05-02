@@ -1,9 +1,4 @@
-import {
-  ArrowForwardIcon,
-  NotAllowedIcon,
-  RepeatIcon,
-  WarningTwoIcon,
-} from "@chakra-ui/icons";
+import { ArrowForwardIcon, NotAllowedIcon, RepeatIcon } from "@chakra-ui/icons";
 import {
   Box,
   Heading,
@@ -14,7 +9,6 @@ import {
   Spacer,
   ButtonGroup,
   Divider,
-  toast,
   useToast,
   Badge,
 } from "@chakra-ui/react";
@@ -108,7 +102,12 @@ export default function PubSubscriptionTile({ pubSub, onEdit }: Props) {
                   {pubSub.subscriber.firstName} {pubSub.subscriber.lastName}
                 </Text>
                 <Spacer />
-                <Text color="GrayText">x {pubSub.qty}</Text>
+                <Text color="GrayText">
+                  <Text fontSize="xs" as="abbr">
+                    QTY
+                  </Text>{" "}
+                  {pubSub.qty}
+                </Text>
               </Flex>
             </Heading>
 

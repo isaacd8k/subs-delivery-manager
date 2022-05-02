@@ -280,9 +280,21 @@ export default function PeriodicalDetailView({ periodicalID }: Props) {
         {/* Recurrence info */}
         <Badge colorScheme="green">{periodical.recurrence}</Badge>
 
-        {/* Automation settings */}
+        {/* Meta data */}
         <Text fontSize="xs" color="InactiveCaptionText">
-          Automation enabled: issues and orders will generate automatically
+          Total subscribers: {periodical.pubSubscriptions?.items.length || "0"}
+        </Text>
+        <Text fontSize="xs" color="InactiveCaptionText">
+          Total periodical order quantity:{" "}
+          {periodical.pubSubscriptions?.items
+            .map((sub) => sub?.qty || 0)
+            .reduce((prev, curr) => prev + curr, 0) || "0"}
+        </Text>
+        <Text fontSize="xs" color="InactiveCaptionText">
+          Total after pending changes:{" "}
+          {periodical.pubSubscriptions?.items
+            .map((sub) => sub?.pendingQtyChange?.qty || sub?.qty || 0)
+            .reduce((prev, curr) => prev + curr, 0) || "0"}
         </Text>
 
         <Divider mt={4} mb={4} />
@@ -555,8 +567,9 @@ export default function PeriodicalDetailView({ periodicalID }: Props) {
             <Box p={2}>
               <Heading size="xs">Subscriptions</Heading>
               <Text color="gray.400" fontSize="xs" my={2}>
-                Canceling subscriptions: In order to cancel a subscription, you
-                must first adjust the quantity to 0 and accept the adjustment.
+                Canceling subscriptions: In order to cancel a subscription, its
+                current quantity must be 0 and it cannot have any pending
+                subscription changes.
               </Text>
 
               {/* Subscriptions grid */}
