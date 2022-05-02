@@ -130,6 +130,9 @@ type PeriodicalIssue
   orders: [Order] @hasMany(indexName: "byPeriodicalIssue", fields: ["id"])
   notes: String
   isBatchClosed: Boolean! @default(value: "false")
+
+  # Periodical connection
+  periodical: Periodical! @belongsTo(fields: ["periodicalID"])
 }
 
 type Order
@@ -171,6 +174,12 @@ type Order
       sortKeyFields: ["status"]
       queryField: "ordersByPeriodicalIssueByStatus"
     )
+
+  # Subscriber connection
+  subscriber: Subscriber! @belongsTo(fields: ["subscriberID"])
+
+  # Periodical connection
+  periodicalIssue: PeriodicalIssue @belongsTo(fields: ["periodicalIssueID"])
 }
 
 type Item

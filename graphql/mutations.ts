@@ -163,6 +163,24 @@ export const createSubscriber = /* GraphQL */ `
           itemID
           subscriberID
           periodicalIssueID
+          subscriber {
+            id
+            firstName
+            lastName
+            subscriberGroupID
+            createdAt
+            updatedAt
+          }
+          periodicalIssue {
+            id
+            issueDate
+            status
+            periodicalID
+            notes
+            isBatchClosed
+            createdAt
+            updatedAt
+          }
           createdAt
           updatedAt
         }
@@ -243,6 +261,24 @@ export const updateSubscriber = /* GraphQL */ `
           itemID
           subscriberID
           periodicalIssueID
+          subscriber {
+            id
+            firstName
+            lastName
+            subscriberGroupID
+            createdAt
+            updatedAt
+          }
+          periodicalIssue {
+            id
+            issueDate
+            status
+            periodicalID
+            notes
+            isBatchClosed
+            createdAt
+            updatedAt
+          }
           createdAt
           updatedAt
         }
@@ -323,6 +359,24 @@ export const deleteSubscriber = /* GraphQL */ `
           itemID
           subscriberID
           periodicalIssueID
+          subscriber {
+            id
+            firstName
+            lastName
+            subscriberGroupID
+            createdAt
+            updatedAt
+          }
+          periodicalIssue {
+            id
+            issueDate
+            status
+            periodicalID
+            notes
+            isBatchClosed
+            createdAt
+            updatedAt
+          }
           createdAt
           updatedAt
         }
@@ -664,6 +718,13 @@ export const createPeriodical = /* GraphQL */ `
           }
           notes
           isBatchClosed
+          periodical {
+            id
+            name
+            recurrence
+            createdAt
+            updatedAt
+          }
           createdAt
           updatedAt
         }
@@ -725,6 +786,13 @@ export const updatePeriodical = /* GraphQL */ `
           }
           notes
           isBatchClosed
+          periodical {
+            id
+            name
+            recurrence
+            createdAt
+            updatedAt
+          }
           createdAt
           updatedAt
         }
@@ -786,6 +854,13 @@ export const deletePeriodical = /* GraphQL */ `
           }
           notes
           isBatchClosed
+          periodical {
+            id
+            name
+            recurrence
+            createdAt
+            updatedAt
+          }
           createdAt
           updatedAt
         }
@@ -849,6 +924,24 @@ export const createPeriodicalIssue = /* GraphQL */ `
           itemID
           subscriberID
           periodicalIssueID
+          subscriber {
+            id
+            firstName
+            lastName
+            subscriberGroupID
+            createdAt
+            updatedAt
+          }
+          periodicalIssue {
+            id
+            issueDate
+            status
+            periodicalID
+            notes
+            isBatchClosed
+            createdAt
+            updatedAt
+          }
           createdAt
           updatedAt
         }
@@ -856,6 +949,38 @@ export const createPeriodicalIssue = /* GraphQL */ `
       }
       notes
       isBatchClosed
+      periodical {
+        id
+        name
+        recurrence
+        issues {
+          items {
+            id
+            issueDate
+            status
+            periodicalID
+            notes
+            isBatchClosed
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        pubSubscriptions {
+          items {
+            qty
+            startDate
+            status
+            periodicalID
+            subscriberID
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
     }
@@ -883,6 +1008,24 @@ export const updatePeriodicalIssue = /* GraphQL */ `
           itemID
           subscriberID
           periodicalIssueID
+          subscriber {
+            id
+            firstName
+            lastName
+            subscriberGroupID
+            createdAt
+            updatedAt
+          }
+          periodicalIssue {
+            id
+            issueDate
+            status
+            periodicalID
+            notes
+            isBatchClosed
+            createdAt
+            updatedAt
+          }
           createdAt
           updatedAt
         }
@@ -890,6 +1033,38 @@ export const updatePeriodicalIssue = /* GraphQL */ `
       }
       notes
       isBatchClosed
+      periodical {
+        id
+        name
+        recurrence
+        issues {
+          items {
+            id
+            issueDate
+            status
+            periodicalID
+            notes
+            isBatchClosed
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        pubSubscriptions {
+          items {
+            qty
+            startDate
+            status
+            periodicalID
+            subscriberID
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
     }
@@ -917,6 +1092,24 @@ export const deletePeriodicalIssue = /* GraphQL */ `
           itemID
           subscriberID
           periodicalIssueID
+          subscriber {
+            id
+            firstName
+            lastName
+            subscriberGroupID
+            createdAt
+            updatedAt
+          }
+          periodicalIssue {
+            id
+            issueDate
+            status
+            periodicalID
+            notes
+            isBatchClosed
+            createdAt
+            updatedAt
+          }
           createdAt
           updatedAt
         }
@@ -924,6 +1117,38 @@ export const deletePeriodicalIssue = /* GraphQL */ `
       }
       notes
       isBatchClosed
+      periodical {
+        id
+        name
+        recurrence
+        issues {
+          items {
+            id
+            issueDate
+            status
+            periodicalID
+            notes
+            isBatchClosed
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        pubSubscriptions {
+          items {
+            qty
+            startDate
+            status
+            periodicalID
+            subscriberID
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
     }
@@ -945,6 +1170,92 @@ export const createOrder = /* GraphQL */ `
       itemID
       subscriberID
       periodicalIssueID
+      subscriber {
+        id
+        firstName
+        lastName
+        subscriberGroupID
+        pubSubscriptions {
+          items {
+            qty
+            startDate
+            status
+            periodicalID
+            subscriberID
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        orders {
+          items {
+            id
+            placedDate
+            isAutomaticOrder
+            isPubSubscriptionOrder
+            itemQty
+            status
+            cancellationReason
+            itemID
+            subscriberID
+            periodicalIssueID
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        group {
+          id
+          name
+          members {
+            nextToken
+          }
+          createdAt
+          updatedAt
+        }
+        createdAt
+        updatedAt
+      }
+      periodicalIssue {
+        id
+        issueDate
+        status
+        periodicalID
+        orders {
+          items {
+            id
+            placedDate
+            isAutomaticOrder
+            isPubSubscriptionOrder
+            itemQty
+            status
+            cancellationReason
+            itemID
+            subscriberID
+            periodicalIssueID
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        notes
+        isBatchClosed
+        periodical {
+          id
+          name
+          recurrence
+          issues {
+            nextToken
+          }
+          pubSubscriptions {
+            nextToken
+          }
+          createdAt
+          updatedAt
+        }
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
     }
@@ -966,6 +1277,92 @@ export const updateOrder = /* GraphQL */ `
       itemID
       subscriberID
       periodicalIssueID
+      subscriber {
+        id
+        firstName
+        lastName
+        subscriberGroupID
+        pubSubscriptions {
+          items {
+            qty
+            startDate
+            status
+            periodicalID
+            subscriberID
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        orders {
+          items {
+            id
+            placedDate
+            isAutomaticOrder
+            isPubSubscriptionOrder
+            itemQty
+            status
+            cancellationReason
+            itemID
+            subscriberID
+            periodicalIssueID
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        group {
+          id
+          name
+          members {
+            nextToken
+          }
+          createdAt
+          updatedAt
+        }
+        createdAt
+        updatedAt
+      }
+      periodicalIssue {
+        id
+        issueDate
+        status
+        periodicalID
+        orders {
+          items {
+            id
+            placedDate
+            isAutomaticOrder
+            isPubSubscriptionOrder
+            itemQty
+            status
+            cancellationReason
+            itemID
+            subscriberID
+            periodicalIssueID
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        notes
+        isBatchClosed
+        periodical {
+          id
+          name
+          recurrence
+          issues {
+            nextToken
+          }
+          pubSubscriptions {
+            nextToken
+          }
+          createdAt
+          updatedAt
+        }
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
     }
@@ -987,6 +1384,92 @@ export const deleteOrder = /* GraphQL */ `
       itemID
       subscriberID
       periodicalIssueID
+      subscriber {
+        id
+        firstName
+        lastName
+        subscriberGroupID
+        pubSubscriptions {
+          items {
+            qty
+            startDate
+            status
+            periodicalID
+            subscriberID
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        orders {
+          items {
+            id
+            placedDate
+            isAutomaticOrder
+            isPubSubscriptionOrder
+            itemQty
+            status
+            cancellationReason
+            itemID
+            subscriberID
+            periodicalIssueID
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        group {
+          id
+          name
+          members {
+            nextToken
+          }
+          createdAt
+          updatedAt
+        }
+        createdAt
+        updatedAt
+      }
+      periodicalIssue {
+        id
+        issueDate
+        status
+        periodicalID
+        orders {
+          items {
+            id
+            placedDate
+            isAutomaticOrder
+            isPubSubscriptionOrder
+            itemQty
+            status
+            cancellationReason
+            itemID
+            subscriberID
+            periodicalIssueID
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        notes
+        isBatchClosed
+        periodical {
+          id
+          name
+          recurrence
+          issues {
+            nextToken
+          }
+          pubSubscriptions {
+            nextToken
+          }
+          createdAt
+          updatedAt
+        }
+        createdAt
+        updatedAt
+      }
       createdAt
       updatedAt
     }
@@ -1012,6 +1495,24 @@ export const createItem = /* GraphQL */ `
           itemID
           subscriberID
           periodicalIssueID
+          subscriber {
+            id
+            firstName
+            lastName
+            subscriberGroupID
+            createdAt
+            updatedAt
+          }
+          periodicalIssue {
+            id
+            issueDate
+            status
+            periodicalID
+            notes
+            isBatchClosed
+            createdAt
+            updatedAt
+          }
           createdAt
           updatedAt
         }
@@ -1043,6 +1544,24 @@ export const updateItem = /* GraphQL */ `
           itemID
           subscriberID
           periodicalIssueID
+          subscriber {
+            id
+            firstName
+            lastName
+            subscriberGroupID
+            createdAt
+            updatedAt
+          }
+          periodicalIssue {
+            id
+            issueDate
+            status
+            periodicalID
+            notes
+            isBatchClosed
+            createdAt
+            updatedAt
+          }
           createdAt
           updatedAt
         }
@@ -1074,6 +1593,24 @@ export const deleteItem = /* GraphQL */ `
           itemID
           subscriberID
           periodicalIssueID
+          subscriber {
+            id
+            firstName
+            lastName
+            subscriberGroupID
+            createdAt
+            updatedAt
+          }
+          periodicalIssue {
+            id
+            issueDate
+            status
+            periodicalID
+            notes
+            isBatchClosed
+            createdAt
+            updatedAt
+          }
           createdAt
           updatedAt
         }
