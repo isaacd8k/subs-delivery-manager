@@ -102,8 +102,8 @@ export default function PubSubscriptionTile({ pubSub, onEdit }: Props) {
                   {pubSub.subscriber.firstName} {pubSub.subscriber.lastName}
                 </Text>
                 <Spacer />
-                <Text color="GrayText">
-                  <Text fontSize="xs" as="abbr">
+                <Text>
+                  <Text fontSize="xs" as="abbr" color="GrayText">
                     QTY
                   </Text>{" "}
                   {pubSub.qty}
