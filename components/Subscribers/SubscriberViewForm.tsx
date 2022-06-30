@@ -37,7 +37,9 @@ export type Props = {
 // TODO: Fix unnecessary dup requests. GraphQL mutations automatically return
 // the updated record. No need to re-request
 export default function SubscriberViewForm({ subscriberID }: Props) {
-  const [subscriber, setSubscriber] = useState<Subscriber | null>();
+  const [subscriber, setSubscriber] = useState<
+    GetSubscriberQuery["getSubscriber"] | null | undefined
+  >();
   const [isEditMode, setIsEditMode] = useState(false);
   const [updatedFirstName, setUpdatedFirstName] = useState<string>("");
   const [updatedLastName, setUpdatedLastName] = useState<string>("");
@@ -185,7 +187,9 @@ export default function SubscriberViewForm({ subscriberID }: Props) {
                     id="firstName"
                     type="text"
                     value={updatedFirstName}
-                    onChange={(e) => setUpdatedFirstName(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setUpdatedFirstName(e.target.value)
+                    }
                   />
                 </FormControl>
                 <FormControl>
@@ -194,7 +198,9 @@ export default function SubscriberViewForm({ subscriberID }: Props) {
                     id="lastName"
                     type="text"
                     value={updatedLastName}
-                    onChange={(e) => setUpdatedLastName(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setUpdatedLastName(e.target.value)
+                    }
                   />
                 </FormControl>
 
