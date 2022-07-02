@@ -98,7 +98,7 @@ export default function PubSubscriptionTile({ pubSub, onEdit }: Props) {
             {/* Heading */}
             <Heading size="sm">
               <Flex>
-                <Text isTruncated maxW="40">
+                <Text noOfLines={1} maxW="40">
                   {pubSub.subscriber.firstName} {pubSub.subscriber.lastName}
                 </Text>
                 <Spacer />

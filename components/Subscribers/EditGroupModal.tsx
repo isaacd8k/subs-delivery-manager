@@ -27,7 +27,6 @@ import {
   Spacer,
   Text,
   Stack,
-  toast,
   useToast,
 } from "@chakra-ui/react";
 import { API } from "aws-amplify";
@@ -361,7 +360,7 @@ export default function EditGroupModal({
                       align="center"
                       justify="space-between"
                     >
-                      <Text maxW="32" isTruncated>
+                      <Text maxW="32" noOfLines={1}>
                         {sub.firstName} {sub.lastName}
                       </Text>
                       <Button
@@ -416,7 +415,7 @@ export default function EditGroupModal({
                       align="center"
                       justify="space-between"
                     >
-                      <Text maxW="32" isTruncated>
+                      <Text maxW="32" noOfLines={1}>
                         {sub.firstName} {sub.lastName}
                       </Text>
                       <Button

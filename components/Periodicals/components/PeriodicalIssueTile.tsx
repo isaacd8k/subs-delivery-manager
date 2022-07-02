@@ -52,7 +52,7 @@ export default function PeriodicalIssueTile({ issue, onEdit }: Props) {
         key={issue.id}
         sx={{ gridColumnStart: 1 }}
       >
-        <Heading size="sm" isTruncated>
+        <Heading size="sm" noOfLines={1}>
           {issue.issueDate}
         </Heading>
 

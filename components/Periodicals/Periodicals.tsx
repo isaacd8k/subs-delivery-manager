@@ -111,7 +111,7 @@ export default function Periodicals() {
               borderColor="pink.800"
               p={6}
             >
-              <Heading size="sm" isTruncated>
+              <Heading size="sm" noOfLines={1}>
                 <NextLink
                   href={`/periodical/${periodical.id}`}
                   key={periodical.id}

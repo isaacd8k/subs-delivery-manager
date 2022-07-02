@@ -253,7 +253,7 @@ export default function Subscribers() {
                   borderColor="green.700"
                   borderRadius="lg"
                 >
-                  <Heading size="sm" isTruncated>
+                  <Heading size="sm" noOfLines={1}>
                     Group: {group.name}
                   </Heading>
 
@@ -338,7 +338,7 @@ export default function Subscribers() {
               >
                 <NextLink href={`/subscriber/${sub.id}`} key={sub.id} passHref>
                   <Link>
-                    <Text maxW="48" isTruncated>
+                    <Text maxW="48" noOfLines={1}>
                       {sub.firstName} {sub.lastName}
                     </Text>
                   </Link>
