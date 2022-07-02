@@ -10,8 +10,8 @@
   },
   "dependencies": {
     "@aws-amplify/ui-react": "^3.0.3",
-    "@chakra-ui/icons": "^1.1.7",
-    "@chakra-ui/react": "^1.8.8",
+    "@chakra-ui/icons": "^2.0.2",
+    "@chakra-ui/react": "^2.2.1",
     "@emotion/react": "^11.8.2",
     "@emotion/styled": "^11.8.1",
     "aws-amplify": "^4.3.16",
