@@ -276,16 +276,14 @@ export default function Subscribers() {
                   </Button>
                 </Box>
               ))}
-
-              {/* EDIT MODE: Add a group button */}
-              <Box bg="blue.700" borderRadius="lg" p={6}>
-                <Link onClick={onAddGroup}>
-                  <Center height="100%">Add a group</Center>
-                </Link>
-              </Box>
             </>
           )}
         </SimpleGrid>
+
+        {/* EDIT MODE: Add a group button */}
+        <Button leftIcon={<AddIcon />} onClick={onAddGroup}>
+          Add a group
+        </Button>
       </Box>
 
       {/* Subscribers */}
