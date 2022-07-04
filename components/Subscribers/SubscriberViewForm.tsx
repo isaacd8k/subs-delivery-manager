@@ -19,6 +19,7 @@ import {
   ModalOverlay,
   Spacer,
   Text,
+  useColorModeValue,
   useDisclosure,
   useToast,
   VStack,
@@ -45,6 +46,7 @@ export default function SubscriberViewForm({ subscriberID }: Props) {
   const [updatedLastName, setUpdatedLastName] = useState<string>("");
   const toast = useToast();
   const router = useRouter();
+  const formLabelTextColor = useColorModeValue("gray.700", "gray.300");
 
   const {
     isOpen: isWarningOpen,
@@ -138,15 +140,9 @@ export default function SubscriberViewForm({ subscriberID }: Props) {
 
   return (
     <div>
-      <Flex>
-        <Heading>Subscriber details</Heading>
-      </Flex>
-
       <Container maxW="container.md">
         <Flex>
-          <Heading size="md">
-            Subscriber: {`${subscriber?.firstName} ${subscriber?.lastName}`}
-          </Heading>
+          <Heading size="md">Subscriber details</Heading>
           <Spacer />
 
           <Button
@@ -176,7 +172,7 @@ export default function SubscriberViewForm({ subscriberID }: Props) {
               borderLeft="1px"
               borderColor={"gray.600"}
             >
-              <Text fontSize="xs" color="gray.300">
+              <Text fontSize="xs" color={formLabelTextColor}>
                 Edit subscriber details
               </Text>
 
@@ -205,14 +201,12 @@ export default function SubscriberViewForm({ subscriberID }: Props) {
                 </FormControl>
 
                 <ButtonGroup variant="outline" isAttached>
-                  <Button colorScheme="blue" onClick={onSaveEdit}>
-                    Save
-                  </Button>
+                  <Button onClick={onSaveEdit}>Save</Button>
                   <Button onClick={onCancelEdit}>Cancel</Button>
                 </ButtonGroup>
               </VStack>
 
-              <Text fontSize="xs" color="gray.300" mt={4}>
+              <Text fontSize="xs" color={formLabelTextColor} mt={4}>
                 Delete subscriber
               </Text>
               <Box mt={2}>
