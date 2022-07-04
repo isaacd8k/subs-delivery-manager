@@ -1,21 +1,11 @@
 import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
   Box,
   Button,
-  Center,
   Divider,
   Flex,
   Heading,
   Input,
   Link,
-  List,
-  ListIcon,
-  ListItem,
-  OrderedList,
   SimpleGrid,
   Spacer,
   Stack,
@@ -23,16 +13,9 @@ import {
   TagLabel,
   TagLeftIcon,
   Text,
-  UnorderedList,
   useDisclosure,
-  VStack,
 } from "@chakra-ui/react";
-import {
-  AddIcon,
-  ArrowForwardIcon,
-  MinusIcon,
-  RepeatIcon,
-} from "@chakra-ui/icons";
+import { AddIcon, ArrowForwardIcon, RepeatIcon } from "@chakra-ui/icons";
 import React, { useEffect, useState } from "react";
 import { API } from "aws-amplify";
 import { listSubscriberGroups, listSubscribers } from "../../graphql/queries";
@@ -41,11 +24,9 @@ import {
   ListSubscribersQuery,
   Subscriber,
   SubscriberGroup,
-  UpdateSubscriberMutation,
 } from "../../graphql/types";
 import NewSubscriber from "./NewSubscriber";
 import NextLink from "next/link";
-import { updateSubscriber } from "../../graphql/mutations";
 import NewGroupModal from "./NewGroupModal";
 import EditGroupModal from "./EditGroupModal";
 
