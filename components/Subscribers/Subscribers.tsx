@@ -219,8 +219,6 @@ export default function Subscribers() {
           templateColumns="repeat(auto-fill, minmax(220px, 1fr))"
           mb={6}
           p={2}
-          borderLeft="1px solid"
-          borderColor="green.200"
         >
           {subGroups === null ? (
             <>Loading</>
@@ -304,8 +302,6 @@ export default function Subscribers() {
           overflow="scroll"
           my={6}
           p={2}
-          borderLeft="1px solid"
-          borderColor="gray.500"
         >
           {filteredSubscribers &&
             filteredSubscribers.map((sub) => (
