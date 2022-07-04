@@ -7,34 +7,22 @@ import theme from "../theming/chakra-theme";
 import amplifyTheme from "../theming/amplify-theme";
 import { components } from "../theming/amplify-theme";
 import "@aws-amplify/ui-react/styles.css";
-import Link from "next/link";
 import { CognitoUserAmplify } from "@aws-amplify/ui";
+import NavBar from "../components/common/NavBar";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ChakraProvider theme={theme}>
       <div>
-        <nav>
-          <Link href="/">
-            <a>Home</a>
-          </Link>
-          <Link href="/profile">
-            <a>Profile</a>
-          </Link>
-          <Link href="/subscribers">
-            <a>Subscribers</a>
-          </Link>
-          <Link href="/periodicals">
-            <a>Periodicals</a>
-          </Link>
-        </nav>
-
         <AmplifyProvider theme={amplifyTheme} colorMode="system">
           <Authenticator variation="default" hideSignUp components={components}>
             {(auth) => (
-              <Container maxW="container.xl">
-                <Component {...pageProps} auth={auth} isAuthEnabled={true} />
-              </Container>
+              <>
+                <NavBar authSignOut={auth.signOut} />
+                <Container maxW="container.xl">
+                  <Component {...pageProps} auth={auth} isAuthEnabled={true} />
+                </Container>
+              </>
             )}
           </Authenticator>
         </AmplifyProvider>
