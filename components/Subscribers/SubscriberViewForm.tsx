@@ -18,6 +18,7 @@ import {
   ModalHeader,
   ModalOverlay,
   Spacer,
+  Stack,
   Text,
   useColorModeValue,
   useDisclosure,
@@ -47,6 +48,7 @@ export default function SubscriberViewForm({ subscriberID }: Props) {
   const toast = useToast();
   const router = useRouter();
   const formLabelTextColor = useColorModeValue("gray.700", "gray.300");
+  const formBgColor = useColorModeValue("gray.50", "gray.700");
 
   const {
     isOpen: isWarningOpen,
@@ -163,18 +165,10 @@ export default function SubscriberViewForm({ subscriberID }: Props) {
 
           {/* Edit mode */}
           {isEditMode && (
-            <Box
-              ml={4}
-              mt={4}
-              mb={4}
-              p={1}
-              pl={4}
-              borderLeft="1px"
-              borderColor={"gray.600"}
-            >
-              <Text fontSize="xs" color={formLabelTextColor}>
+            <Box my={4} py={6} px={{ base: 3, md: 6 }} bgColor={formBgColor}>
+              <Heading as="h4" size="xs">
                 Edit subscriber details
-              </Text>
+              </Heading>
 
               <VStack spacing={3} mt={2} mb={6}>
                 <FormControl>
@@ -206,7 +200,7 @@ export default function SubscriberViewForm({ subscriberID }: Props) {
                 </ButtonGroup>
               </VStack>
 
-              <Text fontSize="xs" color={formLabelTextColor} mt={4}>
+              <Text fontSize="xs" color={formLabelTextColor} mt={"12"}>
                 Delete subscriber
               </Text>
               <Box mt={2}>
@@ -214,13 +208,18 @@ export default function SubscriberViewForm({ subscriberID }: Props) {
                   Note: Deleting is permanent. In order to delete, you must
                   first remove the subscriber from any groups and subscriptions.
                 </Text>
-                <Button
-                  variant="outline"
-                  colorScheme="red"
-                  onClick={onWarningOpen}
+                <Stack
+                  direction="row"
+                  justifyContent={{ base: "center", sm: "flex-start" }}
                 >
-                  Delete
-                </Button>
+                  <Button
+                    variant="outline"
+                    colorScheme="red"
+                    onClick={onWarningOpen}
+                  >
+                    Delete
+                  </Button>
+                </Stack>
               </Box>
             </Box>
           )}
@@ -236,6 +235,9 @@ export default function SubscriberViewForm({ subscriberID }: Props) {
                   {sub.periodical.name}
                 </Box>
               )
+          )}
+          {subscriber.pubSubscriptions?.items.length || (
+            <Text>No active subscriptions</Text>
           )}
         </Box>
 
