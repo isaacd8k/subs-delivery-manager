@@ -19,7 +19,7 @@ function MyApp({ Component, pageProps }: AppProps) {
             {(auth) => (
               <>
                 <NavBar authSignOut={auth.signOut} />
-                <Container maxW="container.xl">
+                <Container maxW="container.lg" paddingY={"2em"}>
                   <Component {...pageProps} auth={auth} isAuthEnabled={true} />
                 </Container>
               </>
