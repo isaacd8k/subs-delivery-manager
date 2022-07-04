@@ -26,8 +26,8 @@ const Home: NextPage<PageProps> = ({ auth }) => {
   return (
     <>
       {/* Greeting */}
-      <Text fontSize="3xl">
-        <h2>Hello, {auth.user.username}</h2>
+      <Text fontSize="3xl" as="h2">
+        Welcome
       </Text>
 
       {/* Render the dashboard */}
