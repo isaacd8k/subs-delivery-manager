@@ -22,6 +22,7 @@ import {
   ChevronRightIcon,
 } from "@chakra-ui/icons";
 import NextLink from "next/link";
+import { useState } from "react";
 
 type NavBarProps = {
   authSignOut: (() => any) | undefined;
@@ -29,6 +30,12 @@ type NavBarProps = {
 
 export default function WithSubnavigation({ authSignOut }: NavBarProps) {
   const { isOpen, onToggle } = useDisclosure();
+  const [signOutIsLoading, setSignOutIsLoading] = useState(false);
+
+  function signOutUser() {
+    setSignOutIsLoading(true);
+    authSignOut && authSignOut();
+  }
 
   return (
     <Box>
@@ -41,6 +48,7 @@ export default function WithSubnavigation({ authSignOut }: NavBarProps) {
         borderBottom={1}
         borderStyle={"solid"}
         borderColor={useColorModeValue("gray.200", "gray.900")}
+        sx={useColorModeValue({}, { boxShadow: "0 0 10px #276749d1" })}
         align={"center"}
       >
         <Flex
@@ -80,7 +88,9 @@ export default function WithSubnavigation({ authSignOut }: NavBarProps) {
           {authSignOut && (
             <Button
               display={{ base: "none", md: "inline-flex" }}
-              onClick={authSignOut}
+              onClick={signOutUser}
+              isLoading={signOutIsLoading}
+              loadingText="Signing out"
               fontSize={"sm"}
               fontWeight={600}
               color={"white"}
@@ -96,7 +106,10 @@ export default function WithSubnavigation({ authSignOut }: NavBarProps) {
       </Flex>
 
       <Collapse in={isOpen} animateOpacity>
-        <MobileNav />
+        <MobileNav
+          authSignOut={authSignOut ? signOutUser : undefined}
+          signOutIsLoading={signOutIsLoading}
+        />
       </Collapse>
     </Box>
   );
@@ -190,16 +203,37 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
   );
 };
 
-const MobileNav = () => {
+const MobileNav = (props: {
+  signOutIsLoading?: boolean;
+  authSignOut?: () => void;
+}) => {
   return (
     <Stack
-      bg={useColorModeValue("white", "gray.800")}
+      bg={useColorModeValue("white", "teal.900")}
       p={4}
       display={{ md: "none" }}
     >
       {NAV_ITEMS.map((navItem) => (
         <MobileNavItem key={navItem.label} {...navItem} />
       ))}
+
+      {props.authSignOut && (
+        <Button
+          width={"full"}
+          onClick={props.authSignOut}
+          fontSize={"sm"}
+          fontWeight={600}
+          color={"white"}
+          bg={"pink.400"}
+          isLoading={props.signOutIsLoading ?? false}
+          loadingText="Signing out"
+          _hover={{
+            bg: "pink.300",
+          }}
+        >
+          Sign out
+        </Button>
+      )}
     </Stack>
   );
 };
@@ -266,16 +300,20 @@ interface NavItem {
 
 const NAV_ITEMS: Array<NavItem> = [
   {
-    label: "Home",
-    href: "/",
-  },
-  {
     label: "Profile",
     href: "/profile",
   },
   {
+    label: "Home",
+    href: "/",
+  },
+  {
     label: "Subscribers",
     href: "/subscribers",
+  },
+  {
+    label: "Periodicals",
+    href: "/periodicals",
   },
 ];
 
