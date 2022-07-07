@@ -5,7 +5,7 @@ import { listSubscribers } from "../graphql/queries";
 import { ListSubscribersQuery, Subscriber } from "../graphql/types";
 import { AdditionalPageProps } from "./_app";
 import Dashboard from "../components/Home/Dashboard/Dashboard";
-import { Container, Text } from "@chakra-ui/react";
+import { Heading } from "@chakra-ui/react";
 
 type PageProps = AdditionalPageProps & {};
 
@@ -26,9 +26,9 @@ const Home: NextPage<PageProps> = ({ auth }) => {
   return (
     <>
       {/* Greeting */}
-      <Text fontSize="3xl" as="h2">
+      <Heading size="lg" mb={2}>
         Welcome
-      </Text>
+      </Heading>
 
       {/* Render the dashboard */}
       <Dashboard />

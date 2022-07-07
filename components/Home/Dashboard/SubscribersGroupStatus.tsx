@@ -1,6 +1,22 @@
-import { Box, GridItem } from "@chakra-ui/react";
+import { Box, GridItem, Heading, useColorModeValue } from "@chakra-ui/react";
 import React from "react";
 
 export default function SubscribersGroupStatus() {
-  return <GridItem p={2}>SubscribersGroupStatus</GridItem>;
+  return (
+    <GridItem
+      border="1px"
+      borderColor={useColorModeValue("gray.200", "gray.700")}
+      rounded="md"
+    >
+      <Heading
+        size="xs"
+        backgroundColor={useColorModeValue("gray.50", "gray.700")}
+        padding={2}
+      >
+        Subscriptions summary
+      </Heading>
+
+      <Box padding={2}>Content</Box>
+    </GridItem>
+  );
 }
