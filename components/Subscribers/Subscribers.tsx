@@ -8,11 +8,8 @@ import {
   Link,
   SimpleGrid,
   Spacer,
-  Stack,
-  Tag,
-  TagLabel,
-  TagLeftIcon,
   Text,
+  useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react";
 import { AddIcon, ArrowForwardIcon, RepeatIcon } from "@chakra-ui/icons";
@@ -29,6 +26,7 @@ import NewSubscriber from "./NewSubscriber";
 import NextLink from "next/link";
 import NewGroupModal from "./NewGroupModal";
 import EditGroupModal from "./EditGroupModal";
+import useDebounce from "../../hooks/useDebouncedValue";
 
 type SubscriberSimple = Pick<
   Subscriber,
@@ -48,6 +46,7 @@ export default function Subscribers() {
     SubscriberSimple[]
   >([]);
   const [searchSubscribersInput, setSearchSubscribersInput] = useState("");
+  const debouncedInputValue = useDebounce(searchSubscribersInput, 500);
 
   const {
     isOpen: isNewGroupModalOpen,
@@ -64,6 +63,7 @@ export default function Subscribers() {
   const [selectedGroupToEdit, setSelectedGroupToEdit] = useState<string | null>(
     null
   );
+  const responsiveTextLinkColor = useColorModeValue("teal.500", "teal.400");
 
   async function fetchSubscribers() {
     try {
@@ -145,7 +145,7 @@ export default function Subscribers() {
       return setFilteredSubscribers([]);
     }
 
-    const input = searchSubscribersInput.toLocaleLowerCase();
+    const input = debouncedInputValue.toLocaleLowerCase();
     const list = subscribers.slice();
 
     setFilteredSubscribers(
@@ -154,7 +154,7 @@ export default function Subscribers() {
         return fullname.indexOf(input) > -1;
       })
     );
-  }, [searchSubscribersInput, subscribers]);
+  }, [debouncedInputValue, subscribers]);
 
   function toggleNewSubscriber() {
     setNewSubVisible((prev) => !prev);
@@ -305,36 +305,13 @@ export default function Subscribers() {
         >
           {filteredSubscribers &&
             filteredSubscribers.map((sub) => (
-              <Stack
-                direction="row"
-                key={sub.id}
-                align="center"
-                justify="space-between"
-              >
-                <NextLink href={`/subscriber/${sub.id}`} key={sub.id} passHref>
-                  <Link>
-                    <Text maxW="48" noOfLines={1}>
-                      {sub.firstName} {sub.lastName}
-                    </Text>
-                  </Link>
-                </NextLink>
-
-                {/* Group name */}
-                {sub.group && (
-                  <Tag size="sm" variant="solid" colorScheme="teal">
-                    {sub.group.name}
-                  </Tag>
-                )}
-
-                {/* Subscriptions */}
-                {sub.pubSubscriptions?.items &&
-                  sub.pubSubscriptions.items.length > 0 && (
-                    <Tag size="sm" variant="outline" colorScheme="pink">
-                      <TagLeftIcon boxSize="12px" as={RepeatIcon} />
-                      <TagLabel>{sub.pubSubscriptions.items.length}</TagLabel>
-                    </Tag>
-                  )}
-              </Stack>
+              <NextLink href={`/subscriber/${sub.id}`} key={sub.id} passHref>
+                <Link>
+                  <Text maxW="48" noOfLines={1} color={responsiveTextLinkColor}>
+                    {sub.firstName} {sub.lastName}
+                  </Text>
+                </Link>
+              </NextLink>
             ))}
         </SimpleGrid>
       </Box>
