@@ -7,15 +7,11 @@ import {
   AccordionItem,
   Box,
   Button,
-  Flex,
   FormControl,
   FormLabel,
   Heading,
   HStack,
   Input,
-  Link,
-  List,
-  ListItem,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -24,14 +20,12 @@ import {
   ModalHeader,
   ModalOverlay,
   SimpleGrid,
-  Spacer,
   Text,
   Stack,
   useToast,
 } from "@chakra-ui/react";
 import { API } from "aws-amplify";
 import {
-  createSubscriberGroup,
   deleteSubscriberGroup,
   updateSubscriber,
   updateSubscriberGroup,
@@ -43,7 +37,7 @@ import {
   Subscriber,
   UpdateSubscriberMutation,
 } from "../../graphql/types";
-import { MinusIcon, WarningTwoIcon } from "@chakra-ui/icons";
+import { WarningTwoIcon } from "@chakra-ui/icons";
 
 type Props = {
   isOpen: boolean;
@@ -80,6 +74,7 @@ export default function EditGroupModal({
 
   // on unmount, update mounted flag
   useEffect(() => {
+    mountedRef.current = true;
     return () => {
       mountedRef.current = false;
     };
