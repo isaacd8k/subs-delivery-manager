@@ -1,6 +1,6 @@
 import { PeriodicalIssue } from "../../graphql/types";
 
-const LOCALDB_KEY = "localPeriodicalIssues";
+import LOCALDB_KEY from "./dbKey";
 
 async function getIssues(): Promise<PeriodicalIssue[]> {
   if (typeof window === "undefined") {

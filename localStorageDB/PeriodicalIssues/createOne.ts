@@ -1,5 +1,5 @@
 import { PeriodicalIssue } from "../../graphql/types";
-const LOCALDB_KEY = "localPeriodicalIssues";
+import LOCALDB_KEY from "./dbKey";
 import { v4 as uuidv4 } from "uuid";
 import { localStorageAvailable } from "../../utils/isStorageAvailable";
 
