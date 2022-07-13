@@ -1,8 +1,8 @@
-import { PeriodicalIssue } from "../../graphql/types";
+import { PeriodicalIssueLocalDB } from "./types";
 
 import LOCALDB_KEY from "./dbKey";
 
-async function getIssues(): Promise<PeriodicalIssue[]> {
+async function getIssues(): Promise<PeriodicalIssueLocalDB[]> {
   if (typeof window === "undefined") {
     return Promise.resolve([]);
   }
@@ -10,7 +10,9 @@ async function getIssues(): Promise<PeriodicalIssue[]> {
   try {
     const issuesUnparsed = window.localStorage.getItem(LOCALDB_KEY);
     if (issuesUnparsed) {
-      const issuesParsed = JSON.parse(issuesUnparsed) as PeriodicalIssue[];
+      const issuesParsed = JSON.parse(
+        issuesUnparsed
+      ) as PeriodicalIssueLocalDB[];
       if (Array.isArray(issuesParsed)) {
         return Promise.resolve(issuesParsed);
       }

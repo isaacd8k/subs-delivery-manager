@@ -2,15 +2,11 @@ import { PeriodicalIssue } from "../../graphql/types";
 import LOCALDB_KEY from "./dbKey";
 import { v4 as uuidv4 } from "uuid";
 import { localStorageAvailable } from "../../utils/isStorageAvailable";
-
-export type PeriodicalIssueLight = Omit<
-  PeriodicalIssue,
-  "periodical" | "id" | "orders"
->;
+import { NewPeriodicalIssuePayload, PeriodicalIssueLocalDB } from "./types";
 
 function createIssue(
-  periodicalIssue: PeriodicalIssueLight
-): Promise<PeriodicalIssueLight> {
+  periodicalIssue: NewPeriodicalIssuePayload
+): Promise<PeriodicalIssueLocalDB> {
   if (typeof window === "undefined") {
     return Promise.reject("localStorage not available window");
   }

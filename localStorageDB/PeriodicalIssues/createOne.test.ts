@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import { IssueStatus } from "../../graphql/types";
-import createOne, { PeriodicalIssueLight } from "./createOne";
+import createOne from "./createOne";
+import { NewPeriodicalIssuePayload } from "./types";
 
 jest.mock("uuid", () => {
   return {
@@ -10,7 +11,7 @@ jest.mock("uuid", () => {
 });
 
 // define new type that is returned from "server" that includes "id", and "updatedAt", "createdAt" fields
-const newPeriodicalIssue: PeriodicalIssueLight = {
+const newPeriodicalIssue: NewPeriodicalIssuePayload = {
   __typename: "PeriodicalIssue",
   createdAt: "",
   updatedAt: "",
