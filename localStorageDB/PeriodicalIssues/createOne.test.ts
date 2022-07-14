@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import { IssueStatus } from "../../graphql/types";
 import createOne from "./createOne";
-import { NewPeriodicalIssuePayload } from "./types";
+import { NewPeriodicalIssuePayload } from "./_types";
 
 jest.mock("uuid", () => {
   return {

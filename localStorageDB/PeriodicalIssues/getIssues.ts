@@ -1,4 +1,4 @@
-import { PeriodicalIssueLocalDB } from "./types";
+import { PeriodicalIssueLocalDB } from "./_types";
 
 import LOCALDB_KEY from "./_dbKey";
 

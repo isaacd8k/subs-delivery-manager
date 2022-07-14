@@ -1,6 +1,6 @@
 import { localStorageAvailable } from "../../utils/isStorageAvailable";
 import LOCALDB_KEY from "./_dbKey";
-import { PeriodicalIssueLocalDB } from "./types";
+import { PeriodicalIssueLocalDB } from "./_types";
 
 async function getIssuesByPeriodical(
   periodicalId: string

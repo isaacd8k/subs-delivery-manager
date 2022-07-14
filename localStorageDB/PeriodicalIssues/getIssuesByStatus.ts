@@ -1,6 +1,6 @@
 import { localStorageAvailable } from "../../utils/isStorageAvailable";
 import LOCALDB_KEY from "./_dbKey";
-import { PeriodicalIssueLocalDB } from "./types";
+import { PeriodicalIssueLocalDB } from "./_types";
 import { IssueStatus } from "../../graphql/types";
 
 async function getIssuesByStatus(

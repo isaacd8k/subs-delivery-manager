@@ -2,7 +2,7 @@ import { PeriodicalIssue } from "../../graphql/types";
 import LOCALDB_KEY from "./_dbKey";
 import { v4 as uuidv4 } from "uuid";
 import { localStorageAvailable } from "../../utils/isStorageAvailable";
-import { NewPeriodicalIssuePayload, PeriodicalIssueLocalDB } from "./types";
+import { NewPeriodicalIssuePayload, PeriodicalIssueLocalDB } from "./_types";
 
 function createIssue(
   periodicalIssue: NewPeriodicalIssuePayload
