@@ -1,6 +1,6 @@
 import { PeriodicalIssueLocalDB } from "./types";
 
-import LOCALDB_KEY from "./dbKey";
+import LOCALDB_KEY from "./_dbKey";
 
 async function getIssues(): Promise<PeriodicalIssueLocalDB[]> {
   if (typeof window === "undefined") {
